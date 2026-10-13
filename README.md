@@ -1,9 +1,3 @@
-# Obee App Mockup
-
-Bản sao nguyên giao diện Vue 3/Vben hiện tại từ `F:\obee\web`, được tách khỏi
-Laravel API bằng một adapter dữ liệu mock cố định để phục vụ demo tương tác.
-
-## Chạy local
 
 ```bash
 cd web
