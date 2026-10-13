@@ -1,0 +1,1108 @@
+{
+  "auth": {
+    "login": "Đăng nhập",
+    "register": "Đăng ký",
+    "codeLogin": "Đăng nhập bằng mã",
+    "qrcodeLogin": "Đăng nhập mã QR",
+    "forgetPassword": "Quên mật khẩu",
+    "profile": "Hồ sơ cá nhân",
+    "welcomeBack": "Chào mừng trở lại",
+    "loginSubtitle": "Đăng nhập bằng tài khoản Obee của bạn.",
+    "loginPageTitle": "Nền tảng quản trị vận hành Obee",
+    "loginPageDescription": "Quản trị dữ liệu, lịch làm việc, nhân sự, phê duyệt và cộng tác nội bộ.",
+    "copyright": "Bản quyền © 2026",
+    "companyName": "Ouransoft - Obee",
+    "emailOrUsername": "Email hoặc tên đăng nhập",
+    "emailOrUsernamePlaceholder": "Nhập email hoặc tên đăng nhập",
+    "emailOrUsernameRequired": "Vui lòng nhập email hoặc tên đăng nhập",
+    "customerLoginBlocked": "Không thể truy cập khu vực quản trị",
+    "customerLoginBlockedDescription": "Vui lòng dùng cổng khách hàng thay cho ứng dụng quản trị."
+  },
+  "notifications": {
+    "routeTitle": "Thông báo",
+    "listTitle": "Danh sách thông báo",
+    "listDescription": "Xem các thông báo gần đây của bạn.",
+    "columns": {
+      "content": "Nội dung",
+      "actor": "Người thực hiện",
+      "status": "Trạng thái",
+      "occurredAt": "Thời điểm"
+    },
+    "filters": {
+      "readState": "Trạng thái",
+      "all": "Tất cả",
+      "read": "Đã đọc",
+      "unread": "Chưa đọc"
+    },
+    "fields": {
+      "by": "Bởi",
+      "recipients": "Người nhận",
+      "message": "Nội dung",
+      "content": "Nội dung",
+      "sender": "Người gửi",
+      "actor": "Người thực hiện",
+      "occurredAt": "Thời điểm"
+    },
+    "placeholders": {
+      "recipients": "Chọn một hoặc nhiều người nhận",
+      "message": "Nhập nội dung thông báo"
+    },
+    "actions": {
+      "create": "Tạo thông báo mới",
+      "send": "Gửi thông báo",
+      "markAllRead": "Đánh dấu tất cả đã đọc"
+    },
+    "create": {
+      "title": "Tạo thông báo mới"
+    },
+    "detail": {
+      "title": "Chi tiết thông báo",
+      "statusTitle": "Trạng thái thông báo",
+      "informationTitle": "Thông tin thông báo"
+    },
+    "status": {
+      "read": "Thông báo đã đọc",
+      "unread": "Thông báo chưa đọc"
+    },
+    "messages": {
+      "sent": "Đã gửi thông báo",
+      "markedAllRead": "Đã đánh dấu tất cả thông báo là đã đọc",
+      "unexpectedError": "Đã xảy ra lỗi không mong muốn"
+    }
+  },
+  "employeeRecord": {
+    "evaluation": {
+      "routeTitle": "Đánh giá"
+    },
+    "history": {
+      "routeTitle": "Lịch sử hồ sơ"
+    },
+    "routeTitle": "Hồ sơ nhân sự",
+    "skills": {
+      "routeTitle": "Kỹ năng và năng lực"
+    }
+  },
+  "employeeHistory": {
+    "messages": {
+      "avatarUpdated": "Đã cập nhật ảnh hồ sơ",
+      "unexpectedError": "Đã xảy ra lỗi không xác định"
+    },
+    "actions": {
+      "changeAvatar": "Đổi ảnh",
+      "back": "Quay lại",
+      "backToList": "Quay lại danh sách",
+      "detail": "Chi tiết"
+    },
+    "columns": {
+      "actions": "Thao tác",
+      "award": "Khen thưởng",
+      "content": "Nội dung",
+      "date": "Ngày tháng",
+      "department": "Bộ phận",
+      "employeeCode": "Mã nhân sự",
+      "fullName": "Họ tên",
+      "gender": "Giới tính",
+      "joinedAt": "Ngày vào công ty",
+      "level": "Trình độ",
+      "note": "Ghi chú",
+      "position": "Chức vụ",
+      "positionDepartment": "Vị trí / Phòng ban",
+      "sequence": "#",
+      "startingDate": "Ngày làm chính thức"
+    },
+    "fields": {
+      "address": "Địa chỉ",
+      "age": "Tuổi",
+      "citizenId": "Số CCCD",
+      "contactInfo": "Thông tin liên lạc",
+      "currentPosition": "Chức vụ hiện tại",
+      "dateOfBirth": "Ngày sinh",
+      "dependentTaxId": "MST người phụ thuộc",
+      "educationLevel": "Trình độ học vấn",
+      "email": "Email",
+      "employeeCode": "Mã nhân viên",
+      "fullName": "Họ và tên",
+      "gender": "Giới tính",
+      "healthInsurance": "Số thẻ BHYT",
+      "joinedAt": "Ngày vào công ty",
+      "personalTaxId": "MST cá nhân",
+      "phone": "Điện thoại",
+      "seniority": "Thâm niên",
+      "socialInsurance": "Số BHXH",
+      "workUnit": "Đơn vị công tác"
+    },
+    "emptyHistory": {
+      "achievements": "Chưa có ghi nhận thành tích hoặc khen thưởng",
+      "achievementsDesc": "Thông tin khen thưởng, danh hiệu hoặc thành tích nổi bật sẽ hiển thị tại đây khi được ghi nhận.",
+      "educationHistory": "Chưa có ghi nhận quá trình đào tạo",
+      "educationHistoryDesc": "Thông tin học vấn, bằng cấp và các chứng chỉ chuyên môn sẽ hiển thị tại đây khi được cập nhật.",
+      "hrNotes": "Chưa có ghi chú từ phòng nhân sự",
+      "hrNotesDesc": "Các lưu ý, đánh giá và ghi chép nội bộ từ bộ phận nhân sự sẽ được lưu trữ tại đây.",
+      "noEmployeeFound": "Không tìm thấy hồ sơ nhân viên",
+      "noEmployeeFoundDesc": "Hồ sơ nhân viên này không tồn tại hoặc đã bị gỡ bỏ khỏi hệ thống.",
+      "workHistory": "Chưa có ghi nhận quá trình công tác",
+      "workHistoryDesc": "Lịch sử bổ nhiệm, luân chuyển bộ phận hoặc thăng tiến sẽ hiển thị tại đây khi có quyết định nhân sự."
+    },
+    "filters": {
+      "search": "Tìm kiếm",
+      "searchPlaceholder": "Mã nhân sự, họ tên..."
+    },
+    "listDescription": "Danh sách nhân sự và xem chi tiết lịch sử hồ sơ.",
+    "listTitle": "Lịch sử công tác",
+    "noEmployeeSelected": "Vui lòng chọn nhân viên để xem hồ sơ",
+    "pageDescription": "Xem thông tin hồ sơ và các mốc lịch sử của nhân viên.",
+    "pageTitle": "Lịch sử hồ sơ nhân sự",
+    "placeholder": "Chưa có dữ liệu",
+    "sections": {
+      "achievements": "Thành tích",
+      "educationHistory": "Quá trình học tập",
+      "hrNotes": "Ghi chép nhân sự",
+      "personalInfo": "Thông tin cá nhân",
+      "workHistory": "Quá trình công tác"
+    },
+    "selectEmployee": "Chọn nhân viên",
+    "selectEmployeePlaceholder": "Tìm theo tên hoặc mã nhân viên...",
+    "status": {
+      "active": "Đang làm việc",
+      "inactive": "Ngừng hoạt động"
+    }
+  },
+  "masterData": {
+    "routeTitle": "Masterdata"
+  },
+  "positions": {
+    "routeTitle": "Chức vụ",
+    "listTitle": "Danh sách chức vụ",
+    "listDescription": "Quản lý danh mục chức vụ dùng cho hồ sơ nhân sự.",
+    "columns": {
+      "name": "Tên chức vụ",
+      "description": "Mô tả",
+      "actions": "Thao tác"
+    },
+    "filters": {
+      "search": "Tìm kiếm",
+      "searchPlaceholder": "Tên chức vụ..."
+    },
+    "fields": {
+      "name": "Tên chức vụ",
+      "description": "Mô tả"
+    },
+    "actions": {
+      "create": "Tạo chức vụ",
+      "view": "Xem chi tiết",
+      "edit": "Chỉnh sửa",
+      "delete": "Xóa",
+      "save": "Lưu",
+      "cancel": "Hủy"
+    },
+    "values": {
+      "notProvided": "Chưa cung cấp"
+    },
+    "create": {
+      "title": "Tạo chức vụ"
+    },
+    "edit": {
+      "title": "Chỉnh sửa chức vụ"
+    },
+    "detail": {
+      "title": "Chi tiết chức vụ"
+    },
+    "delete": {
+      "title": "Xóa chức vụ",
+      "description": "Bạn có chắc muốn xóa chức vụ {name}? Hành động này không thể hoàn tác."
+    },
+    "validation": {
+      "nameRequired": "Vui lòng nhập tên chức vụ"
+    },
+    "messages": {
+      "created": "Đã tạo chức vụ",
+      "updated": "Đã cập nhật chức vụ",
+      "deleted": "Đã xóa chức vụ",
+      "unexpectedError": "Đã xảy ra lỗi không xác định"
+    }
+  },
+  "roles": {
+    "routeTitle": "Vai trò",
+    "listTitle": "Quản trị vai trò",
+    "listDescription": "Cấu hình phân quyền hệ thống cho các vai trò và tài khoản.",
+    "columns": {
+      "resource": "Tài nguyên"
+    },
+    "filters": {
+      "resource": "Tìm tài nguyên"
+    },
+    "fields": {
+      "name": "Tên vai trò",
+      "description": "Mô tả"
+    },
+    "actions": {
+      "create": "Tạo vai trò",
+      "edit": "Sửa vai trò",
+      "save": "Lưu",
+      "undo": "Hoàn tác",
+      "cancel": "Hủy",
+      "retry": "Thử lại",
+      "viewAny": "Xem tất cả",
+      "view": "Xem",
+      "createAction": "Tạo",
+      "update": "Cập nhật",
+      "deleteAction": "Xóa"
+    },
+    "matrixActions": {
+      "viewAny": "Xem tất cả",
+      "view": "Xem",
+      "create": "Tạo",
+      "update": "Cập nhật",
+      "delete": "Xóa"
+    },
+    "create": {
+      "title": "Tạo vai trò"
+    },
+    "edit": {
+      "title": "Sửa vai trò"
+    },
+    "permissionAccessDenied": "Bạn có thể xem vai trò nhưng không có quyền xem danh mục permission. Trang đang ở chế độ chỉ đọc.",
+    "leave": {
+      "title": "Thay đổi vai trò chưa lưu",
+      "confirm": "Bỏ các thay đổi permission vai trò chưa lưu?",
+      "discard": "Bỏ thay đổi"
+    },
+    "aria": {
+      "permission": "Bật hoặc tắt quyền {action} cho {resource}"
+    },
+    "messages": {
+      "created": "Đã tạo vai trò",
+      "updated": "Đã cập nhật vai trò",
+      "loadFailed": "Không thể tải vai trò.",
+      "unexpectedError": "Đã xảy ra lỗi không mong muốn"
+    }
+  },
+  "users": {
+    "routeTitle": "Người dùng",
+    "title": "Người dùng",
+    "description": "Quản lý tài khoản nội bộ, hồ sơ, phòng ban và vai trò.",
+    "listTitle": "Danh sách người dùng",
+    "listDescription": "Theo dõi tài khoản, vai trò, trạng thái và thời điểm tạo.",
+    "columns": {
+      "sequence": "STT",
+      "username": "Tên đăng nhập",
+      "employeeId": "Mã nhân viên",
+      "status": "Trạng thái",
+      "actions": "Thao tác"
+    },
+    "filters": {
+      "search": "Tìm kiếm",
+      "searchPlaceholder": "Mã nhân viên, tên đăng nhập, email, họ tên...",
+      "name": "Tên",
+      "namePlaceholder": "Lọc theo tên",
+      "email": "Email",
+      "emailPlaceholder": "Lọc theo email",
+      "roleGroup": "Vai trò",
+      "status": "Trạng thái"
+    },
+    "fields": {
+      "name": "Họ và tên",
+      "username": "Tên đăng nhập",
+      "email": "Email",
+      "avatar": "Avatar",
+      "password": "Mật khẩu",
+      "roles": "Vai trò",
+      "status": "Trạng thái",
+      "department": "Phòng ban",
+      "company": "Công ty",
+      "phone": "Điện thoại",
+      "employeeCode": "Mã nhân viên",
+      "position": "Chức vụ",
+      "gender": "Giới tính",
+      "birthday": "Ngày sinh",
+      "joinedAt": "Ngày vào công ty",
+      "startingDate": "Ngày làm chính thức",
+      "educationLevel": "Trình độ",
+      "employeeType": "Loại nhân sự",
+      "citizenIdentificationCard": "Căn cước công dân",
+      "socialInsuranceNumber": "Số bảo hiểm xã hội",
+      "healthInsuranceCardNumber": "Số thẻ bảo hiểm y tế",
+      "personalTaxIdentificationNumber": "Mã số thuế cá nhân",
+      "dependentTaxIdentificationNumber": "Mã số thuế người phụ thuộc",
+      "bankAccountNumber": "Số tài khoản",
+      "address": "Địa chỉ",
+      "createdAt": "Ngày tạo",
+      "updatedAt": "Ngày cập nhật"
+    },
+    "sections": {
+      "account": "Tài khoản",
+      "contact": "Thông tin liên hệ",
+      "personal": "Thông tin cá nhân",
+      "access": "Quyền truy cập",
+      "roles": "Vai trò",
+      "accountInformation": "Thông tin tài khoản"
+    },
+    "tabs": {
+      "basic": "Thông tin cơ bản",
+      "additional": "Thông tin bổ sung"
+    },
+    "placeholders": {
+      "department": "Chọn phòng ban",
+      "position": "Chọn chức vụ",
+      "educationLevel": "Chọn trình độ",
+      "password": "Nhập mật khẩu",
+      "passwordConfirmation": "Nhập lại mật khẩu",
+      "roles": "Chọn phân quyền"
+    },
+    "actions": {
+      "create": "Tạo người dùng",
+      "view": "Xem chi tiết",
+      "edit": "Chỉnh sửa",
+      "roles": "Quản lý vai trò",
+      "delete": "Xóa",
+      "save": "Lưu",
+      "cancel": "Hủy"
+    },
+    "verification": {
+      "verified": "Đã xác minh",
+      "unverified": "Chưa xác minh"
+    },
+    "gender": {
+      "male": "Nam",
+      "female": "Nữ"
+    },
+    "educationLevels": {
+      "unskilled_labor": "Lao động phổ thông",
+      "intermediate": "Trung cấp",
+      "college": "Cao đẳng",
+      "university": "Đại học",
+      "master": "Thạc sĩ",
+      "doctorate": "Tiến sĩ",
+      "professor": "Giáo sư"
+    },
+    "values": {
+      "noRoles": "Chưa có vai trò"
+    },
+    "status": {
+      "active": "Hoạt động",
+      "locked": "Bị khóa",
+      "all": "Tất cả"
+    },
+    "create": {
+      "title": "Tạo người dùng"
+    },
+    "edit": {
+      "title": "Chỉnh sửa người dùng"
+    },
+    "detail": {
+      "title": "Chi tiết người dùng"
+    },
+    "roles": {
+      "title": "Quản lý vai trò"
+    },
+    "delete": {
+      "title": "Xóa người dùng",
+      "description": "Bạn có chắc muốn xóa người dùng {name}? Hành động này không thể hoàn tác."
+    },
+    "validation": {
+      "nameRequired": "Vui lòng nhập họ và tên",
+      "usernameMin": "Tên đăng nhập phải có ít nhất 3 ký tự",
+      "usernameRequired": "Vui lòng nhập tên đăng nhập",
+      "usernameMax": "Tên đăng nhập không được vượt quá 50 ký tự",
+      "emailInvalid": "Vui lòng nhập email hợp lệ",
+      "passwordMin": "Mật khẩu phải có ít nhất 6 ký tự",
+      "passwordConfirmationMismatch": "Mật khẩu xác nhận không khớp",
+      "employeeCodeRequired": "Vui lòng nhập mã nhân viên",
+      "birthdayInvalid": "Vui lòng nhập ngày hợp lệ theo định dạng YYYY-MM-DD",
+      "phoneInvalid": "Vui lòng nhập số điện thoại hợp lệ"
+    },
+    "messages": {
+      "created": "Đã tạo người dùng",
+      "updated": "Đã cập nhật người dùng",
+      "rolesUpdated": "Đã cập nhật vai trò",
+      "deleted": "Đã xóa người dùng",
+      "unexpectedError": "Đã xảy ra lỗi không xác định"
+    }
+  },
+  "departments": {
+    "routeTitle": "Phòng ban",
+    "listTitle": "Danh sách phòng ban",
+    "listDescription": "Quản lý tên phòng ban, công ty và cấu trúc phân cấp.",
+    "columns": {
+      "name": "Tên phòng ban",
+      "parent": "Trực thuộc",
+      "company": "Công ty",
+      "createdAt": "Ngày tạo",
+      "actions": "Thao tác"
+    },
+    "filters": {
+      "search": "Tìm kiếm",
+      "searchPlaceholder": "Tìm phòng ban...",
+      "company": "Công ty",
+      "parent": "Trực thuộc"
+    },
+    "fields": {
+      "department": "Phòng ban",
+      "name": "Tên phòng ban",
+      "company": "Công ty",
+      "parent": "Trực thuộc"
+    },
+    "sections": {
+      "department": "Thông tin phòng ban"
+    },
+    "actions": {
+      "create": "Tạo phòng ban",
+      "viewTree": "Xem cây phòng ban",
+      "viewList": "Xem danh sách phòng ban",
+      "view": "Xem chi tiết",
+      "edit": "Chỉnh sửa",
+      "delete": "Xóa",
+      "save": "Lưu",
+      "cancel": "Hủy"
+    },
+    "values": {
+      "noParent": "Không trực thuộc phòng ban nào",
+      "notProvided": "Chưa cung cấp"
+    },
+    "create": {
+      "title": "Tạo phòng ban"
+    },
+    "edit": {
+      "title": "Chỉnh sửa phòng ban"
+    },
+    "detail": {
+      "title": "Chi tiết phòng ban"
+    },
+    "tree": {
+      "title": "Cây phòng ban",
+      "company": "Công ty",
+      "create": "Thêm mới",
+      "createChild": "Thêm phòng ban con",
+      "empty": "Công ty này chưa có phòng ban",
+      "detailTitle": "Chi tiết phòng ban",
+      "memberCount": "Số lượng thành viên",
+      "chart": {
+        "companyNode": "Công ty",
+        "directDepartment": "Phòng ban trực thuộc",
+        "departmentLevel": "Phòng ban cấp {level}",
+        "collapse": "Thu gọn",
+        "expand": "Mở rộng",
+        "zoomOut": "Thu nhỏ",
+        "zoomIn": "Phóng to",
+        "fit": "Căn vừa màn hình",
+        "expandAll": "Mở toàn bộ",
+        "collapseAll": "Thu gọn toàn bộ"
+      },
+      "members": {
+        "title": "Danh sách thành viên",
+        "name": "Tên",
+        "username": "Tên đăng nhập",
+        "avatar": "Avatar",
+        "roles": "Vai trò",
+        "empty": "Phòng ban chưa có thành viên"
+      }
+    },
+    "delete": {
+      "title": "Xóa phòng ban",
+      "description": "Bạn có chắc muốn xóa {name}? Hành động này không thể hoàn tác.",
+      "parentTitle": "Cảnh báo xóa phòng ban cha",
+      "parentDescription": "Xóa phòng ban {name} sẽ đồng thời xóa tất cả phòng ban con trực thuộc. Bạn có chắc muốn xóa?",
+      "confirmCascade": "Xác nhận xóa tất cả"
+    },
+    "validation": {
+      "nameRequired": "Vui lòng nhập tên phòng ban"
+    },
+    "messages": {
+      "created": "Đã tạo phòng ban",
+      "updated": "Đã cập nhật phòng ban",
+      "deleted": "Đã xóa phòng ban",
+      "unexpectedError": "Đã xảy ra lỗi không xác định"
+    }
+  },
+  "equipment": {
+    "routeTitle": "Thiết bị",
+    "listTitle": "Danh sách thiết bị",
+    "listDescription": "Quản lý danh sách thiết bị.",
+    "columns": {
+      "code": "Mã thiết bị",
+      "name": "Tên thiết bị",
+      "createdAt": "Ngày tạo",
+      "updatedAt": "Ngày cập nhật",
+      "actions": "Thao tác"
+    },
+    "filters": {
+      "search": "Tìm kiếm",
+      "searchPlaceholder": "Tìm thiết bị..."
+    },
+    "fields": {
+      "code": "Mã thiết bị",
+      "name": "Tên thiết bị",
+      "createdAt": "Ngày tạo",
+      "updatedAt": "Ngày cập nhật"
+    },
+    "sections": {
+      "equipment": "Thông tin thiết bị"
+    },
+    "actions": {
+      "create": "Tạo thiết bị",
+      "view": "Xem chi tiết",
+      "edit": "Chỉnh sửa",
+      "delete": "Xóa",
+      "save": "Lưu",
+      "cancel": "Hủy"
+    },
+    "create": {
+      "title": "Tạo thiết bị"
+    },
+    "edit": {
+      "title": "Chỉnh sửa thiết bị"
+    },
+    "detail": {
+      "title": "Chi tiết thiết bị"
+    },
+    "delete": {
+      "title": "Xóa thiết bị",
+      "description": "Bạn có chắc muốn xóa {name}? Hành động này không thể hoàn tác."
+    },
+    "validation": {
+      "codeRequired": "Vui lòng nhập mã thiết bị",
+      "nameRequired": "Vui lòng nhập tên thiết bị"
+    },
+    "messages": {
+      "created": "Đã tạo thiết bị",
+      "updated": "Đã cập nhật thiết bị",
+      "deleted": "Đã xóa thiết bị",
+      "unexpectedError": "Đã xảy ra lỗi không xác định"
+    }
+  },
+  "schedules": {
+    "routeTitle": "Lịch trình",
+    "title": "Lịch trình",
+    "description": "Truy cập không gian làm việc lịch trình mới trong giao diện Obee hiện tại.",
+    "currentMonth": "Tháng hiện tại",
+    "loading": "Đang tải dữ liệu lịch trình",
+    "loadedCount": "Đã tải {count} lịch",
+    "empty": "Không có lịch trình nào khớp với bộ lọc này.",
+    "messages": {
+      "createSuccess": "Tạo lịch mới thành công",
+      "deleteSuccess": "Xóa lịch thành công",
+      "joinSuccess": "Tham gia lịch thành công",
+      "leaveSuccess": "Rời lịch thành công",
+      "updateSuccess": "Cập nhật lịch thành công",
+      "unexpectedError": "Đã xảy ra lỗi không mong muốn"
+    },
+    "delete": {
+      "title": "Xóa lịch",
+      "description": "Xóa lịch trình này? Hành động này không thể hoàn tác.",
+      "confirm": "Xóa lịch",
+      "cancel": "Hủy"
+    },
+    "form": {
+      "editTitle": "Chỉnh sửa lịch",
+      "reuseTitle": "Dùng lại lịch",
+      "createTitle": "Tạo lịch",
+      "createDescription": "Tạo lịch từ ngữ cảnh ngày đã chọn.",
+      "companyRequiredTitle": "Cần tham gia công ty",
+      "companyRequiredDescription": "Bạn cần thuộc về một công ty trước khi có thể tạo lịch.",
+      "cancel": "Hủy",
+      "create": "Tạo",
+      "title": "Tiêu đề",
+      "eventType": "Loại sự kiện",
+      "scheduleType": "Loại lịch",
+      "startDate": "Ngày bắt đầu",
+      "endDate": "Ngày kết thúc",
+      "startTime": "Thời điểm bắt đầu",
+      "endTime": "Thời điểm kết thúc",
+      "participants": "Người tham gia",
+      "observers": "Người theo dõi",
+      "privacy": "Quyền riêng tư",
+      "isGeneral": "Lịch công ty",
+      "hasReminder": "Bật nhắc lịch",
+      "reminderRange": "Khoảng nhắc",
+      "reminderValue": "Giá trị nhắc",
+      "repeatTitle": "Thiết lập lặp lại",
+      "repeat": {
+        "type": "Kiểu lặp lại",
+        "startTime": "Giờ bắt đầu lặp lại",
+        "endTime": "Giờ kết thúc lặp lại",
+        "dayPattern": "Ngày lặp lại",
+        "monthPattern": "Ngày trong tháng",
+        "selectAll": "Chọn tất cả"
+      },
+      "note": "Ghi chú",
+      "location": "Địa chỉ",
+      "userOptionsLoading": "Đang tải nhân viên",
+      "modes": {
+        "create": "Chế độ tạo",
+        "edit": "Chế độ chỉnh sửa",
+        "reuse": "Chế độ dùng lại"
+      },
+      "typeOptions": {
+        "training": "Đào tạo",
+        "seminar": "Hội thảo",
+        "interview": "Phỏng vấn",
+        "meetup": "Gặp mặt",
+        "meeting": "Cuộc họp",
+        "holiday": "Nghỉ lễ",
+        "business_trip": "Công tác"
+      },
+      "scheduleTypeOptions": {
+        "ordinary": "Thông thường",
+        "multiple_days": "Nhiều ngày",
+        "repeat": "Lặp lại"
+      },
+      "repeatOptions": {
+        "daily": "Hằng ngày",
+        "weekly": "Hằng tuần",
+        "monthly": "Hằng tháng"
+      },
+      "privacyOptions": {
+        "public": "Công khai",
+        "private": "Riêng tư"
+      },
+      "reminderRangeOptions": {
+        "minute": "Phút",
+        "hour": "Giờ",
+        "day": "Ngày"
+      }
+    },
+    "detail": {
+      "title": "Chi tiết lịch trình",
+      "actions": {
+        "edit": "Chỉnh sửa",
+        "delete": "Xóa",
+        "reuse": "Dùng lại",
+        "join": "Tham gia",
+        "leave": "Rời lịch"
+      },
+      "reuse": {
+        "mode": "Bản nháp dùng lại",
+        "description": "Xem trước bản nháp dùng lại trước khi biểu mẫu Epic 3 hoàn thiện."
+      },
+      "type": "Loại",
+      "time": "Thời gian",
+      "participants": "Người tham gia",
+      "observers": "Người theo dõi",
+      "showMoreUsers": "+{count} người xem thêm",
+      "collapseUsers": "Thu gọn",
+      "reminder": "Nhắc nhở",
+      "reminderOff": "Không có nhắc nhở",
+      "reminderOn": "Nhắc trước {value} {range}",
+      "reminderRange": {
+        "minute": "phút",
+        "hour": "giờ",
+        "day": "ngày"
+      },
+      "location": "Địa điểm",
+      "note": "Ghi chú",
+      "multiDay": "Lịch nhiều ngày",
+      "repeat": {
+        "daily": "Lặp lại hằng ngày",
+        "weekly": "Lặp lại hằng tuần",
+        "monthly": "Lặp lại hằng tháng"
+      },
+      "typeLabels": {
+        "training": "Đào tạo",
+        "seminar": "Hội thảo",
+        "interview": "Phỏng vấn",
+        "meetup": "Gặp mặt",
+        "meeting": "Cuộc họp",
+        "holiday": "Nghỉ lễ",
+        "business_trip": "Công tác"
+      }
+    },
+    "actions": {
+      "all": "Tất cả lịch trình",
+      "create": "Tạo",
+      "created": "Lịch trình đã tạo",
+      "previousMonth": "Tháng trước",
+      "nextMonth": "Tháng sau",
+      "today": "Hôm nay",
+      "selectMonth": "Chọn tháng",
+      "selectCalendars": "Lịch của nhân viên",
+      "selectVisibility": "Hiển thị",
+      "participated": "Lịch trình đã tham gia",
+      "observed": "Lịch trình đang theo dõi"
+    }
+  },
+  "attendance": {
+    "routeTitle": "Chấm công",
+    "todayPunch": "Chấm công hôm nay",
+    "punchInfo": "Thông tin chấm công hôm nay",
+    "monthlyStats": "Thống kê tháng {month}",
+    "history": "Lịch sử chấm công",
+    "dayDetail": "Chi tiết ngày",
+    "dayDetailOf": "Chi tiết ngày {date}",
+    "totalWorkHours": "Tổng giờ làm",
+    "totalWorkHoursValue": "{hours} giờ",
+    "daysValue": "{days} ngày",
+    "workingDays": "Ngày làm việc",
+    "offDays": "Ngày nghỉ",
+    "deficientDays": "Chưa đủ giờ",
+    "gpsLocation": "Vị trí GPS",
+    "gpsValid": "Hợp lệ",
+    "gpsInvalid": "Ngoài vùng",
+    "gpsRangeInfo": "Bạn đang ở trong phạm vi cho phép chấm công.",
+    "gpsRangeRadius": "Bán kính: {radius}m",
+    "ipNetwork": "Mạng IP",
+    "ipValid": "Hợp lệ",
+    "ipInvalid": "IP lạ",
+    "noPosition": "Không có vị trí",
+    "noIp": "Không có IP",
+    "punchButton": "Chấm công",
+    "fingerprint": "Vân tay",
+    "selectMonth": "Chọn tháng",
+    "today": "Hôm nay",
+    "statusPunched": "Đã chấm công",
+    "statusDeficient": "Chưa đủ giờ",
+    "statusLeave": "Nghỉ phép",
+    "statusOff": "Không chấm công",
+    "recheckStatus": "Thử lại các bước kiểm tra",
+    "onTime": "Đúng giờ",
+    "late": "Muộn",
+    "onTimeStatus": "Đúng giờ / Muộn",
+    "punchesToday": "Các lần chấm công hôm nay",
+    "noData": "Chưa có dữ liệu chấm công",
+    "noMoreData": "Không còn dữ liệu",
+    "notEligible": "IP hoặc vị trí của bạn chưa khớp với địa điểm chấm công được phân công.",
+    "monthLabel": "Tháng {month}/{year}",
+    "statusLabel": "Trạng thái",
+    "workHoursLabel": "Giờ công",
+    "totalHoursLabel": "Tổng giờ",
+    "messages": {
+      "notEligibleTitle": "Chưa đủ điều kiện chấm công",
+      "punchSuccess": "Chấm công thành công",
+      "unexpectedError": "Đã xảy ra lỗi không mong muốn"
+    },
+    "position": {
+      "denied": "Bạn đã từ chối quyền vị trí",
+      "failed": "Không lấy được vị trí",
+      "idle": "Đang chờ vị trí",
+      "loading": "Đang lấy vị trí",
+      "ready": "Đã có vị trí"
+    },
+    "weekdays": {
+      "mon": "Thứ Hai",
+      "tue": "Thứ Ba",
+      "wed": "Thứ Tư",
+      "thu": "Thứ Năm",
+      "fri": "Thứ Sáu",
+      "sat": "Thứ Bảy",
+      "sun": "Chủ nhật"
+    },
+    "weekdaysShort": {
+      "mon": "T2",
+      "tue": "T3",
+      "wed": "T4",
+      "thu": "T5",
+      "fri": "T6",
+      "sat": "T7",
+      "sun": "CN"
+    }
+  },
+  "dashboard": {
+    "title": "Tổng quan",
+    "analytics": "Phân tích",
+    "workspace": "Không gian làm việc",
+    "analyticsPage": {
+      "userCount": "Người dùng",
+      "totalUserCount": "Tổng người dùng",
+      "visitCount": "Lượt truy cập",
+      "totalVisitCount": "Tổng lượt truy cập",
+      "downloadCount": "Lượt tải",
+      "totalDownloadCount": "Tổng lượt tải",
+      "usageCount": "Lượt sử dụng",
+      "totalUsageCount": "Tổng lượt sử dụng",
+      "trafficTrend": "Xu hướng lưu lượng",
+      "monthlyVisits": "Lượt truy cập hàng tháng",
+      "visitCountCard": "Số lượt truy cập",
+      "visitSourceCard": "Nguồn truy cập",
+      "visitSalesCard": "Nguồn truy cập (Bán hàng)",
+      "searchEngine": "Công cụ tìm kiếm",
+      "directVisit": "Truy cập trực tiếp",
+      "emailMarketing": "Email marketing",
+      "affiliateAds": "Quảng cáo liên kết",
+      "outsourcing": "Thuê ngoài",
+      "custom": "Tùy chỉnh",
+      "techSupport": "Hỗ trợ kỹ thuật",
+      "remote": "Từ xa",
+      "businessShare": "Tỷ trọng kinh doanh",
+      "visit": "Truy cập",
+      "trend": "Xu hướng",
+      "web": "Web",
+      "mobileDevice": "Di động",
+      "client": "Ứng dụng",
+      "thirdParty": "Bên thứ ba",
+      "other": "Khác",
+      "months": {
+        "Jan": "Tháng 1",
+        "Feb": "Tháng 2",
+        "Mar": "Tháng 3",
+        "Apr": "Tháng 4",
+        "May": "Tháng 5",
+        "Jun": "Tháng 6",
+        "Jul": "Tháng 7",
+        "Aug": "Tháng 8",
+        "Sep": "Tháng 9",
+        "Oct": "Tháng 10",
+        "Nov": "Tháng 11",
+        "Dec": "Tháng 12"
+      }
+    },
+    "workspacePage": {
+      "greeting": "Chào buổi sáng, {name}, bắt đầu một ngày làm việc nào!",
+      "weatherDesc": "Hôm nay trời nắng, 20°C - 32°C!",
+      "projectSection": "Dự án",
+      "latestActivity": "Hoạt động gần đây",
+      "quickNavSection": "Điều hướng nhanh",
+      "todoSection": "Việc cần làm",
+      "visitSource": "Nguồn truy cập",
+      "project1Content": "Đừng chờ đợi cơ hội, hãy tạo ra nó.",
+      "project1Group": "Mã nguồn mở",
+      "project2Content": "Bạn của hôm nay quyết định bạn của ngày mai.",
+      "project2Group": "Thuật toán",
+      "project3Content": "Không có tài năng nào quan trọng hơn sự nỗ lực.",
+      "project3Group": "Lười biếng",
+      "project4Content": "Đam mê và khát vọng có thể vượt qua mọi khó khăn.",
+      "project5Content": "Cơ thể khỏe mạnh là nền tảng để đạt được mục tiêu.",
+      "project5Group": "Chuyên gia kỹ thuật",
+      "project6Content": "Con đường được tạo ra bởi bước chân, không phải bởi trí tưởng tượng.",
+      "project6Group": "Kiến trúc",
+      "navHome": "Trang chủ",
+      "navDashboard": "Tổng quan",
+      "navComponents": "Thành phần",
+      "navSystem": "Quản lý hệ thống",
+      "navAccess": "Quản lý quyền",
+      "navCharts": "Biểu đồ",
+      "todo1Title": "Xem xét commit code frontend",
+      "todo1Content": "Xem xét các commit gần đây vào kho Git để đảm bảo chất lượng và tiêu chuẩn code.",
+      "todo2Title": "Tối ưu hiệu năng hệ thống",
+      "todo2Content": "Kiểm tra và tối ưu hiệu năng hệ thống, giảm mức sử dụng CPU.",
+      "todo3Title": "Kiểm tra bảo mật",
+      "todo3Content": "Thực hiện kiểm tra bảo mật hệ thống để đảm bảo không có lỗ hổng hoặc truy cập trái phép.",
+      "todo4Title": "Cập nhật dependencies dự án",
+      "todo4Content": "Cập nhật tất cả các gói npm dependency để đảm bảo sử dụng phiên bản mới nhất.",
+      "todo5Title": "Sửa lỗi hiển thị giao diện",
+      "todo5Content": "Sửa lỗi hiển thị giao diện được người dùng báo cáo để đảm bảo tính nhất quán trên các trình duyệt.",
+      "trend1Content": "Đã tạo dự án Vue trong Mã nguồn mở",
+      "trend1Date": "Vừa xong",
+      "trend1Name": "William",
+      "trend2Content": "Đã theo dõi William",
+      "trend2Date": "1 giờ trước",
+      "trend2Name": "Elvin",
+      "trend3Content": "Đã đăng Cập nhật cá nhân",
+      "trend3Date": "1 ngày trước",
+      "trend3Name": "Chris",
+      "trend4Content": "Đã đăng bài Cách viết plugin Vite",
+      "trend4Date": "2 ngày trước",
+      "trend5Content": "Đã trả lời câu hỏi của Jack Cách tối ưu dự án?",
+      "trend5Date": "3 ngày trước",
+      "trend5Name": "Pete",
+      "trend6Content": "Đã đóng câu hỏi Cách chạy dự án",
+      "trend6Date": "1 tuần trước",
+      "trend6Name": "Jack",
+      "trend7Content": "Đã đăng Cập nhật cá nhân",
+      "trend7Date": "1 tuần trước",
+      "trend7Name": "William",
+      "trend8Content": "Đã đẩy code lên Github",
+      "trend8Date": "2021-04-01 20:00",
+      "trend8Name": "William",
+      "trend9Content": "Đã đăng bài Cách sử dụng Admin Vben",
+      "trend9Date": "2021-03-01 20:00"
+    }
+  },
+  "profile": {
+    "center": "Trung tâm hồ sơ",
+    "basicSettings": "Cài đặt cơ bản",
+    "securitySettings": "Cài đặt bảo mật",
+    "changePassword": "Đổi mật khẩu",
+    "notifications": "Thông báo",
+    "realName": "Họ và tên",
+    "username": "Tên đăng nhập",
+    "role": "Vai trò",
+    "bio": "Tiểu sử",
+    "admin": "Quản trị viên",
+    "user": "Người dùng",
+    "test": "Kiểm thử",
+    "accountPassword": "Mật khẩu tài khoản",
+    "passwordStrengthStrong": "Độ mạnh mật khẩu hiện tại: Mạnh",
+    "securityPhone": "Điện thoại bảo mật",
+    "phoneBound": "Đã liên kết điện thoại: 138****8293",
+    "securityQuestion": "Câu hỏi bảo mật",
+    "securityQuestionDesc": "Chưa đặt câu hỏi bảo mật. Câu hỏi bảo mật giúp bảo vệ tài khoản hiệu quả.",
+    "backupEmail": "Email dự phòng",
+    "emailBound": "Đã liên kết email: ant***sign.com",
+    "mfaDevice": "Thiết bị MFA",
+    "mfaDesc": "Chưa liên kết thiết bị MFA. Sau khi liên kết, bạn có thể xác nhận hai bước.",
+    "oldPassword": "Mật khẩu cũ",
+    "newPassword": "Mật khẩu mới",
+    "confirmPassword": "Xác nhận mật khẩu",
+    "oldPasswordPlaceholder": "Nhập mật khẩu cũ",
+    "newPasswordPlaceholder": "Nhập mật khẩu mới",
+    "confirmPasswordPlaceholder": "Nhập lại mật khẩu mới",
+    "confirmPasswordRequired": "Vui lòng nhập lại mật khẩu mới",
+    "passwordMismatch": "Mật khẩu không khớp",
+    "passwordChangeSuccess": "Đổi mật khẩu thành công",
+    "notificationAccount": "Mật khẩu tài khoản",
+    "notificationAccountDesc": "Tin nhắn từ người dùng khác sẽ được thông báo qua tin nhắn nội bộ",
+    "systemMessage": "Tin nhắn hệ thống",
+    "systemMessageDesc": "Tin nhắn hệ thống sẽ được thông báo qua tin nhắn nội bộ",
+    "todoTask": "Việc cần làm",
+    "todoTaskDesc": "Việc cần làm sẽ được thông báo qua tin nhắn nội bộ"
+  },
+  "attendanceLocations": {
+    "routeTitle": "Địa điểm chấm công",
+    "title": "Địa điểm chấm công",
+    "description": "Quản lý địa điểm chấm công, bán kính, tọa độ, IP và chế độ xác thực.",
+    "listTitle": "Danh sách địa điểm chấm công",
+    "listDescription": "Xem và cấu hình bán kính định vị, quy tắc IP và tiêu chí xác thực.",
+    "columns": {
+      "name": "Tên địa điểm",
+      "coordinates": "Tọa độ (Vĩ độ/Kinh độ)",
+      "radius": "Bán kính",
+      "validationMode": "Chế độ xác thực",
+      "status": "Trạng thái",
+      "createdAt": "Ngày tạo",
+      "actions": "Thao tác"
+    },
+    "filters": {
+      "search": "Tìm kiếm",
+      "searchPlaceholder": "Tên địa điểm...",
+      "validationMode": "Chế độ xác thực",
+      "status": "Trạng thái"
+    },
+    "fields": {
+      "name": "Tên địa điểm",
+      "latitude": "Vĩ độ",
+      "longitude": "Kinh độ",
+      "radius": "Bán kính (mét)",
+      "validationMode": "Chế độ xác thực",
+      "status": "Trạng thái",
+      "ips": "IP được phép",
+      "users": "Nhân viên áp dụng",
+      "departments": "Phòng ban áp dụng",
+      "excludedUsers": "Nhân viên ngoại lệ",
+      "mapLocation": "Vị trí trên bản đồ",
+      "createdAt": "Ngày tạo",
+      "updatedAt": "Ngày cập nhật"
+    },
+    "placeholders": {
+      "name": "Vui lòng nhập",
+      "validationMode": "Vui lòng chọn",
+      "latitude": "e.g. 10.762622",
+      "longitude": "e.g. 106.660172",
+      "radius": "e.g. 100",
+      "ips": "Nhập địa chỉ IP",
+      "mapSearch": "Tìm địa điểm...",
+      "departmentSearch": "Tìm phòng ban",
+      "departments": "Chọn phòng ban áp dụng",
+      "users": "Chọn nhân viên áp dụng",
+      "excludedUsers": "Chọn nhân viên ngoại lệ"
+    },
+    "sections": {
+      "basic": "Thông tin cơ bản",
+      "location": "Tọa độ GPS",
+      "ips": "Quy tắc địa chỉ IP",
+      "assignments": "Phân công & Ngoại lệ",
+      "information": "Thông tin hệ thống"
+    },
+    "tabs": {
+      "basic": "Thông tin cơ bản",
+      "ips": "Danh sách IP",
+      "departments": "Danh sách phòng ban",
+      "users": "Danh sách nhân viên"
+    },
+    "help": {
+      "mapPicker": "Nhấn hoặc kéo thả ghim trên bản đồ để chọn tọa độ.",
+      "ips": "Nhân viên chỉ có thể chấm công từ các IP này khi bật xác thực IP.",
+      "ipInput": "Thêm từng địa chỉ IP hoặc dải IP dưới dạng tag.",
+      "departments": "Chọn phòng ban được áp dụng địa điểm chấm công này. Để trống để áp dụng cho toàn công ty.",
+      "users": "Chọn nhân viên được áp dụng địa điểm chấm công này. Để trống để áp dụng cho tất cả nhân viên.",
+      "excludedUsers": "Những nhân viên này không thể chấm công tại đây dù thuộc phòng ban được áp dụng."
+    },
+    "actions": {
+      "create": "Tạo địa điểm",
+      "view": "Xem chi tiết",
+      "edit": "Chỉnh sửa",
+      "delete": "Xóa",
+      "locateCurrent": "Lấy vị trí hiện tại",
+      "switchToSatellite": "Chuyển sang vệ tinh",
+      "switchToStandard": "Chuyển sang bản đồ tiêu chuẩn",
+      "save": "Lưu",
+      "cancel": "Hủy"
+    },
+    "validationMode": {
+      "location": "Chỉ GPS",
+      "ip": "Chỉ IP",
+      "both": "GPS và IP",
+      "either": "GPS hoặc IP"
+    },
+    "values": {
+      "anyIp": "Mọi IP",
+      "allDepartments": "Tất cả phòng ban",
+      "allUsers": "Tất cả nhân viên"
+    },
+    "status": {
+      "active": "Hoạt động",
+      "inactive": "Ngừng hoạt động",
+      "all": "Tất cả"
+    },
+    "create": {
+      "title": "Tạo địa điểm chấm công"
+    },
+    "edit": {
+      "title": "Chỉnh sửa địa điểm chấm công"
+    },
+    "detail": {
+      "title": "Chi tiết địa điểm chấm công"
+    },
+    "delete": {
+      "title": "Xóa địa điểm chấm công",
+      "description": "Bạn có chắc chắn muốn xóa địa điểm {name}? Hành động này không thể hoàn tác."
+    },
+    "validation": {
+      "nameRequired": "Vui lòng nhập tên địa điểm",
+      "latitudeRequired": "Vui lòng nhập vĩ độ hợp lệ (-90 đến 90)",
+      "longitudeRequired": "Vui lòng nhập kinh độ hợp lệ (-180 đến 180)",
+      "radiusRequired": "Vui lòng nhập bán kính hợp lệ",
+      "validationModeRequired": "Vui lòng chọn chế độ xác thực"
+    },
+    "messages": {
+      "created": "Đã tạo địa điểm chấm công",
+      "updated": "Đã cập nhật địa điểm chấm công",
+      "deleted": "Đã xóa địa điểm chấm công",
+      "mapboxKeyMissing": "Chưa cấu hình khóa truy cập Mapbox.",
+      "mapboxUnavailable": "WebGL không khả dụng hoặc Mapbox không thể tải.",
+      "geolocationPermissionDenied": "Quyền truy cập vị trí bị từ chối.",
+      "geolocationSuccess": "Lấy vị trí hiện tại thành công.",
+      "geolocationTimeout": "Thời gian lấy vị trí quá hạn.",
+      "geolocationUnknown": "Lỗi không xác định khi lấy vị trí.",
+      "geolocationUnavailable": "Thông tin vị trí không khả dụng.",
+      "geolocationUnsupported": "Trình duyệt không hỗ trợ lấy tọa độ vị trí GPS.",
+      "unexpectedError": "Đã xảy ra lỗi không xác định"
+    },
+    "customAssign": {
+      "selectedDepartments": "Phòng ban đã chọn",
+      "noDepartmentSelected": "Chưa chọn phòng ban nào",
+      "applicableUsers": "Nhân viên áp dụng",
+      "searchActiveUsers": "Tìm kiếm nhân viên áp dụng...",
+      "noActiveUsers": "Không tìm thấy nhân viên nào",
+      "excludeBtn": "Loại trừ",
+      "customRules": "Danh sách tuỳ chỉnh (Bao gồm / Loại trừ)",
+      "noCustomRules": "Chưa có tuỳ chỉnh nào",
+      "includeBtn": "Bao gồm nhân viên",
+      "excludeBtnAction": "Loại trừ nhân viên",
+      "includePlaceholder": "Chọn nhân viên để bao gồm...",
+      "excludePlaceholder": "Chọn nhân viên để loại trừ..."
+    }
+  },
+  "demos": {
+    "antd": {
+      "pageTitle": "Trình diễn thành phần Ant Design Vue",
+      "pageDesc": "Hỗ trợ đa ngôn ngữ, tích hợp và chuyển đổi chủ đề, v.v.",
+      "buttons": "Nút",
+      "message": "Thông báo",
+      "notification": "Thông báo đẩy",
+      "info": "Thông tin",
+      "error": "Lỗi",
+      "warning": "Cảnh báo",
+      "success": "Thành công",
+      "notifyTitle": "Nói gì đó"
+    }
+  }
+}

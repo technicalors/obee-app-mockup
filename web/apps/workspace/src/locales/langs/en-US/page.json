@@ -1,0 +1,1109 @@
+{
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "codeLogin": "Code Login",
+    "qrcodeLogin": "Qr Code Login",
+    "forgetPassword": "Forget Password",
+    "profile": "Profile",
+    "welcomeBack": "Welcome back",
+    "loginSubtitle": "Sign in with your Obee account.",
+    "loginPageTitle": "Obee operations management platform",
+    "loginPageDescription": "Manage data, schedules, people, approvals, and internal collaboration.",
+    "copyright": "Copyright © 2026",
+    "companyName": "Ouransoft - Obee",
+    "emailOrUsername": "Email or username",
+    "emailOrUsernamePlaceholder": "Enter your email or username",
+    "emailOrUsernameRequired": "Please enter your email or username",
+    "customerLoginBlocked": "Customer access is not available here",
+    "customerLoginBlockedDescription": "Use the customer portal instead of the admin application."
+  },
+  "notifications": {
+    "routeTitle": "Notifications",
+    "listTitle": "Notification list",
+    "listDescription": "Review your recent notifications.",
+    "columns": {
+      "content": "Content",
+      "actor": "Actor",
+      "status": "Status",
+      "occurredAt": "Time"
+    },
+    "filters": {
+      "readState": "Status",
+      "all": "All",
+      "read": "Read",
+      "unread": "Unread"
+    },
+    "fields": {
+      "by": "By",
+      "recipients": "Recipients",
+      "message": "Content",
+      "content": "Content",
+      "sender": "Sender",
+      "actor": "Actor",
+      "occurredAt": "Time"
+    },
+    "placeholders": {
+      "recipients": "Select one or more recipients",
+      "message": "Write a notification message"
+    },
+    "actions": {
+      "create": "New notification",
+      "send": "Send notification",
+      "markAllRead": "Mark all as read"
+    },
+    "create": {
+      "title": "New notification"
+    },
+    "detail": {
+      "title": "Notification details",
+      "statusTitle": "Notification status",
+      "informationTitle": "Notification information"
+    },
+    "status": {
+      "read": "Read notification",
+      "unread": "Unread notification"
+    },
+    "messages": {
+      "sent": "Notification sent",
+      "markedAllRead": "All notifications have been marked as read",
+      "unexpectedError": "An unexpected error occurred"
+    }
+  },
+  "employeeRecord": {
+    "evaluation": {
+      "routeTitle": "Evaluations"
+    },
+    "history": {
+      "routeTitle": "Employee history"
+    },
+    "routeTitle": "Employee records",
+    "skills": {
+      "routeTitle": "Skills & competencies"
+    }
+  },
+  "employeeHistory": {
+    "messages": {
+      "avatarUpdated": "Profile photo updated",
+      "unexpectedError": "An unexpected error occurred"
+    },
+    "actions": {
+      "changeAvatar": "Change photo",
+      "back": "Back",
+      "backToList": "Back to list",
+      "detail": "Detail"
+    },
+    "columns": {
+      "actions": "Actions",
+      "award": "Award",
+      "content": "Content",
+      "date": "Date",
+      "department": "Department",
+      "employeeCode": "Employee Code",
+      "fullName": "Full Name",
+      "gender": "Gender",
+      "joinedAt": "Joined Date",
+      "level": "Level",
+      "note": "Note",
+      "position": "Position",
+      "positionDepartment": "Position / Department",
+      "sequence": "#",
+      "startingDate": "Official Date"
+    },
+    "fields": {
+      "address": "Address",
+      "age": "Age (years)",
+      "citizenId": "Citizen ID",
+      "contactInfo": "Contact information",
+      "currentPosition": "Current position",
+      "dateOfBirth": "Date of birth",
+      "dependentTaxId": "Dependent tax ID",
+      "educationLevel": "Education level",
+      "email": "Email",
+      "employeeCode": "Employee code",
+      "fullName": "Full name",
+      "gender": "Gender",
+      "healthInsurance": "Health insurance number",
+      "joinedAt": "Joined date",
+      "personalTaxId": "Personal tax ID",
+      "phone": "Phone",
+      "seniority": "Seniority (years)",
+      "socialInsurance": "Social insurance number",
+      "workUnit": "Work unit"
+    },
+    "emptyHistory": {
+      "achievements": "No achievements or awards recorded",
+      "achievementsDesc": "Awards, recognitions, or notable achievements will be displayed here when recorded.",
+      "educationHistory": "No education or training history recorded",
+      "educationHistoryDesc": "Educational degrees, qualifications, and certificates will be displayed here when updated.",
+      "hrNotes": "No HR notes recorded",
+      "hrNotesDesc": "Internal notes, assessments, and remarks from human resources will be kept here.",
+      "noEmployeeFound": "Employee record not found",
+      "noEmployeeFoundDesc": "This employee record does not exist or has been removed from the system.",
+      "workHistory": "No work history recorded",
+      "workHistoryDesc": "Appointments, departmental transfers, and promotions will appear here when recorded."
+    },
+    "filters": {
+      "search": "Search",
+      "searchPlaceholder": "Employee code, full name..."
+    },
+    "listDescription": "Employee list and history records.",
+    "listTitle": "Work History",
+    "noEmployeeSelected": "Please select an employee to view their record",
+    "pageDescription": "Review employee profile information and historical records.",
+    "pageTitle": "Employee history",
+    "placeholder": "No data available",
+    "sections": {
+      "achievements": "Achievements",
+      "educationHistory": "Education History",
+      "hrNotes": "HR Notes",
+      "personalInfo": "Personal Information",
+      "workHistory": "Work History"
+    },
+    "selectEmployee": "Select employee",
+    "selectEmployeePlaceholder": "Search by name or employee code...",
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    }
+  },
+  "masterData": {
+    "routeTitle": "Masterdata"
+  },
+  "positions": {
+    "routeTitle": "Positions",
+    "listTitle": "Position list",
+    "listDescription": "Manage the position catalog used by employee profiles.",
+    "columns": {
+      "name": "Position name",
+      "description": "Description",
+      "actions": "Actions"
+    },
+    "filters": {
+      "search": "Search",
+      "searchPlaceholder": "Position name..."
+    },
+    "fields": {
+      "name": "Position name",
+      "description": "Description"
+    },
+    "actions": {
+      "create": "Create position",
+      "view": "View details",
+      "edit": "Edit",
+      "delete": "Delete",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "values": {
+      "notProvided": "Not provided"
+    },
+    "create": {
+      "title": "Create position"
+    },
+    "edit": {
+      "title": "Edit position"
+    },
+    "detail": {
+      "title": "Position details"
+    },
+    "delete": {
+      "title": "Delete position",
+      "description": "Are you sure you want to delete position {name}? This action cannot be undone."
+    },
+    "validation": {
+      "nameRequired": "Enter the position name"
+    },
+    "messages": {
+      "created": "Position created",
+      "updated": "Position updated",
+      "deleted": "Position deleted",
+      "unexpectedError": "An unexpected error occurred"
+    }
+  },
+  "roles": {
+    "routeTitle": "Roles",
+    "listTitle": "Role management",
+    "listDescription": "Configure system permissions for roles and accounts.",
+    "columns": {
+      "resource": "Resource"
+    },
+    "filters": {
+      "resource": "Search resources"
+    },
+    "fields": {
+      "name": "Role name",
+      "description": "Description"
+    },
+    "actions": {
+      "create": "Create role",
+      "edit": "Edit role",
+      "save": "Save",
+      "undo": "Undo",
+      "cancel": "Cancel",
+      "retry": "Retry",
+      "viewAny": "View all",
+      "view": "View",
+      "createAction": "Create",
+      "update": "Update",
+      "deleteAction": "Delete"
+    },
+    "matrixActions": {
+      "viewAny": "View all",
+      "view": "View",
+      "create": "Create",
+      "update": "Update",
+      "delete": "Delete"
+    },
+    "create": {
+      "title": "Create role"
+    },
+    "edit": {
+      "title": "Edit role"
+    },
+    "permissionAccessDenied": "You can view roles, but do not have access to the permission catalog. This page is read-only.",
+    "leave": {
+      "title": "Unsaved role changes",
+      "confirm": "Discard unsaved role permission changes?",
+      "discard": "Discard"
+    },
+    "aria": {
+      "permission": "Toggle {action} permission for {resource}"
+    },
+    "messages": {
+      "created": "Role created",
+      "updated": "Role updated",
+      "loadFailed": "Unable to load roles.",
+      "unexpectedError": "An unexpected error occurred"
+    }
+  },
+  "users": {
+    "routeTitle": "Users",
+    "title": "Users",
+    "description": "Manage internal accounts, profiles, departments, and roles.",
+    "listTitle": "User list",
+    "listDescription": "Review accounts, roles, status, and creation time.",
+    "columns": {
+      "sequence": "No.",
+      "username": "Username",
+      "employeeId": "Employee ID",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "filters": {
+      "search": "Search",
+      "searchPlaceholder": "Employee code, username, email, name...",
+      "name": "Name",
+      "namePlaceholder": "Filter by name",
+      "email": "Email",
+      "emailPlaceholder": "Filter by email",
+      "roleGroup": "Roles",
+      "status": "Status"
+    },
+    "fields": {
+      "name": "Full name",
+      "username": "Username",
+      "email": "Email",
+      "avatar": "Avatar",
+      "password": "Password",
+      "roles": "Roles",
+      "status": "Status",
+      "department": "Department",
+      "company": "Company",
+      "phone": "Phone",
+      "employeeCode": "Employee code",
+      "position": "Position",
+      "gender": "Gender",
+      "birthday": "Birthday",
+      "joinedAt": "Company start date",
+      "startingDate": "Official start date",
+      "educationLevel": "Education level",
+      "employeeType": "Employee type",
+      "citizenIdentificationCard": "Citizen ID",
+      "socialInsuranceNumber": "Social insurance number",
+      "healthInsuranceCardNumber": "Health insurance card number",
+      "personalTaxIdentificationNumber": "Personal tax identification number",
+      "dependentTaxIdentificationNumber": "Dependent tax identification number",
+      "bankAccountNumber": "Bank account number",
+      "address": "Address",
+      "createdAt": "Created at",
+      "updatedAt": "Updated at"
+    },
+    "sections": {
+      "account": "Account",
+      "contact": "Contact information",
+      "personal": "Personal information",
+      "access": "Access",
+      "roles": "Roles",
+      "accountInformation": "Account information"
+    },
+    "tabs": {
+      "basic": "Basic information",
+      "additional": "Additional information"
+    },
+    "placeholders": {
+      "department": "Select department",
+      "position": "Select position",
+      "educationLevel": "Select education level",
+      "password": "Enter password",
+      "passwordConfirmation": "Confirm password",
+      "roles": "Select roles"
+    },
+    "actions": {
+      "create": "Create user",
+      "view": "View details",
+      "edit": "Edit",
+      "roles": "Manage roles",
+      "delete": "Delete",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "verification": {
+      "verified": "Verified",
+      "unverified": "Unverified"
+    },
+    "gender": {
+      "male": "Male",
+      "female": "Female"
+    },
+    "educationLevels": {
+      "unskilled_labor": "Unskilled labor",
+      "intermediate": "Intermediate",
+      "college": "College",
+      "university": "University",
+      "master": "Master's degree",
+      "doctorate": "Doctorate",
+      "professor": "Professor"
+    },
+    "values": {
+      "noRoles": "No roles"
+    },
+    "status": {
+      "active": "Active",
+      "locked": "Locked",
+      "all": "All"
+    },
+    "create": {
+      "title": "Create user"
+    },
+    "edit": {
+      "title": "Edit user"
+    },
+    "detail": {
+      "title": "User details"
+    },
+    "roles": {
+      "title": "Manage roles"
+    },
+    "delete": {
+      "title": "Delete user",
+      "description": "Are you sure you want to delete {name}? This action cannot be undone."
+    },
+    "validation": {
+      "nameRequired": "Enter the full name",
+      "usernameMin": "Username must contain at least 3 characters",
+      "usernameRequired": "Enter the username",
+      "usernameMax": "Username must contain at most 50 characters",
+      "emailInvalid": "Enter a valid email address",
+      "passwordMin": "Password must contain at least 6 characters",
+      "passwordConfirmationMismatch": "Password confirmation does not match",
+      "employeeCodeRequired": "Enter the employee code",
+      "birthdayInvalid": "Enter a valid date in YYYY-MM-DD format",
+      "phoneInvalid": "Enter a valid phone number"
+    },
+    "messages": {
+      "created": "User created",
+      "updated": "User updated",
+      "rolesUpdated": "Roles updated",
+      "deleted": "User deleted",
+      "unexpectedError": "An unexpected error occurred"
+    }
+  },
+  "departments": {
+    "routeTitle": "Departments",
+    "listTitle": "Department list",
+    "listDescription": "Manage department names, companies, and hierarchy.",
+    "columns": {
+      "name": "Department name",
+      "parent": "Reports to",
+      "company": "Company",
+      "createdAt": "Created at",
+      "actions": "Actions"
+    },
+    "filters": {
+      "search": "Search",
+      "searchPlaceholder": "Search departments...",
+      "company": "Company",
+      "parent": "Reports to"
+    },
+    "fields": {
+      "department": "Department",
+      "name": "Department name",
+      "company": "Company",
+      "parent": "Reports to"
+    },
+    "sections": {
+      "department": "Department information"
+    },
+    "actions": {
+      "create": "Create department",
+      "viewTree": "View department tree",
+      "viewList": "View department list",
+      "view": "View details",
+      "edit": "Edit",
+      "delete": "Delete",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "values": {
+      "noParent": "Does not report to another department",
+      "notProvided": "Not provided"
+    },
+    "create": {
+      "title": "Create department"
+    },
+    "edit": {
+      "title": "Edit department"
+    },
+    "detail": {
+      "title": "Department details"
+    },
+    "tree": {
+      "title": "Department tree",
+      "company": "Company",
+      "create": "Add new",
+      "createChild": "Add child department",
+      "empty": "No departments for this company",
+      "detailTitle": "Department details",
+      "memberCount": "Members",
+      "chart": {
+        "companyNode": "Company",
+        "directDepartment": "Direct department",
+        "departmentLevel": "Level {level} department",
+        "collapse": "Collapse",
+        "expand": "Expand",
+        "zoomOut": "Zoom out",
+        "zoomIn": "Zoom in",
+        "fit": "Fit to screen",
+        "expandAll": "Expand all",
+        "collapseAll": "Collapse all"
+      },
+      "members": {
+        "title": "Members",
+        "name": "Name",
+        "username": "Username",
+        "avatar": "Avatar",
+        "roles": "Roles",
+        "empty": "No members in this department"
+      }
+    },
+    "delete": {
+      "title": "Delete department",
+      "description": "Are you sure you want to delete {name}? This action cannot be undone.",
+      "parentTitle": "Delete parent department warning",
+      "parentDescription": "Deleting {name} will also delete all subordinate departments. Are you sure you want to proceed?",
+      "confirmCascade": "Confirm cascade delete"
+    },
+    "validation": {
+      "nameRequired": "Enter the department name"
+    },
+    "messages": {
+      "created": "Department created",
+      "updated": "Department updated",
+      "deleted": "Department deleted",
+      "unexpectedError": "An unexpected error occurred"
+    }
+  },
+  "equipment": {
+    "routeTitle": "Equipment",
+    "listTitle": "Equipment list",
+    "listDescription": "Manage the equipment list.",
+    "columns": {
+      "code": "Equipment code",
+      "name": "Equipment name",
+      "createdAt": "Created at",
+      "updatedAt": "Updated at",
+      "actions": "Actions"
+    },
+    "filters": {
+      "search": "Search",
+      "searchPlaceholder": "Search equipment..."
+    },
+    "fields": {
+      "code": "Equipment code",
+      "name": "Equipment name",
+      "createdAt": "Created at",
+      "updatedAt": "Updated at"
+    },
+    "sections": {
+      "equipment": "Equipment information"
+    },
+    "actions": {
+      "create": "Create equipment",
+      "view": "View details",
+      "edit": "Edit",
+      "delete": "Delete",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "create": {
+      "title": "Create equipment"
+    },
+    "edit": {
+      "title": "Edit equipment"
+    },
+    "detail": {
+      "title": "Equipment details"
+    },
+    "delete": {
+      "title": "Delete equipment",
+      "description": "Are you sure you want to delete {name}? This action cannot be undone."
+    },
+    "validation": {
+      "codeRequired": "Enter the equipment code",
+      "nameRequired": "Enter the equipment name"
+    },
+    "messages": {
+      "created": "Equipment created",
+      "updated": "Equipment updated",
+      "deleted": "Equipment deleted",
+      "unexpectedError": "An unexpected error occurred"
+    }
+  },
+  "schedules": {
+    "routeTitle": "Schedules",
+    "title": "Schedules",
+    "description": "Browse the new schedule workspace from the existing Obee shell.",
+    "currentMonth": "Current month",
+    "loading": "Loading month data",
+    "loadedCount": "Loaded {count} schedules",
+    "empty": "No schedules match this filter.",
+    "messages": {
+      "createSuccess": "Created schedule",
+      "deleteSuccess": "Deleted schedule",
+      "joinSuccess": "Joined schedule",
+      "leaveSuccess": "Left schedule",
+      "updateSuccess": "Updated schedule",
+      "unexpectedError": "An unexpected error occurred"
+    },
+    "delete": {
+      "title": "Delete schedule",
+      "description": "Delete this schedule event? This action cannot be undone.",
+      "confirm": "Delete schedule",
+      "cancel": "Cancel"
+    },
+    "form": {
+      "editTitle": "Edit schedule",
+      "reuseTitle": "Reuse schedule",
+      "createTitle": "Create schedule",
+      "createDescription": "Create a schedule from the selected date context.",
+      "companyRequiredTitle": "Company membership required",
+      "companyRequiredDescription": "You need to belong to a company before you can create a schedule.",
+      "cancel": "Cancel",
+      "create": "Create",
+      "title": "Title",
+      "eventType": "Event type",
+      "scheduleType": "Schedule type",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "startTime": "Start time",
+      "endTime": "End time",
+      "participants": "Participants",
+      "observers": "Observers",
+      "privacy": "Privacy",
+      "isGeneral": "General schedule",
+      "hasReminder": "Enable reminder",
+      "reminderRange": "Reminder range",
+      "reminderValue": "Reminder value",
+      "repeatTitle": "Repeat settings",
+      "repeat": {
+        "type": "Repeat type",
+        "startTime": "Repeat start time",
+        "endTime": "Repeat end time",
+        "dayPattern": "Repeat days",
+        "monthPattern": "Repeat dates",
+        "selectAll": "Select all"
+      },
+      "note": "Note",
+      "location": "Physical address",
+      "userOptionsLoading": "Loading employees",
+      "modes": {
+        "create": "Create mode",
+        "edit": "Edit mode",
+        "reuse": "Reuse mode"
+      },
+      "typeOptions": {
+        "training": "Training",
+        "seminar": "Seminar",
+        "interview": "Interview",
+        "meetup": "Meetup",
+        "meeting": "Meeting",
+        "holiday": "Holiday",
+        "business_trip": "Business trip"
+      },
+      "scheduleTypeOptions": {
+        "ordinary": "Ordinary",
+        "multiple_days": "Multiple days",
+        "repeat": "Repeat"
+      },
+      "repeatOptions": {
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "monthly": "Monthly"
+      },
+      "privacyOptions": {
+        "public": "Public",
+        "private": "Private"
+      },
+      "reminderRangeOptions": {
+        "minute": "Minute",
+        "hour": "Hour",
+        "day": "Day"
+      }
+    },
+    "detail": {
+      "title": "Schedule detail",
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "reuse": "Reuse",
+        "join": "Join",
+        "leave": "Leave"
+      },
+      "reuse": {
+        "mode": "Reuse draft",
+        "description": "Review the reused event draft before Epic 3 form editing arrives."
+      },
+      "type": "Type",
+      "time": "Time",
+      "participants": "Participants",
+      "observers": "Observers",
+      "showMoreUsers": "+{count} more users",
+      "collapseUsers": "Collapse",
+      "reminder": "Reminder",
+      "reminderOff": "Reminder off",
+      "reminderOn": "Reminder {value} {range} before",
+      "reminderRange": {
+        "minute": "minute",
+        "hour": "hour",
+        "day": "day"
+      },
+      "location": "Location",
+      "note": "Note",
+      "multiDay": "Multi-day schedule",
+      "repeat": {
+        "daily": "Repeats daily",
+        "weekly": "Repeats weekly",
+        "monthly": "Repeats monthly"
+      },
+      "typeLabels": {
+        "training": "Training",
+        "seminar": "Seminar",
+        "interview": "Interview",
+        "meetup": "Meetup",
+        "meeting": "Meeting",
+        "holiday": "Holiday",
+        "business_trip": "Business trip"
+      }
+    },
+    "actions": {
+      "all": "All schedules",
+      "create": "Create",
+      "created": "Created",
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month",
+      "today": "Today",
+      "selectMonth": "Select month",
+      "selectCalendars": "Calendars",
+      "selectVisibility": "Visibility",
+      "participated": "Participated",
+      "observed": "Observed"
+    }
+  },
+  "attendance": {
+    "routeTitle": "Attendance",
+    "todayPunch": "Punch Today",
+    "punchInfo": "Attendance Info Today",
+    "monthlyStats": "Monthly Stats {month}",
+    "history": "Attendance History",
+    "dayDetail": "Day Detail",
+    "dayDetailOf": "Day Detail {date}",
+    "totalWorkHours": "Total Work Hours",
+    "totalWorkHoursValue": "{hours} hours",
+    "daysValue": "{days} days",
+    "workingDays": "Working Days",
+    "offDays": "Off Days",
+    "deficientDays": "Deficient Hours",
+    "gpsLocation": "GPS Location",
+    "gpsValid": "Valid",
+    "gpsInvalid": "Out of Range",
+    "gpsRangeInfo": "You are within the allowed range for attendance.",
+    "gpsRangeRadius": "Radius: {radius}m",
+    "ipNetwork": "IP Network",
+    "ipValid": "Valid",
+    "ipInvalid": "Unknown IP",
+    "noPosition": "No Position",
+    "noIp": "No IP",
+    "punchButton": "Punch",
+    "fingerprint": "Fingerprint",
+    "selectMonth": "Select month",
+    "today": "Today",
+    "statusPunched": "Punched",
+    "statusDeficient": "Deficient",
+    "statusLeave": "On leave",
+    "statusOff": "No punch",
+    "recheckStatus": "Retry checks",
+    "onTime": "On time",
+    "late": "Late",
+    "onTimeStatus": "On time / Late",
+    "punchesToday": "Punches Today",
+    "noData": "No attendance data",
+    "noMoreData": "No more data",
+    "notEligible": "Your IP or location does not match an assigned attendance location.",
+    "monthLabel": "{month}/{year}",
+    "statusLabel": "Status",
+    "workHoursLabel": "Work hours",
+    "totalHoursLabel": "Total hours",
+    "messages": {
+      "notEligibleTitle": "Not eligible to punch",
+      "punchSuccess": "Attendance recorded",
+      "unexpectedError": "An unexpected error occurred"
+    },
+    "position": {
+      "denied": "Location permission denied",
+      "failed": "Location unavailable",
+      "idle": "Waiting for location",
+      "loading": "Getting location",
+      "ready": "Location ready"
+    },
+    "weekdays": {
+      "mon": "Monday",
+      "tue": "Tuesday",
+      "wed": "Wednesday",
+      "thu": "Thursday",
+      "fri": "Friday",
+      "sat": "Saturday",
+      "sun": "Sunday"
+    },
+    "weekdaysShort": {
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "analytics": "Analytics",
+    "workspace": "Workspace",
+    "analyticsPage": {
+      "userCount": "Users",
+      "totalUserCount": "Total Users",
+      "visitCount": "Visits",
+      "totalVisitCount": "Total Visits",
+      "downloadCount": "Downloads",
+      "totalDownloadCount": "Total Downloads",
+      "usageCount": "Usage",
+      "totalUsageCount": "Total Usage",
+      "trafficTrend": "Traffic Trend",
+      "monthlyVisits": "Monthly Visits",
+      "visitCountCard": "Visit Count",
+      "visitSourceCard": "Visit Source",
+      "visitSalesCard": "Visit Source (Sales)",
+      "searchEngine": "Search Engine",
+      "directVisit": "Direct Visit",
+      "emailMarketing": "Email Marketing",
+      "affiliateAds": "Affiliate Ads",
+      "outsourcing": "Outsourcing",
+      "custom": "Custom",
+      "techSupport": "Tech Support",
+      "remote": "Remote",
+      "businessShare": "Business Share",
+      "visit": "Visit",
+      "trend": "Trend",
+      "web": "Web",
+      "mobileDevice": "Mobile",
+      "client": "Client",
+      "thirdParty": "Third Party",
+      "other": "Other",
+      "months": {
+        "Jan": "Jan",
+        "Feb": "Feb",
+        "Mar": "Mar",
+        "Apr": "Apr",
+        "May": "May",
+        "Jun": "Jun",
+        "Jul": "Jul",
+        "Aug": "Aug",
+        "Sep": "Sep",
+        "Oct": "Oct",
+        "Nov": "Nov",
+        "Dec": "Dec"
+      }
+    },
+    "workspacePage": {
+      "greeting": "Good morning, {name}, let's start your day!",
+      "weatherDesc": "Sunny today, 20°C - 32°C!",
+      "projectSection": "Projects",
+      "latestActivity": "Latest Activity",
+      "quickNavSection": "Quick Navigation",
+      "todoSection": "To-Do Items",
+      "visitSource": "Visit Source",
+      "project1Content": "Don't wait for opportunity, create it.",
+      "project1Group": "Open Source",
+      "project2Content": "Today's you determine tomorrow's you.",
+      "project2Group": "Algorithm",
+      "project3Content": "Nothing is more important than hard work.",
+      "project3Group": "Slackers",
+      "project4Content": "Passion and desire can overcome all difficulties.",
+      "project5Content": "A healthy body is the cornerstone of achieving goals.",
+      "project5Group": "Tech Experts",
+      "project6Content": "The road is walked, not imagined.",
+      "project6Group": "Architecture",
+      "navHome": "Home",
+      "navDashboard": "Dashboard",
+      "navComponents": "Components",
+      "navSystem": "System Management",
+      "navAccess": "Access Management",
+      "navCharts": "Charts",
+      "todo1Title": "Review frontend code commits",
+      "todo1Content": "Review recent commits to the Git repository to ensure code quality and standards.",
+      "todo2Title": "System performance optimization",
+      "todo2Content": "Check and optimize system performance, reduce CPU usage.",
+      "todo3Title": "Security check",
+      "todo3Content": "Perform system security checks to ensure no vulnerabilities or unauthorized access.",
+      "todo4Title": "Update project dependencies",
+      "todo4Content": "Update all npm dependency packages to ensure the latest versions are used.",
+      "todo5Title": "Fix UI display issues",
+      "todo5Content": "Fix user-reported page UI display issues for consistent rendering across browsers.",
+      "trend1Content": "Created project Vue in Open Source",
+      "trend1Date": "Just now",
+      "trend1Name": "William",
+      "trend2Content": "Followed William",
+      "trend2Date": "1 hour ago",
+      "trend2Name": "Elvin",
+      "trend3Content": "Posted Personal Update",
+      "trend3Date": "1 day ago",
+      "trend3Name": "Chris",
+      "trend4Content": "Published article How to write a Vite plugin",
+      "trend4Date": "2 days ago",
+      "trend5Content": "Replied to Jack's question How to optimize a project?",
+      "trend5Date": "3 days ago",
+      "trend5Name": "Pete",
+      "trend6Content": "Closed question How to run the project",
+      "trend6Date": "1 week ago",
+      "trend6Name": "Jack",
+      "trend7Content": "Posted Personal Update",
+      "trend7Date": "1 week ago",
+      "trend7Name": "William",
+      "trend8Content": "Pushed code to Github",
+      "trend8Date": "2021-04-01 20:00",
+      "trend8Name": "William",
+      "trend9Content": "Published article How to use Admin Vben",
+      "trend9Date": "2021-03-01 20:00"
+    }
+  },
+  "profile": {
+    "center": "Profile Center",
+    "basicSettings": "Basic Settings",
+    "securitySettings": "Security Settings",
+    "changePassword": "Change Password",
+    "notifications": "Notifications",
+    "realName": "Full Name",
+    "username": "Username",
+    "role": "Role",
+    "bio": "Bio",
+    "admin": "Admin",
+    "user": "User",
+    "test": "Test",
+    "accountPassword": "Account Password",
+    "passwordStrengthStrong": "Current password strength: Strong",
+    "securityPhone": "Security Phone",
+    "phoneBound": "Bound phone: 138****8293",
+    "securityQuestion": "Security Question",
+    "securityQuestionDesc": "No security question set. Security questions can effectively protect your account.",
+    "backupEmail": "Backup Email",
+    "emailBound": "Bound email: ant***sign.com",
+    "mfaDevice": "MFA Device",
+    "mfaDesc": "No MFA device bound. After binding, you can perform two-factor confirmation.",
+    "oldPassword": "Old Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "oldPasswordPlaceholder": "Enter old password",
+    "newPasswordPlaceholder": "Enter new password",
+    "confirmPasswordPlaceholder": "Re-enter new password",
+    "confirmPasswordRequired": "Please re-enter new password",
+    "passwordMismatch": "Passwords do not match",
+    "passwordChangeSuccess": "Password changed successfully",
+    "notificationAccount": "Account Password",
+    "notificationAccountDesc": "Messages from other users will be notified via in-app messages",
+    "systemMessage": "System Messages",
+    "systemMessageDesc": "System messages will be notified via in-app messages",
+    "todoTask": "To-Do Tasks",
+    "todoTaskDesc": "To-do tasks will be notified via in-app messages"
+  },
+
+  "attendanceLocations": {
+    "routeTitle": "Attendance Locations",
+    "title": "Attendance Locations",
+    "description": "Manage attendance locations, radius, coordinates, IPs, and validation modes.",
+    "listTitle": "Attendance Location List",
+    "listDescription": "Review and configure geofences, IP rules, and validation criteria.",
+    "columns": {
+      "name": "Location Name",
+      "coordinates": "Coordinates (Lat/Lng)",
+      "radius": "Radius",
+      "validationMode": "Validation Mode",
+      "status": "Status",
+      "createdAt": "Created at",
+      "actions": "Actions"
+    },
+    "filters": {
+      "search": "Search",
+      "searchPlaceholder": "Location name...",
+      "validationMode": "Validation Mode",
+      "status": "Status"
+    },
+    "fields": {
+      "name": "Location Name",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "radius": "Radius (meters)",
+      "validationMode": "Validation Mode",
+      "status": "Status",
+      "ips": "Allowed IPs",
+      "users": "Assigned Users",
+      "departments": "Assigned Departments",
+      "excludedUsers": "Excluded Users",
+      "mapLocation": "Map Location",
+      "createdAt": "Created at",
+      "updatedAt": "Updated at"
+    },
+    "placeholders": {
+      "name": "Please enter",
+      "validationMode": "Please select",
+      "latitude": "e.g. 10.762622",
+      "longitude": "e.g. 106.660172",
+      "radius": "e.g. 100",
+      "ips": "Enter an IP address",
+      "mapSearch": "Search for a place...",
+      "departmentSearch": "Search departments",
+      "departments": "Select assigned departments",
+      "users": "Select assigned users",
+      "excludedUsers": "Select excluded users"
+    },
+    "sections": {
+      "basic": "Basic Information",
+      "location": "GPS Coordinates",
+      "ips": "IP Address Rules",
+      "assignments": "Assignments & Exceptions",
+      "information": "System Information"
+    },
+    "tabs": {
+      "basic": "Basic Information",
+      "ips": "IP List",
+      "departments": "Department List",
+      "users": "User List"
+    },
+    "help": {
+      "mapPicker": "Click or drag the marker on the map to choose coordinates.",
+      "ips": "Employees can check in only from these IPs when IP validation is enabled.",
+      "ipInput": "Add each IP address or IP range as a tag.",
+      "departments": "Choose departments that can use this attendance location. Leave empty to apply it company-wide.",
+      "users": "Choose users that can use this attendance location. Leave empty to apply it to all users.",
+      "excludedUsers": "These users cannot check in here even when their department is assigned."
+    },
+    "actions": {
+      "create": "Create Location",
+      "view": "View Details",
+      "edit": "Edit",
+      "delete": "Delete",
+      "locateCurrent": "Use current location",
+      "switchToSatellite": "Switch to satellite",
+      "switchToStandard": "Switch to standard",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "validationMode": {
+      "location": "GPS only",
+      "ip": "IP only",
+      "both": "GPS & IP",
+      "either": "GPS or IP"
+    },
+    "values": {
+      "anyIp": "Any IP",
+      "allDepartments": "All departments",
+      "allUsers": "All users"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "all": "All"
+    },
+    "create": {
+      "title": "Create Attendance Location"
+    },
+    "edit": {
+      "title": "Edit Attendance Location"
+    },
+    "detail": {
+      "title": "Attendance Location Details"
+    },
+    "delete": {
+      "title": "Delete Attendance Location",
+      "description": "Are you sure you want to delete {name}? This action cannot be undone."
+    },
+    "validation": {
+      "nameRequired": "Enter the location name",
+      "latitudeRequired": "Enter the latitude (-90 to 90)",
+      "longitudeRequired": "Enter the longitude (-180 to 180)",
+      "radiusRequired": "Enter a valid radius in meters",
+      "validationModeRequired": "Select a validation mode"
+    },
+    "messages": {
+      "created": "Attendance location created",
+      "updated": "Attendance location updated",
+      "deleted": "Attendance location deleted",
+      "mapboxKeyMissing": "Mapbox access key is missing.",
+      "mapboxUnavailable": "WebGL is unavailable or Mapbox failed to load.",
+      "geolocationPermissionDenied": "Location access was denied.",
+      "geolocationSuccess": "Current location retrieved successfully.",
+      "geolocationTimeout": "Timed out while retrieving the current location.",
+      "geolocationUnknown": "An unknown error occurred while retrieving the current location.",
+      "geolocationUnavailable": "Location information is unavailable.",
+      "geolocationUnsupported": "This browser does not support GPS location retrieval.",
+      "unexpectedError": "An unexpected error occurred"
+    },
+    "customAssign": {
+      "selectedDepartments": "Selected Departments",
+      "noDepartmentSelected": "No departments selected",
+      "applicableUsers": "Applicable Users",
+      "searchActiveUsers": "Search applicable users...",
+      "noActiveUsers": "No applicable users found",
+      "excludeBtn": "Exclude",
+      "customRules": "Custom Rules (Include / Exclude)",
+      "noCustomRules": "No custom rules yet",
+      "includeBtn": "Include User",
+      "excludeBtnAction": "Exclude User",
+      "includePlaceholder": "Select user to include...",
+      "excludePlaceholder": "Select user to exclude..."
+    }
+  },
+  "demos": {
+    "antd": {
+      "pageTitle": "Ant Design Vue Component Demo",
+      "pageDesc": "Supports multi-language, theme integration and switching, etc.",
+      "buttons": "Buttons",
+      "message": "Message",
+      "notification": "Notification",
+      "info": "Info",
+      "error": "Error",
+      "warning": "Warning",
+      "success": "Success",
+      "notifyTitle": "Say something"
+    }
+  }
+}

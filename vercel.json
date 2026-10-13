@@ -1,3 +1,8 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "buildCommand": "cd web && pnpm -F @obee/workspace run build",
+  "installCommand": "cd web && pnpm install --frozen-lockfile",
+  "outputDirectory": "web/apps/workspace/dist",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }

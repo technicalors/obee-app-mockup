@@ -1,0 +1,24 @@
+# Obee-maintained overrides that must survive upstream syncs.
+
+# Workspace composition and package management.
+package.json
+pnpm-lock.yaml
+pnpm-workspace.yaml
+.npmrc
+.node-version
+
+# Project runtime, browser, test, and task policy.
+.browserslistrc
+.gitignore
+vitest.config.ts
+
+# Obee linting, formatting, and spelling policy.
+cspell.json
+eslint.config.mjs
+oxfmt.config.ts
+oxlint.config.ts
+stylelint.config.mjs
+.stylelintignore
+
+# Intentional Obee behavior layered onto the upstream Vben CLI.
+scripts/vsh/src/check-dep/index.ts

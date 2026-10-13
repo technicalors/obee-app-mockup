@@ -1,0 +1,165 @@
+{
+  "formRules": {
+    "required": "Vui lòng nhập {0}",
+    "selectRequired": "Vui lòng chọn {0}",
+    "minLength": "{0} phải có ít nhất {1} ký tự",
+    "maxLength": "{0} không được vượt quá {1} ký tự",
+    "length": "{0} phải có đúng {1} ký tự",
+    "alreadyExists": "{0} `{1}` đã tồn tại",
+    "startWith": "{0} phải bắt đầu bằng `{1}`",
+    "invalidURL": "Vui lòng nhập URL hợp lệ",
+    "sizeLimit": "Kích thước tệp không được vượt quá {0}MB",
+    "previewWarning": "Không thể mở tệp, không có URL hoặc địa chỉ xem trước"
+  },
+  "actionTitle": {
+    "edit": "Sửa {0}",
+    "create": "Tạo {0}",
+    "delete": "Xóa {0}",
+    "view": "Xem {0}"
+  },
+  "actionMessage": {
+    "deleteConfirm": "Bạn có chắc chắn muốn xóa {0} không?",
+    "deleting": "Đang xóa {0} ...",
+    "deleteSuccess": "Xóa {0} thành công",
+    "operationSuccess": "Thao tác thành công",
+    "operationFailed": "Thao tác thất bại"
+  },
+  "placeholder": {
+    "input": "Vui lòng nhập",
+    "select": "Vui lòng chọn",
+    "upload": "Nhấn để tải lên"
+  },
+  "captcha": {
+    "title": "Vui lòng hoàn tất xác minh bảo mật",
+    "sliderSuccessText": "Đã xác minh",
+    "sliderDefaultText": "Nhấn giữ thanh trượt và kéo",
+    "sliderRotateDefaultTip": "Nhấn vào hình để làm mới",
+    "sliderTranslateDefaultTip": "Nhấn vào hình để làm mới",
+    "sliderRotateFailTip": "Xác minh thất bại",
+    "sliderRotateSuccessTip": "Xác minh thành công, mất {0} giây",
+    "sliderTranslateFailTip": "Xác minh thất bại",
+    "sliderTranslateSuccessTip": "Xác minh thành công, mất {0} giây",
+    "alt": "Hỗ trợ giá trị thuộc tính src của thẻ img",
+    "refreshAriaLabel": "Làm mới mã xác minh",
+    "confirmAriaLabel": "Xác nhận lựa chọn",
+    "confirm": "Xác nhận",
+    "pointAriaLabel": "Nhấn điểm",
+    "clickInOrder": "Vui lòng nhấn theo thứ tự"
+  },
+  "iconPicker": {
+    "placeholder": "Chọn biểu tượng",
+    "search": "Tìm biểu tượng..."
+  },
+  "jsonViewer": {
+    "copy": "Sao chép",
+    "copied": "Đã sao chép"
+  },
+  "crop": {
+    "title": "Cắt ảnh",
+    "titleTip": "Tỷ lệ cắt {0}",
+    "confirm": "Cắt",
+    "cancel": "Hủy cắt",
+    "errorTip": "Lỗi cắt ảnh"
+  },
+  "tiptap": {
+    "placeholder": "Vui lòng nhập nội dung...",
+    "prompts": {
+      "image": "Nhập địa chỉ ảnh",
+      "link": "Nhập địa chỉ liên kết"
+    },
+    "toolbar": {
+      "bold": "Đậm",
+      "italic": "Nghiêng",
+      "underline": "Gạch chân",
+      "strike": "Gạch ngang",
+      "code": "Mã nội dòng",
+      "codeBlock": "Khối mã",
+      "heading": "Tiêu đề",
+      "paragraph": "Đoạn văn",
+      "heading1": "Tiêu đề 1",
+      "heading2": "Tiêu đề 2",
+      "heading3": "Tiêu đề 3",
+      "heading4": "Tiêu đề 4",
+      "bulletList": "Danh sách dấu đầu dòng",
+      "orderedList": "Danh sách đánh số",
+      "blockquote": "Trích dẫn",
+      "link": "Liên kết",
+      "unlink": "Xóa liên kết",
+      "image": "Hình ảnh",
+      "imageUrl": "URL hình ảnh",
+      "imageUpload": "Tải lên từ máy",
+      "textColor": "Màu chữ",
+      "highlightColor": "Màu tô sáng",
+      "alignLeft": "Căn trái",
+      "alignCenter": "Căn giữa",
+      "alignRight": "Căn phải",
+      "preview": "Xem trước",
+      "undo": "Hoàn tác",
+      "redo": "Làm lại",
+      "clear": "Xóa định dạng"
+    },
+    "upload": {
+      "fileTooLarge": "Kích thước tệp vượt quá giới hạn",
+      "fileTypeNotAllowed": "Loại tệp không được hỗ trợ",
+      "onlySingleImage": "Chỉ hỗ trợ tải lên một ảnh, đã chọn ảnh đầu tiên",
+      "uploadFailed": "Tải lên thất bại"
+    }
+  },
+  "fallback": {
+    "pageNotFound": "Ôi! Không tìm thấy trang",
+    "pageNotFoundDesc": "Xin lỗi, chúng tôi không thể tìm thấy trang bạn đang tìm kiếm.",
+    "forbidden": "Ôi! Truy cập bị từ chối",
+    "forbiddenDesc": "Xin lỗi, bạn không có quyền truy cập trang này.",
+    "internalError": "Ôi! Đã xảy ra lỗi",
+    "internalErrorDesc": "Xin lỗi, máy chủ đã gặp lỗi.",
+    "offline": "Trang ngoại tuyến",
+    "offlineError": "Ôi! Lỗi mạng",
+    "offlineErrorDesc": "Xin lỗi, không thể kết nối internet. Vui lòng kiểm tra kết nối và thử lại.",
+    "comingSoon": "Sắp ra mắt",
+    "http": {
+      "requestTimeout": "Yêu cầu hết thời gian. Vui lòng thử lại sau.",
+      "networkError": "Lỗi mạng. Vui lòng kiểm tra kết nối internet và thử lại.",
+      "badRequest": "Yêu cầu không hợp lệ. Vui lòng kiểm tra dữ liệu nhập và thử lại.",
+      "unauthorized": "Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.",
+      "forbidden": "Bị từ chối. Bạn không có quyền truy cập tài nguyên này.",
+      "notFound": "Không tìm thấy. Tài nguyên yêu cầu không tồn tại.",
+      "internalServerError": "Lỗi máy chủ nội bộ. Vui lòng thử lại sau."
+    }
+  },
+  "widgets": {
+    "document": "Tài liệu",
+    "qa": "Hỏi đáp & Trợ giúp",
+    "setting": "Cài đặt",
+    "logoutTip": "Bạn có muốn đăng xuất không?",
+    "viewAll": "Xem tất cả tin nhắn",
+    "notifications": "Thông báo",
+    "markAllAsRead": "Đánh dấu tất cả đã đọc",
+    "clearNotifications": "Xóa tất cả",
+    "checkUpdatesTitle": "Có phiên bản mới",
+    "checkUpdatesDescription": "Nhấn làm mới để tải phiên bản mới nhất",
+    "search": {
+      "title": "Tìm kiếm",
+      "searchNavigate": "Tìm kiếm menu điều hướng",
+      "select": "Chọn",
+      "navigate": "Điều hướng",
+      "close": "Đóng",
+      "noResults": "Không tìm thấy kết quả",
+      "noRecent": "Không có lịch sử tìm kiếm",
+      "recent": "Lịch sử tìm kiếm"
+    },
+    "lockScreen": {
+      "title": "Khóa màn hình",
+      "screenButton": "Mở khóa",
+      "password": "Mật khẩu",
+      "placeholder": "Vui lòng nhập mật khẩu khóa",
+      "unlock": "Nhấn để mở khóa",
+      "errorPasswordTip": "Mật khẩu sai, vui lòng nhập lại",
+      "backToLogin": "Quay lại đăng nhập",
+      "entry": "Vào hệ thống"
+    },
+    "timezone": {
+      "setTimezone": "Đặt múi giờ",
+      "setSuccess": "Đặt múi giờ thành công"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+# Vben-origin or framework-sensitive paths.
+# Obee feature work belongs in apps/workspace/**.
+internal/**
+packages/**
+scripts/**
+.browserslistrc
+.changeset/**
+.commitlintrc.js
+.editorconfig
+.gitattributes
+.gitignore
+.node-version
+.npmrc
+.stylelintignore
+LICENSE
+cspell.json
+eslint.config.mjs
+lefthook.yml
+oxfmt.config.ts
+oxlint.config.ts
+package.json
+pnpm-lock.yaml
+pnpm-workspace.yaml
+stylelint.config.mjs
+tea.yaml
+vitest.config.ts

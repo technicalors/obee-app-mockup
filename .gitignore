@@ -1,9 +1,9 @@
+.vercel/
+.chrome-preview-profile/
+*-preview.png
 node_modules/
 dist/
 *.tsbuildinfo
-.vercel/
-.env*
-!.env.example
-*-preview.png
-
-.vercel
+/lefthook.yml
+web/node_modules/
+web/apps/workspace/dist/

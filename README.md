@@ -1,31 +1,15 @@
 # Obee App Mockup
 
-Interactive frontend demo extracted from the Obee product direction. The app is
-fully client-side and uses fixed mock data, so it can be reviewed without the
-Laravel API or a database.
+Bản sao nguyên giao diện Vue 3/Vben hiện tại từ `F:\obee\web`, được tách khỏi
+Laravel API bằng một adapter dữ liệu mock cố định để phục vụ demo tương tác.
 
-## Demo modules
-
-- Login and responsive application shell
-- Dashboard and attendance overview
-- Interactive check-in/check-out flow
-- Weekly schedule with event creation
-- Notifications with filters, detail drawer, and composer
-- Employee records, evaluations, skills, departments, positions, roles,
-  equipment, and attendance locations
-
-## Local development
+## Chạy local
 
 ```bash
-npm install
-npm run dev
+cd web
+pnpm install
+pnpm dev
 ```
 
-## Verification
-
-```bash
-npm run check
-npm run build
-```
-
-The repository includes a Vercel SPA rewrite in `vercel.json`.
+Tài khoản demo đã được mock ở tầng request. Có thể nhập bất kỳ mật khẩu nào để
+đăng nhập bằng tài khoản quản trị mặc định.
