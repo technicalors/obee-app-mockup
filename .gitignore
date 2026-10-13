@@ -1,5 +1,6 @@
 .vercel/
 .chrome-preview-profile/
+.chrome-remote-profile/
 *-preview.png
 node_modules/
 dist/
