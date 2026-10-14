@@ -9,7 +9,6 @@ import 'package:obee_mobile/src/features/auth/ui/auth_session_listener.dart';
 import 'package:obee_mobile/src/app/theme.dart';
 import 'package:obee_mobile/src/features/schedule/data/schedule_api.dart';
 import 'package:obee_mobile/src/features/schedule/ui/schedule_page.dart';
-import 'package:obee_mobile/src/features/schedule/ui/widgets/schedule_main_header.dart';
 import 'schedule_page_test.dart' show FakeScheduleApi;
 import 'auth_controller_test.dart'
     show FakeAuthApi, MemoryTokenStorage, createSchedulePermission;
@@ -39,33 +38,18 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(
-        tester
-            .widget<ScheduleHeader>(find.byType(ScheduleHeader))
-            .canCreateSchedule,
-        false,
-      );
+      expect(find.byKey(const ValueKey('schedule-create-fab')), findsNothing);
 
       api.user = api.user.copyWith(permissions: [createSchedulePermission]);
       resumeFromBackground(tester);
       await tester.pumpAndSettle();
-      expect(
-        tester
-            .widget<ScheduleHeader>(find.byType(ScheduleHeader))
-            .canCreateSchedule,
-        true,
-      );
+      expect(find.byKey(const ValueKey('schedule-create-fab')), findsOneWidget);
       expect(storage.token, 'saved-token');
 
       api.user = api.user.copyWith(permissions: []);
       resumeFromBackground(tester);
       await tester.pumpAndSettle();
-      expect(
-        tester
-            .widget<ScheduleHeader>(find.byType(ScheduleHeader))
-            .canCreateSchedule,
-        false,
-      );
+      expect(find.byKey(const ValueKey('schedule-create-fab')), findsNothing);
       expect(storage.token, 'saved-token');
 
       api.user = api.user.copyWith(permissions: [createSchedulePermission]);
@@ -73,12 +57,7 @@ void main() {
           .widget<RefreshIndicator>(find.byType(RefreshIndicator))
           .onRefresh();
       await tester.pumpAndSettle();
-      expect(
-        tester
-            .widget<ScheduleHeader>(find.byType(ScheduleHeader))
-            .canCreateSchedule,
-        true,
-      );
+      expect(find.byKey(const ValueKey('schedule-create-fab')), findsOneWidget);
       expect(storage.token, 'saved-token');
 
       await tester.pumpWidget(const SizedBox.shrink());

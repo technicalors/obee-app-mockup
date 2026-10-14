@@ -42,8 +42,12 @@ void main() {
   });
 
   test('formats schedule month year as MM/yyyy', () {
-    expect(formatScheduleMonthYear(DateTime(2026, 6)), '06/2026');
-    expect(formatScheduleMonthYear(DateTime(2026, 10)), '10/2026');
+    expect(formatScheduleMonthYear(DateTime(2026, 6)), 'Tháng 6, 2026');
+    expect(formatScheduleMonthYear(DateTime(2026, 10)), 'Tháng 10, 2026');
+    expect(formatScheduleWeekRange(DateTime(2026, 10, 14)), '12 – 18/10');
+    expect(formatScheduleWeekRange(DateTime(2026, 10, 1)), '28/09 – 04/10');
+    expect(formatScheduleWeekdayShort(DateTime(2026, 10, 12)), 'T2');
+    expect(formatScheduleWeekdayShort(DateTime(2026, 10, 18)), 'CN');
   });
 
   test('formats the selected day label for the schedule page header', () {

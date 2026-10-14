@@ -22,6 +22,24 @@ extension ScheduleVisibilityFilterX on ScheduleVisibilityFilter {
   };
 }
 
+/// Calendar layouts offered on the schedule tab. Only drives client-side
+/// rendering and the date range requested from the API.
+enum ScheduleViewMode { week, month, year }
+
+extension ScheduleViewModeX on ScheduleViewMode {
+  String get label => switch (this) {
+    ScheduleViewMode.week => 'Tuần',
+    ScheduleViewMode.month => 'Tháng',
+    ScheduleViewMode.year => 'Năm',
+  };
+
+  IconData get icon => switch (this) {
+    ScheduleViewMode.week => Icons.view_week_outlined,
+    ScheduleViewMode.month => Icons.calendar_view_month_outlined,
+    ScheduleViewMode.year => Icons.grid_view_outlined,
+  };
+}
+
 @JsonEnum(alwaysCreate: true)
 enum ScheduleEventType {
   @JsonValue('training')

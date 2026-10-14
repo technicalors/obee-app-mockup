@@ -20,6 +20,7 @@ class ScheduleController extends Notifier<ScheduleViewState> {
   int _scheduleLoad = 0;
   int _userLoad = 0;
   CancelToken? _scheduleCancellation;
+  DateTime? _pendingCreateStart;
 
   @override
   ScheduleViewState build() {
@@ -88,8 +89,63 @@ class ScheduleController extends Notifier<ScheduleViewState> {
     await _loadSchedules();
   }
 
-  Future<void> goToToday() {
-    return changeMonth(state.today);
+  Future<void> goToToday() async {
+    state = state.copyWith(
+      month: scheduleMonthAnchor(state.today),
+      selectedDate: state.today,
+    );
+
+    await _loadSchedules();
+  }
+
+  Future<void> setViewMode(ScheduleViewMode mode) async {
+    if (mode == state.viewMode) {
+      return;
+    }
+
+    state = state.copyWith(viewMode: mode);
+    await _loadSchedules();
+  }
+
+  /// Steps one page forward or backward in the active view.
+  Future<void> shiftRange(int offset) async {
+    switch (state.viewMode) {
+      case ScheduleViewMode.month:
+        await changeMonth(
+          DateTime(state.month.year, state.month.month + offset),
+        );
+      case ScheduleViewMode.week:
+        final selected = state.selectedDate;
+        final next = DateTime(
+          selected.year,
+          selected.month,
+          selected.day + 7 * offset,
+        );
+        state = state.copyWith(
+          month: scheduleMonthAnchor(next),
+          selectedDate: next,
+        );
+        await _loadSchedules();
+      case ScheduleViewMode.year:
+        await changeMonth(
+          DateTime(state.month.year + offset, state.month.month),
+        );
+    }
+  }
+
+  /// Opens the month view on [month], used when tapping a mini month in the
+  /// year overview.
+  Future<void> openMonth(DateTime month) async {
+    state = state.copyWith(viewMode: ScheduleViewMode.month);
+    await changeMonth(month);
+  }
+
+  /// Remembers a tapped time slot so the next create draft starts there.
+  void prepareCreate({DateTime? start}) {
+    _pendingCreateStart = start;
+    if (start != null) {
+      selectDate(start);
+    }
   }
 
   Future<void> setVisibility(ScheduleVisibilityFilter visibility) async {
@@ -122,9 +178,13 @@ class ScheduleController extends Notifier<ScheduleViewState> {
       return null;
     }
 
+    final startAt = _pendingCreateStart;
+    _pendingCreateStart = null;
+
     return ScheduleDraft.forCreate(
       currentUserId: currentUser.id,
       selectedDate: state.selectedDate,
+      startAt: startAt,
     );
   }
 
@@ -297,7 +357,11 @@ class ScheduleController extends Notifier<ScheduleViewState> {
     }
 
     try {
-      final visibleRange = scheduleVisibleRange(state.month);
+      final visibleRange = scheduleRangeForView(
+        mode: state.viewMode,
+        month: state.month,
+        focusedDate: state.selectedDate,
+      );
       final schedules = await _scheduleApi.fetchSchedules(
         cancelToken: cancellation,
         endFrom: visibleRange.start,
@@ -380,6 +444,7 @@ class ScheduleViewState {
     required this.selectedDate,
     required this.selectedUserId,
     required this.visibility,
+    required this.viewMode,
     required this.isLoading,
     required this.isUsersLoading,
     required this.isMutating,
@@ -398,6 +463,7 @@ class ScheduleViewState {
       selectedDate: today,
       selectedUserId: null,
       visibility: ScheduleVisibilityFilter.participated,
+      viewMode: ScheduleViewMode.month,
       isLoading: true,
       isUsersLoading: true,
       isMutating: false,
@@ -413,6 +479,7 @@ class ScheduleViewState {
   final DateTime selectedDate;
   final String? selectedUserId;
   final ScheduleVisibilityFilter visibility;
+  final ScheduleViewMode viewMode;
   final bool isLoading;
   final bool isUsersLoading;
   final bool isMutating;
@@ -439,6 +506,7 @@ class ScheduleViewState {
     DateTime? selectedDate,
     String? selectedUserId,
     ScheduleVisibilityFilter? visibility,
+    ScheduleViewMode? viewMode,
     bool? isLoading,
     bool? isUsersLoading,
     bool? isMutating,
@@ -453,6 +521,7 @@ class ScheduleViewState {
       selectedDate: selectedDate ?? this.selectedDate,
       selectedUserId: selectedUserId ?? this.selectedUserId,
       visibility: visibility ?? this.visibility,
+      viewMode: viewMode ?? this.viewMode,
       isLoading: isLoading ?? this.isLoading,
       isUsersLoading: isUsersLoading ?? this.isUsersLoading,
       isMutating: isMutating ?? this.isMutating,

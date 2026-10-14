@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:obee_mobile/src/features/schedule/data/schedule_enums.dart';
 import 'package:obee_mobile/src/features/schedule/data/schedule_models.dart';
@@ -6,7 +8,7 @@ import 'package:obee_mobile/src/features/schedule/logic/schedule_calendar.dart';
 const _weekdayLabels = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
 
 const _eventTextStyle = TextStyle(
-  fontSize: 9.5,
+  fontSize: 10,
   fontWeight: FontWeight.w700,
   height: 1.15,
 );
@@ -77,38 +79,35 @@ class ScheduleMonthCalendar extends StatelessWidget {
 
         final colorScheme = Theme.of(context).colorScheme;
 
-        return Container(
-          decoration: BoxDecoration(
-            color: colorScheme.surface,
-            borderRadius: BorderRadius.circular(16),
-          ),
+        return DecoratedBox(
+          decoration: BoxDecoration(color: colorScheme.surface),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Weekday header row: T2 T3 T4 T5 T6 T7 CN
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.only(top: 4, bottom: 6),
                 child: Row(
                   children: [
-                    for (final label in _weekdayLabels)
+                    for (var i = 0; i < _weekdayLabels.length; i++)
                       Expanded(
                         child: Text(
-                          label,
+                          _weekdayLabels[i],
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 13,
+                            fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: colorScheme.onSurfaceVariant,
+                            letterSpacing: 0.2,
+                            color: i >= 5
+                                ? colorScheme.onSurfaceVariant.withValues(
+                                    alpha: 0.6,
+                                  )
+                                : colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ),
                   ],
                 ),
-              ),
-              Divider(
-                height: 1,
-                thickness: 1,
-                color: colorScheme.outlineVariant,
               ),
               // If in Week view, render only that 1 week row. Otherwise render all weeks.
               if (activeWeekIndex != null)
@@ -200,18 +199,31 @@ class _ScheduleCalendarWeekRow extends StatelessWidget {
   final double minRowHeight;
 
   static const double _topPadding = 4.0;
-  static const double _dayNumberHeight = 26.0;
+  static const double _dayNumberHeight = 28.0;
   static const double _badgeHeight = 18.0;
-  static const double _badgeSpacing = 3.0;
+  static const double _badgeSpacing = 2.0;
   static const double _bottomPadding = 6.0;
   static const double _defaultMinRowHeight = 64.0;
+  static const int _maxVisibleLanes = 3;
 
   @override
   Widget build(BuildContext context) {
-    final maxLane = segments.isEmpty
-        ? -1
-        : segments.map((e) => e.lane).reduce((a, b) => a > b ? a : b);
-    final laneCount = maxLane + 1;
+    final colorScheme = Theme.of(context).colorScheme;
+
+    // Lanes past the cap collapse into a per-day "+N" counter.
+    final hiddenPerColumn = List<int>.filled(7, 0);
+    var visibleLaneCount = 0;
+    for (final segment in segments) {
+      if (segment.lane < _maxVisibleLanes) {
+        visibleLaneCount = math.max(visibleLaneCount, segment.lane + 1);
+        continue;
+      }
+      for (var col = segment.startColumn; col <= segment.endColumn; col++) {
+        hiddenPerColumn[col] += 1;
+      }
+    }
+    final hasOverflow = hiddenPerColumn.any((count) => count > 0);
+    final laneCount = visibleLaneCount + (hasOverflow ? 1 : 0);
 
     final eventsHeight = laneCount > 0
         ? (laneCount * _badgeHeight + (laneCount - 1) * _badgeSpacing)
@@ -219,6 +231,9 @@ class _ScheduleCalendarWeekRow extends StatelessWidget {
     final naturalHeight =
         _topPadding + _dayNumberHeight + eventsHeight + _bottomPadding;
     final rowHeight = naturalHeight.clamp(minRowHeight, 300.0);
+
+    double laneTop(int lane) =>
+        _topPadding + _dayNumberHeight + lane * (_badgeHeight + _badgeSpacing);
 
     return SizedBox(
       height: rowHeight,
@@ -238,8 +253,8 @@ class _ScheduleCalendarWeekRow extends StatelessWidget {
                         selectedKey != null &&
                         scheduleDateKey(weekCells[col].date) == selectedKey,
                     isToday: scheduleDateKey(weekCells[col].date) == todayKey,
+                    isWeekend: col >= 5,
                     onTap: () => onDaySelected(weekCells[col].date),
-                    showRightBorder: col < 6,
                     showBottomBorder: !isLastWeek,
                   ),
                 ),
@@ -247,25 +262,48 @@ class _ScheduleCalendarWeekRow extends StatelessWidget {
             ],
           ),
           // 2. Events Layer
-          for (final segment in segments) ...[
-            Positioned(
-              top:
-                  _topPadding +
-                  _dayNumberHeight +
-                  segment.lane * (_badgeHeight + _badgeSpacing),
-              left: segment.startColumn * cellWidth + 2.0,
-              width: segment.span * cellWidth - 4.0,
-              height: _badgeHeight,
-              child: _CalendarEventSegmentDetector(
-                cellWidth: cellWidth,
-                startColumn: segment.startColumn,
-                span: segment.span,
-                weekCells: weekCells,
-                onDaySelected: onDaySelected,
-                child: _CalendarEventSegmentBadge(segment: segment),
+          for (final segment in segments)
+            if (segment.lane < _maxVisibleLanes)
+              Positioned(
+                top: laneTop(segment.lane),
+                left: segment.startColumn * cellWidth + 2.0,
+                width: segment.span * cellWidth - 4.0,
+                height: _badgeHeight,
+                child: _CalendarEventSegmentDetector(
+                  cellWidth: cellWidth,
+                  startColumn: segment.startColumn,
+                  span: segment.span,
+                  weekCells: weekCells,
+                  onDaySelected: onDaySelected,
+                  child: _CalendarEventSegmentBadge(segment: segment),
+                ),
               ),
-            ),
-          ],
+          // 3. Overflow counters
+          for (var col = 0; col < 7; col++)
+            if (hiddenPerColumn[col] > 0)
+              Positioned(
+                top: laneTop(visibleLaneCount),
+                left: col * cellWidth + 2.0,
+                width: cellWidth - 4.0,
+                height: _badgeHeight,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => onDaySelected(weekCells[col].date),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 4),
+                    child: Text(
+                      '+${hiddenPerColumn[col]}',
+                      key: ValueKey(
+                        'schedule-day-more-'
+                        '${scheduleDateKey(weekCells[col].date)}',
+                      ),
+                      style: _eventTextStyle.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
         ],
       ),
     );
@@ -330,8 +368,8 @@ class _CalendarDayCellBackground extends StatelessWidget {
     required this.dateKey,
     required this.isSelected,
     required this.isToday,
+    required this.isWeekend,
     required this.onTap,
-    required this.showRightBorder,
     required this.showBottomBorder,
   });
 
@@ -339,25 +377,45 @@ class _CalendarDayCellBackground extends StatelessWidget {
   final String dateKey;
   final bool isSelected;
   final bool isToday;
+  final bool isWeekend;
   final VoidCallback onTap;
-  final bool showRightBorder;
   final bool showBottomBorder;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
+    // Today is a filled primary circle, selection a tonal one.
+    final Color? circleColor = isToday
+        ? colorScheme.primary
+        : (isSelected ? colorScheme.primaryContainer : null);
+    final Color textColor;
+    if (isToday) {
+      textColor = colorScheme.onPrimary;
+    } else if (isSelected) {
+      textColor = colorScheme.onPrimaryContainer;
+    } else if (!cell.inCurrentMonth) {
+      textColor = colorScheme.onSurfaceVariant.withValues(alpha: 0.35);
+    } else if (isWeekend) {
+      textColor = colorScheme.onSurfaceVariant;
+    } else {
+      textColor = colorScheme.onSurface;
+    }
+
     return InkWell(
       key: ValueKey('schedule-day-$dateKey'),
       onTap: onTap,
       child: DecoratedBox(
         decoration: BoxDecoration(
+          color: isSelected
+              ? colorScheme.primaryContainer.withValues(alpha: 0.18)
+              : null,
           border: Border(
-            right: showRightBorder
-                ? BorderSide(color: colorScheme.outlineVariant, width: 1.0)
-                : BorderSide.none,
             bottom: showBottomBorder
-                ? BorderSide(color: colorScheme.outlineVariant, width: 1.0)
+                ? BorderSide(
+                    color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    width: 0.6,
+                  )
                 : BorderSide.none,
           ),
         ),
@@ -365,40 +423,27 @@ class _CalendarDayCellBackground extends StatelessWidget {
           alignment: Alignment.topCenter,
           child: Padding(
             padding: const EdgeInsets.only(top: 4),
-            child: isSelected
-                ? Container(
-                    width: 26,
-                    height: 26,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: colorScheme.primary,
-                    ),
-                    child: Center(
-                      child: Text(
-                        '${cell.date.day}',
-                        style: TextStyle(
-                          color: colorScheme.onPrimary,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          height: 1.0,
-                        ),
-                      ),
-                    ),
-                  )
-                : Text(
-                    '${cell.date.day}',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: cell.inCurrentMonth
-                          ? (isToday
-                                ? colorScheme.primary
-                                : colorScheme.onSurface)
-                          : colorScheme.onSurfaceVariant.withValues(
-                              alpha: 0.38,
-                            ),
-                    ),
-                  ),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              width: 26,
+              height: 26,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: circleColor,
+              ),
+              child: Text(
+                '${cell.date.day}',
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 13,
+                  fontWeight: isToday || isSelected
+                      ? FontWeight.w700
+                      : FontWeight.w500,
+                  height: 1.0,
+                ),
+              ),
+            ),
           ),
         ),
       ),
@@ -455,21 +500,32 @@ class _CalendarEventSegmentBadge extends StatelessWidget {
       );
     }
 
-    // Single-day schedule: display ONLY the schedule type label
-    return Container(
-      decoration: BoxDecoration(
-        color: badgeBg,
-        borderRadius: BorderRadius.circular(4),
-      ),
-      alignment: Alignment.center,
-      padding: const EdgeInsets.symmetric(horizontal: 2),
-      child: Text(
-        type.label,
-        style: _eventTextStyle.copyWith(color: badgeFg),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        textAlign: TextAlign.center,
-      ),
+    // Timed single-day schedule: colored dot plus title, Google Calendar
+    // style, so it reads lighter than the filled multi-day bars.
+    return Row(
+      children: [
+        Container(
+          width: 6,
+          height: 6,
+          margin: const EdgeInsets.only(left: 2, right: 3),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: type.harmonizedColor(colorScheme),
+          ),
+        ),
+        Expanded(
+          child: Text(
+            segment.text,
+            style: _eventTextStyle.copyWith(
+              color: colorScheme.onSurface,
+              fontWeight: FontWeight.w600,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.fade,
+            softWrap: false,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -641,9 +697,9 @@ List<CalendarEventSegment> _buildAllCalendarSegments({
     }
 
     if (!isMulti) {
-      // Single-day event: text is always type.label
+      // Single-day event: the cell shows the title next to a type dot.
       for (final seg in scheduleSegments) {
-        seg.text = schedule.event.type.label;
+        seg.text = schedule.event.title.trim();
         allSegments.add(seg);
       }
       continue;

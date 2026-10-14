@@ -6,6 +6,56 @@ import 'package:obee_mobile/src/features/schedule/logic/schedule_calendar.dart';
 import 'package:obee_mobile/src/features/schedule/ui/widgets/schedule_main_month_calendar.dart';
 
 void main() {
+  test('buildWeekDays returns the Monday-first week around a date', () {
+    final days = buildWeekDays(DateTime(2026, 10, 1));
+
+    expect(days.map(scheduleDateKey), [
+      '2026-09-28',
+      '2026-09-29',
+      '2026-09-30',
+      '2026-10-01',
+      '2026-10-02',
+      '2026-10-03',
+      '2026-10-04',
+    ]);
+    expect(scheduleWeekStart(DateTime(2026, 10, 4)), DateTime(2026, 9, 28));
+  });
+
+  test('buildYearMonths returns the first day of each month', () {
+    final months = buildYearMonths(2026);
+
+    expect(months, hasLength(12));
+    expect(months.first, DateTime(2026));
+    expect(months.last, DateTime(2026, 12));
+  });
+
+  test('scheduleRangeForView covers the active view', () {
+    final month = DateTime(2026, 10);
+    final focused = DateTime(2026, 10, 14);
+
+    final monthRange = scheduleRangeForView(
+      mode: ScheduleViewMode.month,
+      month: month,
+      focusedDate: focused,
+    );
+    final weekRange = scheduleRangeForView(
+      mode: ScheduleViewMode.week,
+      month: month,
+      focusedDate: focused,
+    );
+    final yearRange = scheduleRangeForView(
+      mode: ScheduleViewMode.year,
+      month: month,
+      focusedDate: focused,
+    );
+
+    expect(monthRange, scheduleVisibleRange(month));
+    expect(weekRange.start, DateTime(2026, 10, 12));
+    expect(weekRange.end, DateTime(2026, 10, 18));
+    expect(yearRange.start, DateTime(2026));
+    expect(yearRange.end, DateTime(2026, 12, 31));
+  });
+
   // The grid should always render full weeks so the month view stays aligned.
   test('buildScheduleCalendar returns full weeks around the month', () {
     final cells = buildScheduleCalendar(DateTime(2026, 6));

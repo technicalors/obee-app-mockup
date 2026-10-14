@@ -112,9 +112,24 @@ List<ScheduleTimelineValue> formatScheduleTimelineValues(
 }
 
 String formatScheduleMonthYear(DateTime value) {
-  final normalized = value;
+  return 'Tháng ${value.month}, ${value.year}';
+}
 
-  return '${normalized.month.toString().padLeft(2, '0')}/${normalized.year}';
+/// Week title such as `12 – 18/10`, or `28/09 – 04/10` across months.
+String formatScheduleWeekRange(DateTime date) {
+  final start = DateTime(date.year, date.month, date.day - (date.weekday - 1));
+  final end = DateTime(start.year, start.month, start.day + 6);
+  final endLabel = formatTimelineDate(end);
+  if (start.month == end.month) {
+    return '${start.day} – $endLabel';
+  }
+
+  return '${formatTimelineDate(start)} – $endLabel';
+}
+
+/// Short Vietnamese weekday label used by calendar column headers.
+String formatScheduleWeekdayShort(DateTime value) {
+  return value.weekday == DateTime.sunday ? 'CN' : 'T${value.weekday + 1}';
 }
 
 String formatScheduleSelectedDayLabel(DateTime value) {

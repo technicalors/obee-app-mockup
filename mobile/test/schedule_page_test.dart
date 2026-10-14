@@ -96,11 +96,12 @@ void main() {
     expect(visibilitySelectedText.overflow, TextOverflow.ellipsis);
 
     expect(find.byKey(const ValueKey('schedule-month-picker')), findsOneWidget);
-    expect(find.text('06/2026'), findsOneWidget);
+    expect(find.text('Tháng 6, 2026'), findsOneWidget);
     expect(find.text('Không có lịch trình'), findsNothing);
     expect(find.text('09:00'), findsOneWidget);
     expect(find.text('10:00'), findsOneWidget);
-    expect(find.text('Planning'), findsOneWidget);
+    expect(find.text('Planning'), findsNWidgets(2));
+    // Type label shows on the day tile and in the filter legend.
     expect(find.text('Cuộc họp'), findsNWidgets(2));
   });
 
@@ -150,77 +151,76 @@ void main() {
     expect(find.text('Đào tạo'), findsOneWidget);
   });
 
-  testWidgets(
-    'calendar displays only type label for single-day event and title for multi-day event',
-    (tester) async {
-      await tester.binding.setSurfaceSize(const Size(800, 1400));
-      addTearDown(() => tester.binding.setSurfaceSize(null));
+  testWidgets('calendar displays titles for single-day and multi-day events', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(800, 1400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
 
-      final today = DateTime(2025, 4, 15);
-      final api = FakeScheduleApi(
-        schedules: [
-          _schedule(
-            id: 'schedule-single-day',
-            title: 'Họp bí mật riêng tư',
-            type: ScheduleEventType.meeting,
-            start: DateTime(2025, 4, 15, 9),
-            end: DateTime(2025, 4, 15, 10, 30),
-            scheduleType: ScheduleEventScheduleType.ordinary,
-            physicalAddress: 'Phòng họp A',
-          ),
-          _schedule(
-            id: 'schedule-multi-day',
-            title: 'Chuẩn bị demo Nhật Bản',
-            type: ScheduleEventType.seminar,
-            start: DateTime(2025, 4, 24),
-            end: DateTime(2025, 4, 27),
-            scheduleType: ScheduleEventScheduleType.multipleDays,
-          ),
-        ],
-      );
-
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            scheduleApiProvider.overrideWithValue(api),
-            authControllerProvider.overrideWith(_FakeAuthController.new),
-          ],
-          child: MaterialApp.router(
-            theme: buildAppTheme(),
-            routerConfig: _router(now: today),
-          ),
+    final today = DateTime(2025, 4, 15);
+    final api = FakeScheduleApi(
+      schedules: [
+        _schedule(
+          id: 'schedule-single-day',
+          title: 'Họp bí mật riêng tư',
+          type: ScheduleEventType.meeting,
+          start: DateTime(2025, 4, 15, 9),
+          end: DateTime(2025, 4, 15, 10, 30),
+          scheduleType: ScheduleEventScheduleType.ordinary,
+          physicalAddress: 'Phòng họp A',
         ),
-      );
+        _schedule(
+          id: 'schedule-multi-day',
+          title: 'Chuẩn bị demo Nhật Bản',
+          type: ScheduleEventType.seminar,
+          start: DateTime(2025, 4, 24),
+          end: DateTime(2025, 4, 27),
+          scheduleType: ScheduleEventScheduleType.multipleDays,
+        ),
+      ],
+    );
 
-      await tester.pumpAndSettle();
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          scheduleApiProvider.overrideWithValue(api),
+          authControllerProvider.overrideWith(_FakeAuthController.new),
+        ],
+        child: MaterialApp.router(
+          theme: buildAppTheme(),
+          routerConfig: _router(now: today),
+        ),
+      ),
+    );
 
-      // In week view for Day 15, close to return to full month view
-      await tester.tap(find.byKey(const ValueKey('schedule-day-panel-close')));
-      await tester.pumpAndSettle();
+    await tester.pumpAndSettle();
 
-      // Calendar month title
-      expect(find.text('04/2025'), findsOneWidget);
+    // In week view for Day 15, close to return to full month view
+    await tester.tap(find.byKey(const ValueKey('schedule-day-panel-close')));
+    await tester.pumpAndSettle();
 
-      // Multi-day event: displays title in calendar (month view)
-      expect(find.text('Chuẩn bị demo Nhật Bản'), findsOneWidget);
+    // Calendar month title
+    expect(find.text('Tháng 4, 2025'), findsOneWidget);
 
-      // Re-select day 15 to open day panel
-      await tester.tap(
-        find.byKey(const ValueKey('schedule-day-2025-04-15')),
-        warnIfMissed: false,
-      );
-      await tester.pumpAndSettle();
+    // Multi-day event: displays title in calendar (month view)
+    expect(find.text('Chuẩn bị demo Nhật Bản'), findsOneWidget);
 
-      // Single-day event: in bottom panel it displays title
-      expect(find.text('Họp bí mật riêng tư'), findsOneWidget);
-      // 'Cuộc họp' is displayed both as the calendar cell badge and the timeline card badge (2 occurrences)
-      expect(find.text('Cuộc họp'), findsNWidgets(2));
+    // Re-select day 15 to open day panel
+    await tester.tap(
+      find.byKey(const ValueKey('schedule-day-2025-04-15')),
+      warnIfMissed: false,
+    );
+    await tester.pumpAndSettle();
 
-      // Bottom panel header
-      expect(find.text('Lịch ngày 15/04'), findsOneWidget);
-      expect(find.text('Phòng họp A'), findsOneWidget);
-    },
-  );
+    // Single-day event: title shows in the month cell and the day panel
+    expect(find.text('Họp bí mật riêng tư'), findsNWidgets(2));
+    // The type label only appears on the timeline card badge
+    expect(find.text('Cuộc họp'), findsOneWidget);
+
+    // Bottom panel header
+    expect(find.text('Lịch ngày 15/04'), findsOneWidget);
+    expect(find.text('Phòng họp A'), findsOneWidget);
+  });
 
   testWidgets(
     'default calendar has no day selected, tapping day switches to week view, close button restores month view',
@@ -286,7 +286,7 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Lịch ngày 15/04'), findsOneWidget);
-      expect(find.text('Họp bí mật riêng tư'), findsOneWidget);
+      expect(find.text('Họp bí mật riêng tư'), findsNWidgets(2));
 
       // 3. Tap close button -> restores original month view
       await tester.tap(find.byKey(const ValueKey('schedule-day-panel-close')));
@@ -500,7 +500,7 @@ void main() {
       ),
     ]);
 
-    await tester.tap(find.text('06/2026'));
+    await tester.tap(find.text('Tháng 6, 2026'));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('month-year-picker-month-8')));
     await tester.pumpAndSettle();
@@ -521,7 +521,7 @@ void main() {
     await tester.tap(find.text('OK'));
     await tester.pumpAndSettle();
 
-    expect(find.text('08/2026'), findsOneWidget);
+    expect(find.text('Tháng 8, 2026'), findsOneWidget);
     expect(api.fetchSchedulesRequests.last, (
       endFrom: DateTime(2026, 7, 27),
       endTo: null,
@@ -2086,7 +2086,7 @@ void main() {
         expect(find.byType(ScheduleDetailPage), findsNothing);
         expect(api.fetchSchedulesCallCount, 3);
         expect(api.fetchSchedulesRequests.last.eventId, isNull);
-        expect(find.text('Updated planning'), findsOneWidget);
+        expect(find.text('Updated planning'), findsNWidgets(2));
         if (!reloadFails) {
           reload.complete([updated]);
           await tester.pumpAndSettle();
@@ -2272,6 +2272,210 @@ void main() {
       expect(find.text('Cập nhật lịch trình thành công.'), findsWidgets);
     },
   );
+
+  testWidgets('view menu switches between week, month and year views', (
+    tester,
+  ) async {
+    final api = FakeScheduleApi(
+      schedules: [
+        _schedule(
+          id: 'schedule-1',
+          title: 'Planning',
+          start: DateTime(2026, 6, 10, 9),
+          end: DateTime(2026, 6, 10, 10, 30),
+        ),
+        _schedule(
+          id: 'schedule-2',
+          title: 'Sync',
+          start: DateTime(2026, 6, 10, 10),
+          end: DateTime(2026, 6, 10, 11),
+        ),
+      ],
+    );
+    await _pumpSchedulePage(tester, api: api, now: DateTime(2026, 6, 10));
+
+    await _selectViewMode(tester, ScheduleViewMode.week);
+
+    expect(find.text('8 – 14/06'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('schedule-week-block-schedule-1-2026-06-10')),
+      findsOneWidget,
+    );
+    // Overlapping blocks are laid out side by side.
+    final first = tester.getRect(
+      find.byKey(const ValueKey('schedule-week-block-schedule-1-2026-06-10')),
+    );
+    final second = tester.getRect(
+      find.byKey(const ValueKey('schedule-week-block-schedule-2-2026-06-10')),
+    );
+    expect(second.left, greaterThan(first.left));
+    expect(api.fetchSchedulesRequests.last.endFrom, DateTime(2026, 6, 8));
+    expect(api.fetchSchedulesRequests.last.startTo, DateTime(2026, 6, 14));
+
+    await _selectViewMode(tester, ScheduleViewMode.year);
+
+    expect(find.byKey(const ValueKey('schedule-year-grid')), findsOneWidget);
+    expect(find.text('2026'), findsOneWidget);
+    expect(api.fetchSchedulesRequests.last.endFrom, DateTime(2026));
+    expect(api.fetchSchedulesRequests.last.startTo, DateTime(2026, 12, 31));
+
+    await tester.tap(find.byKey(const ValueKey('schedule-year-month-8')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Tháng 8, 2026'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('schedule-day-2026-08-15')),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.byKey(const ValueKey('schedule-today-button')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Tháng 6, 2026'), findsOneWidget);
+  });
+
+  testWidgets('tapping an empty week slot creates a schedule at that hour', (
+    tester,
+  ) async {
+    final api = FakeScheduleApi();
+    await _pumpSchedulePage(tester, api: api, now: DateTime(2026, 6, 10));
+    await _selectViewMode(tester, ScheduleViewMode.week);
+
+    final scrollable = tester.state<ScrollableState>(
+      find.descendant(
+        of: find.byKey(const ValueKey('schedule-week-scroll')),
+        matching: find.byType(Scrollable),
+      ),
+    );
+    scrollable.position.jumpTo(13 * 56);
+    await tester.pumpAndSettle();
+
+    final column = find.byKey(
+      const ValueKey('schedule-week-column-2026-06-11'),
+    );
+    await tester.tapAt(tester.getTopLeft(column) + const Offset(10, 14.5 * 56));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextFormField).first, 'Slot planning');
+    await tester.tap(find.byKey(const ValueKey('schedule_form_header_save')));
+    await tester.pumpAndSettle();
+
+    expect(api.lastCreateDraft?.startDate, DateTime(2026, 6, 11, 14));
+    expect(api.lastCreateDraft?.endDate, DateTime(2026, 6, 11, 15));
+    expect(api.lastCreateDraft?.startTime, '14:00');
+  });
+
+  testWidgets('create button is hidden without the create permission', (
+    tester,
+  ) async {
+    await _pumpSchedulePage(
+      tester,
+      api: FakeScheduleApi(),
+      now: DateTime(2026, 6, 10),
+      auth: _FakeObserverAuthController.new,
+    );
+
+    expect(find.byKey(const ValueKey('schedule-create-fab')), findsNothing);
+  });
+
+  testWidgets('month cells cap visible events and show a +N counter', (
+    tester,
+  ) async {
+    final api = FakeScheduleApi(
+      schedules: [
+        for (var hour = 8; hour < 13; hour++)
+          _schedule(
+            id: 'schedule-$hour',
+            title: 'Event $hour',
+            start: DateTime(2026, 6, 10, hour),
+            end: DateTime(2026, 6, 10, hour, 30),
+          ),
+      ],
+    );
+    await _pumpSchedulePage(tester, api: api, now: DateTime(2026, 6, 10));
+
+    expect(
+      find.byKey(const ValueKey('schedule-day-more-2026-06-10')),
+      findsOneWidget,
+    );
+    expect(find.text('+2'), findsOneWidget);
+  });
+
+  for (final mode in ScheduleViewMode.values) {
+    testWidgets('${mode.name} view fits a narrow phone', (tester) async {
+      final api = FakeScheduleApi(
+        schedules: [
+          _schedule(
+            id: 'schedule-1',
+            title: 'Họp kế hoạch sản phẩm rất dài',
+            start: DateTime(2026, 6, 10, 9),
+            end: DateTime(2026, 6, 10, 10),
+          ),
+          _schedule(
+            id: 'schedule-2',
+            title: 'Hội thảo khách hàng',
+            type: ScheduleEventType.seminar,
+            scheduleType: ScheduleEventScheduleType.multipleDays,
+            start: DateTime(2026, 6, 9),
+            end: DateTime(2026, 6, 12),
+          ),
+        ],
+      );
+      await _pumpSchedulePage(
+        tester,
+        api: api,
+        now: DateTime(2026, 6, 10),
+        size: const Size(320, 640),
+      );
+      await _selectViewMode(tester, mode);
+
+      expect(tester.takeException(), isNull);
+    });
+  }
+}
+
+Future<void> _pumpSchedulePage(
+  WidgetTester tester, {
+  required FakeScheduleApi api,
+  required DateTime now,
+  AuthController Function() auth = _FakeAuthController.new,
+  Size size = const Size(800, 1400),
+}) async {
+  await tester.binding.setSurfaceSize(size);
+  addTearDown(() => tester.binding.setSurfaceSize(null));
+
+  final router = GoRouter(
+    initialLocation: '/app/schedule',
+    routes: [
+      GoRoute(
+        path: ScheduleFormPage.routePath,
+        builder: (context, state) => const ScheduleFormPage(isEditing: false),
+      ),
+      GoRoute(
+        path: '/app/schedule',
+        builder: (context, state) => SchedulePage(now: now),
+      ),
+    ],
+  );
+  addTearDown(router.dispose);
+
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [
+        scheduleApiProvider.overrideWithValue(api),
+        authControllerProvider.overrideWith(auth),
+      ],
+      child: MaterialApp.router(theme: buildAppTheme(), routerConfig: router),
+    ),
+  );
+  await tester.pumpAndSettle();
+}
+
+Future<void> _selectViewMode(WidgetTester tester, ScheduleViewMode mode) async {
+  await tester.tap(find.byKey(const ValueKey('schedule-view-mode-button')));
+  await tester.pumpAndSettle();
+  await tester.tap(find.byKey(ValueKey('schedule-view-mode-${mode.name}')));
+  await tester.pumpAndSettle();
 }
 
 GoRouter _router({required DateTime now, String? initialLocation}) {
@@ -2510,6 +2714,13 @@ class _FakeAuthController extends AuthController {
   @override
   AuthState build() {
     return const AuthState.authenticated(_currentUser);
+  }
+}
+
+class _FakeObserverAuthController extends AuthController {
+  @override
+  AuthState build() {
+    return const AuthState.authenticated(_observerUser);
   }
 }
 

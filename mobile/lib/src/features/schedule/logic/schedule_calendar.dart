@@ -70,6 +70,50 @@ List<ScheduleCalendarCell> buildScheduleCalendar(DateTime month) {
   return (end: cells.last.date, start: cells.first.date);
 }
 
+bool isSameScheduleMonth(DateTime left, DateTime right) {
+  return left.year == right.year && left.month == right.month;
+}
+
+/// Monday of the week containing [date], matching the Monday-first month grid.
+DateTime scheduleWeekStart(DateTime date) {
+  final day = DateTime(date.year, date.month, date.day);
+  return DateTime(day.year, day.month, day.day - (day.weekday - 1));
+}
+
+/// The seven Monday-first days of the week containing [date].
+List<DateTime> buildWeekDays(DateTime date) {
+  final start = scheduleWeekStart(date);
+  return [
+    for (var offset = 0; offset < 7; offset += 1)
+      DateTime(start.year, start.month, start.day + offset),
+  ];
+}
+
+/// First day of each month in [year], used by the year overview.
+List<DateTime> buildYearMonths(int year) {
+  return [for (var month = 1; month <= 12; month += 1) DateTime(year, month)];
+}
+
+/// Date range the API must cover for the active view. Week and year views can
+/// cross the month anchor, so they cannot reuse the month grid range.
+({DateTime end, DateTime start}) scheduleRangeForView({
+  required ScheduleViewMode mode,
+  required DateTime month,
+  required DateTime focusedDate,
+}) {
+  return switch (mode) {
+    ScheduleViewMode.month => scheduleVisibleRange(month),
+    ScheduleViewMode.week => (
+      start: scheduleWeekStart(focusedDate),
+      end: buildWeekDays(focusedDate).last,
+    ),
+    ScheduleViewMode.year => (
+      start: DateTime(month.year),
+      end: DateTime(month.year, 12, 31),
+    ),
+  };
+}
+
 /// Stable string key shared by the month grid and selected-day lookup map.
 String scheduleDateKey(DateTime date) {
   return '${date.year.toString().padLeft(4, '0')}-'
