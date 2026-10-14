@@ -118,28 +118,28 @@ abstract class ScheduleDraft with _$ScheduleDraft {
   factory ScheduleDraft.forCreate({
     required String currentUserId,
     required DateTime selectedDate,
+    DateTime? startAt,
   }) {
+    // A tapped time slot gets a one-hour default, kept within that day.
+    final start =
+        startAt ??
+        DateTime(selectedDate.year, selectedDate.month, selectedDate.day, 8);
+    final dayLimit = DateTime(start.year, start.month, start.day, 23, 59);
+    final slotEnd = start.add(const Duration(hours: 1));
+    final end = startAt == null
+        ? DateTime(start.year, start.month, start.day, 17, 30)
+        : (slotEnd.isAfter(dayLimit) ? dayLimit : slotEnd);
+
     return ScheduleDraft(
       title: '',
       type: ScheduleEventType.meeting,
       scheduleType: ScheduleEventScheduleType.ordinary,
-      startDate: DateTime(
-        selectedDate.year,
-        selectedDate.month,
-        selectedDate.day,
-        8,
-      ),
-      endDate: DateTime(
-        selectedDate.year,
-        selectedDate.month,
-        selectedDate.day,
-        17,
-        30,
-      ),
+      startDate: start,
+      endDate: end,
       repeatType: null,
       repeatPattern: null,
-      startTime: '08:00',
-      endTime: '17:30',
+      startTime: _formatDraftTime(start),
+      endTime: _formatDraftTime(end),
       note: null,
       physicalAddress: null,
       privacy: ScheduleEventPrivacy.public,
@@ -300,4 +300,9 @@ DateTime _dateOnlyFromJson(Object? value) {
     throw const FormatException('Schedule date must be YYYY-MM-DD.');
   }
   return DateFormat('yyyy-MM-dd').parseStrict(value);
+}
+
+String _formatDraftTime(DateTime value) {
+  return '${value.hour.toString().padLeft(2, '0')}:'
+      '${value.minute.toString().padLeft(2, '0')}';
 }

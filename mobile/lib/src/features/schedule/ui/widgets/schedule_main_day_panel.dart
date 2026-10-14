@@ -42,51 +42,74 @@ class ScheduleDayPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Header Row: Lịch ngày dd/MM [Count] ... [Close Button]
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 12, 10),
-            child: Row(
+          // Drag handle + header; swiping down returns to the full month.
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onVerticalDragEnd: onClose == null
+                ? null
+                : (details) {
+                    if ((details.primaryVelocity ?? 0) > 250) {
+                      onClose!();
+                    }
+                  },
+            child: Column(
               children: [
-                Text(
-                  formatScheduleSelectedDayLabel(selectedDate),
-                  key: const ValueKey('selected-day-label'),
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: colorScheme.onSurface,
-                  ),
-                ),
-                const SizedBox(width: 8),
                 Container(
-                  width: 24,
-                  height: 24,
+                  width: 36,
+                  height: 4,
+                  margin: const EdgeInsets.only(top: 8),
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: colorScheme.surfaceContainerHighest,
-                  ),
-                  child: Center(
-                    child: Text(
-                      '${daySchedules.length}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
+                    color: colorScheme.outlineVariant,
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                const Spacer(),
-                if (onClose != null)
-                  IconButton(
-                    key: const ValueKey('schedule-day-panel-close'),
-                    icon: Icon(
-                      Icons.close,
-                      size: 22,
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                    tooltip: 'Trở lại lịch tháng',
-                    onPressed: onClose,
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 12, 6),
+                  child: Row(
+                    children: [
+                      Text(
+                        formatScheduleSelectedDayLabel(selectedDate),
+                        key: const ValueKey('selected-day-label'),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        width: 24,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: colorScheme.surfaceContainerHighest,
+                        ),
+                        child: Center(
+                          child: Text(
+                            '${daySchedules.length}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const Spacer(),
+                      if (onClose != null)
+                        IconButton(
+                          key: const ValueKey('schedule-day-panel-close'),
+                          icon: Icon(
+                            Icons.close,
+                            size: 22,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                          tooltip: 'Trở lại lịch tháng',
+                          onPressed: onClose,
+                        ),
+                    ],
                   ),
+                ),
               ],
             ),
           ),
@@ -105,19 +128,30 @@ class ScheduleDayPanel extends StatelessWidget {
                 }
                 if (daySchedules.isEmpty) {
                   return Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        color: colorScheme.surfaceContainerLow,
-                        border: Border.all(color: colorScheme.outlineVariant),
-                      ),
-                      child: Text(
-                        'Không có lịch trình cho ngày đã chọn.',
-                        style: TextStyle(color: colorScheme.onSurfaceVariant),
-                      ),
+                    padding: const EdgeInsets.symmetric(vertical: 24),
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.event_available_outlined,
+                          size: 44,
+                          color: colorScheme.outline,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Không có lịch trình cho ngày đã chọn.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: colorScheme.onSurfaceVariant),
+                        ),
+                        if (canCreateSchedule) ...[
+                          const SizedBox(height: 12),
+                          FilledButton.tonalIcon(
+                            key: const ValueKey('schedule-day-empty-create'),
+                            onPressed: onCreatePressed,
+                            icon: const Icon(Icons.add),
+                            label: const Text('Tạo lịch trình'),
+                          ),
+                        ],
+                      ],
                     ),
                   );
                 }

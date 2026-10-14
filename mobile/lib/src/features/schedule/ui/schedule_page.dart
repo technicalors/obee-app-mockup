@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:obee_mobile/src/features/auth/state/auth_controller.dart';
+import 'package:obee_mobile/src/features/schedule/data/schedule_enums.dart';
 import 'package:obee_mobile/src/features/schedule/data/schedule_models.dart';
 import 'package:obee_mobile/src/features/schedule/logic/schedule_calendar.dart';
 import 'package:obee_mobile/src/features/schedule/state/schedule_controller.dart';
@@ -12,6 +13,8 @@ import 'package:obee_mobile/src/features/schedule/ui/schedule_form_page.dart';
 import 'package:obee_mobile/src/features/schedule/ui/widgets/schedule_main_day_panel.dart';
 import 'package:obee_mobile/src/features/schedule/ui/widgets/schedule_main_month_calendar.dart';
 import 'package:obee_mobile/src/features/schedule/ui/widgets/schedule_main_header.dart';
+import 'package:obee_mobile/src/features/schedule/ui/widgets/schedule_week_time_grid.dart';
+import 'package:obee_mobile/src/features/schedule/ui/widgets/schedule_year_view.dart';
 
 /// Authenticated schedule route for the mobile app.
 /// The page keeps view-local state here and delegates all backend work to the
@@ -117,11 +120,80 @@ class _SchedulePageState extends ConsumerState<SchedulePage> {
     ref.read(scheduleControllerProvider.notifier).clearFeedback();
   }
 
-  void _changeMonthByOffset(int offset) {
-    final month = ref.read(scheduleControllerProvider).month;
-    ref
-        .read(scheduleControllerProvider.notifier)
-        .changeMonth(DateTime(month.year, month.month + offset));
+  /// Last swipe direction, used to slide the incoming page from that side.
+  int _pageDirection = 1;
+
+  void _shiftRange(int offset) {
+    setState(() {
+      _pageDirection = offset;
+    });
+    ref.read(scheduleControllerProvider.notifier).shiftRange(offset);
+  }
+
+  void _selectDay(DateTime date) {
+    setState(() {
+      _selectedDate = date;
+    });
+    ref.read(scheduleControllerProvider.notifier).selectDate(date);
+  }
+
+  void _closeDay() {
+    setState(() {
+      _selectedDate = null;
+    });
+  }
+
+  void _goToToday() {
+    final controller = ref.read(scheduleControllerProvider.notifier);
+    final today = ref.read(scheduleControllerProvider).today;
+    setState(() {
+      if (_selectedDate != null) {
+        _selectedDate = today;
+      }
+    });
+    controller.goToToday();
+  }
+
+  void _changeMonth(DateTime month) {
+    setState(() {
+      _selectedDate = null;
+    });
+    ref.read(scheduleControllerProvider.notifier).changeMonth(month);
+  }
+
+  void _setViewMode(ScheduleViewMode mode) {
+    setState(() {
+      _selectedDate = null;
+    });
+    ref.read(scheduleControllerProvider.notifier).setViewMode(mode);
+  }
+
+  /// Drills from the week header into that day's agenda in the month view.
+  void _openDayFromWeek(DateTime date) {
+    final controller = ref.read(scheduleControllerProvider.notifier);
+    setState(() {
+      _selectedDate = date;
+    });
+    controller.setViewMode(ScheduleViewMode.month);
+    if (!isSameScheduleMonth(
+      ref.read(scheduleControllerProvider).month,
+      date,
+    )) {
+      controller.changeMonth(date);
+    }
+    controller.selectDate(date);
+  }
+
+  void _openMonthFromYear(DateTime month) {
+    setState(() {
+      _selectedDate = null;
+    });
+    ref.read(scheduleControllerProvider.notifier).openMonth(month);
+  }
+
+  Future<void> _openCreateForm({DateTime? start}) {
+    ref.read(scheduleControllerProvider.notifier).prepareCreate(start: start);
+    return _openScheduleForm();
   }
 
   @override
@@ -129,8 +201,7 @@ class _SchedulePageState extends ConsumerState<SchedulePage> {
     final scheduleState = ref.watch(scheduleControllerProvider);
     final scheduleController = ref.read(scheduleControllerProvider.notifier);
     final currentUser = ref.watch(authControllerProvider).user;
-    final organizationUsers = scheduleState.users;
-    final cells = scheduleState.calendarCells;
+    final colorScheme = Theme.of(context).colorScheme;
 
     ref.listen<ScheduleViewState>(
       scheduleControllerProvider,
@@ -143,143 +214,195 @@ class _SchedulePageState extends ConsumerState<SchedulePage> {
         ) ==
         true;
 
-    final isDaySelected = _selectedDate != null;
-    final selectedKey = isDaySelected ? scheduleDateKey(_selectedDate!) : null;
-    final daySchedules = isDaySelected
-        ? (scheduleState.schedulesByDate[selectedKey] ??
-              const <ScheduleModel>[])
-        : const <ScheduleModel>[];
-    final colorScheme = Theme.of(context).colorScheme;
-
     return Scaffold(
       backgroundColor: colorScheme.surface,
+      floatingActionButton: canCreateSchedule
+          ? FloatingActionButton(
+              key: const ValueKey('schedule-create-fab'),
+              tooltip: 'Thêm lịch trình mới',
+              onPressed: _openCreateForm,
+              child: const Icon(Icons.add),
+            )
+          : null,
       body: SafeArea(
         bottom: false,
         child: RefreshIndicator(
           onRefresh: () =>
               ref.read(scheduleControllerProvider.notifier).refresh(),
-          child: isDaySelected
-              ? Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 6,
-                      ),
-                      child: ScheduleHeader(
-                        month: scheduleState.month,
-                        selectedUserId: scheduleState.selectedUserId,
-                        organizationUsers: organizationUsers,
-                        visibility: scheduleState.visibility,
-                        isVisibilityEnabled:
-                            currentUser != null &&
-                            scheduleState.selectedUserId == currentUser.id,
-                        canCreateSchedule: canCreateSchedule,
-                        onPrevious: () {
-                          setState(() {
-                            _selectedDate = null;
-                          });
-                        },
-                        onNext: () => _changeMonthByOffset(1),
-                        onMonthChanged: scheduleController.changeMonth,
-                        onSelectedUserChanged:
-                            scheduleController.setSelectedUser,
-                        onVisibilityChanged: scheduleController.setVisibility,
-                        onCreatePressed: _openScheduleForm,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: ScheduleMonthCalendar(
-                        cells: cells,
-                        selectedWeekDate: _selectedDate,
-                        selectedKey: selectedKey,
-                        today: scheduleState.today,
-                        schedulesByDate: scheduleState.schedulesByDate,
-                        onDaySelected: (date) {
-                          setState(() {
-                            _selectedDate = date;
-                          });
-                          scheduleController.selectDate(date);
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Expanded(
-                      child: ScheduleDayPanel(
-                        selectedDate: _selectedDate!,
-                        daySchedules: daySchedules,
-                        isLoading: scheduleState.isLoading,
-                        canCreateSchedule: canCreateSchedule,
-                        onCreatePressed: _openScheduleForm,
-                        onSchedulePressed: _openScheduleDetail,
-                        onClose: () {
-                          setState(() {
-                            _selectedDate = null;
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                )
-              : Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 6,
-                      ),
-                      child: ScheduleHeader(
-                        month: scheduleState.month,
-                        selectedUserId: scheduleState.selectedUserId,
-                        organizationUsers: organizationUsers,
-                        visibility: scheduleState.visibility,
-                        isVisibilityEnabled:
-                            currentUser != null &&
-                            scheduleState.selectedUserId == currentUser.id,
-                        canCreateSchedule: canCreateSchedule,
-                        onPrevious: () => _changeMonthByOffset(-1),
-                        onNext: () => _changeMonthByOffset(1),
-                        onMonthChanged: scheduleController.changeMonth,
-                        onSelectedUserChanged:
-                            scheduleController.setSelectedUser,
-                        onVisibilityChanged: scheduleController.setVisibility,
-                        onCreatePressed: _openScheduleForm,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 12),
-                        child: GestureDetector(
-                          onHorizontalDragEnd: (details) {
-                            final velocity = details.primaryVelocity;
-                            if (velocity != null) {
-                              if (velocity < -200) {
-                                _changeMonthByOffset(1);
-                              } else if (velocity > 200) {
-                                _changeMonthByOffset(-1);
-                              }
-                            }
-                          },
-                          child: ScheduleMonthCalendar(
-                            cells: cells,
-                            selectedKey: null,
-                            today: scheduleState.today,
-                            schedulesByDate: scheduleState.schedulesByDate,
-                            onDaySelected: (date) {
-                              setState(() {
-                                _selectedDate = date;
-                              });
-                              scheduleController.selectDate(date);
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 4, 8, 4),
+                child: ScheduleHeader(
+                  viewMode: scheduleState.viewMode,
+                  month: scheduleState.month,
+                  focusedDate: scheduleState.selectedDate,
+                  today: scheduleState.today,
+                  selectedUserId: scheduleState.selectedUserId,
+                  organizationUsers: scheduleState.users,
+                  visibility: scheduleState.visibility,
+                  isVisibilityEnabled:
+                      currentUser != null &&
+                      scheduleState.selectedUserId == currentUser.id,
+                  onMonthChanged: _changeMonth,
+                  onTodayPressed: _goToToday,
+                  onViewModeChanged: _setViewMode,
+                  onSelectedUserChanged: scheduleController.setSelectedUser,
+                  onVisibilityChanged: scheduleController.setVisibility,
                 ),
+              ),
+              Expanded(
+                child: switch (scheduleState.viewMode) {
+                  ScheduleViewMode.month => _buildMonthBody(
+                    scheduleState,
+                    canCreateSchedule,
+                  ),
+                  ScheduleViewMode.week => _SwipePager(
+                    pageKey: ValueKey(
+                      'week-${scheduleDateKey(scheduleWeekStart(scheduleState.selectedDate))}',
+                    ),
+                    direction: _pageDirection,
+                    onShift: _shiftRange,
+                    child: ScheduleWeekTimeGrid(
+                      days: buildWeekDays(scheduleState.selectedDate),
+                      today: scheduleState.today,
+                      schedulesByDate: scheduleState.schedulesByDate,
+                      onSchedulePressed: _openScheduleDetail,
+                      onDaySelected: _openDayFromWeek,
+                      onSlotPressed: canCreateSchedule
+                          ? (start) => _openCreateForm(start: start)
+                          : null,
+                    ),
+                  ),
+                  ScheduleViewMode.year => _SwipePager(
+                    pageKey: ValueKey('year-${scheduleState.month.year}'),
+                    direction: _pageDirection,
+                    onShift: _shiftRange,
+                    child: ScheduleYearView(
+                      year: scheduleState.month.year,
+                      today: scheduleState.today,
+                      schedulesByDate: scheduleState.schedulesByDate,
+                      onMonthSelected: _openMonthFromYear,
+                    ),
+                  ),
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMonthBody(ScheduleViewState scheduleState, bool canCreate) {
+    final selectedDate = _selectedDate;
+
+    if (selectedDate == null) {
+      return _SwipePager(
+        pageKey: ValueKey('month-${scheduleDateKey(scheduleState.month)}'),
+        direction: _pageDirection,
+        onShift: _shiftRange,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
+          child: ScheduleMonthCalendar(
+            cells: scheduleState.calendarCells,
+            selectedKey: null,
+            today: scheduleState.today,
+            schedulesByDate: scheduleState.schedulesByDate,
+            onDaySelected: _selectDay,
+          ),
+        ),
+      );
+    }
+
+    final selectedKey = scheduleDateKey(selectedDate);
+
+    // Day selected: collapse the grid to that week and show the day's agenda.
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: ScheduleMonthCalendar(
+            cells: scheduleState.calendarCells,
+            selectedWeekDate: selectedDate,
+            selectedKey: selectedKey,
+            today: scheduleState.today,
+            schedulesByDate: scheduleState.schedulesByDate,
+            onDaySelected: _selectDay,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Expanded(
+          child: ScheduleDayPanel(
+            selectedDate: selectedDate,
+            daySchedules:
+                scheduleState.schedulesByDate[selectedKey] ??
+                const <ScheduleModel>[],
+            isLoading: scheduleState.isLoading,
+            canCreateSchedule: canCreate,
+            onCreatePressed: _openCreateForm,
+            onSchedulePressed: _openScheduleDetail,
+            onClose: _closeDay,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Horizontal swipe navigation with a slide transition between pages.
+class _SwipePager extends StatelessWidget {
+  const _SwipePager({
+    required this.pageKey,
+    required this.direction,
+    required this.onShift,
+    required this.child,
+  });
+
+  final Key pageKey;
+  final int direction;
+  final ValueChanged<int> onShift;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onHorizontalDragEnd: (details) {
+        final velocity = details.primaryVelocity;
+        if (velocity == null) {
+          return;
+        }
+        if (velocity < -200) {
+          onShift(1);
+        } else if (velocity > 200) {
+          onShift(-1);
+        }
+      },
+      child: ClipRect(
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 260),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          transitionBuilder: (child, animation) {
+            final isIncoming = child.key == pageKey;
+            final begin = Offset(
+              isIncoming ? 0.25 * direction : -0.25 * direction,
+              0,
+            );
+            return FadeTransition(
+              opacity: animation,
+              child: SlideTransition(
+                position: Tween(
+                  begin: begin,
+                  end: Offset.zero,
+                ).animate(animation),
+                child: child,
+              ),
+            );
+          },
+          child: KeyedSubtree(key: pageKey, child: child),
         ),
       ),
     );

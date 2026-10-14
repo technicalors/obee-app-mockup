@@ -4,7 +4,10 @@ const mockApiEnabled = bool.fromEnvironment('OBEE_MOCK_API');
 
 final class MockApiInterceptor extends Interceptor {
   final List<Map<String, dynamic>> _attendanceLogs = [];
-  late final List<Map<String, dynamic>> _schedules = [_schedule('schedule-1')];
+  late final List<Map<String, dynamic>> _schedules = [
+    _schedule('schedule-1'),
+    ..._demoSchedules(),
+  ];
   late final List<Map<String, dynamic>> _requests = [
     _absenceRequest('request-1'),
   ];
@@ -388,22 +391,34 @@ Map<String, dynamic> _treeUser(
   'profile': {'code': code},
 };
 
-Map<String, dynamic> _schedule(String id, [Object? draft]) {
+Map<String, dynamic> _schedule(
+  String id, [
+  Object? draft,
+  DateTime? seedStart,
+  Duration seedDuration = const Duration(hours: 1, minutes: 30),
+]) {
   final now = DateTime.now();
   final data = draft is Map
       ? Map<String, dynamic>.from(draft)
       : <String, dynamic>{};
-  final start = DateTime(now.year, now.month, now.day, 9);
-  final end = start.add(const Duration(hours: 1, minutes: 30));
+  // Created drafts keep their chosen date and time so they land in the grid.
+  final draftStart = _draftDateTime(data['start_date'], data['start_time']);
+  final draftEnd = _draftDateTime(data['end_date'], data['end_time']);
+  final start =
+      draftStart ?? seedStart ?? DateTime(now.year, now.month, now.day, 9);
+  final end = draftEnd != null && draftEnd.isAfter(start)
+      ? draftEnd
+      : start.add(seedDuration);
   final eventId = 'event-${id.split('-').last}';
+  final isMultipleDays = data['schedule_type'] == 'multiple_days';
   final startDate = data['start_date']?.toString() ?? _date(start);
-  final endDate = data['end_date']?.toString() ?? startDate;
+  final endDate = data['end_date']?.toString() ?? _date(end);
   return {
     'id': id,
     'event_id': eventId,
     'start': start.toIso8601String(),
     'end': end.toIso8601String(),
-    'one_day': true,
+    'one_day': _date(start) == _date(end),
     'remind_at': start.subtract(const Duration(minutes: 15)).toIso8601String(),
     'event': {
       'id': eventId,
@@ -414,8 +429,9 @@ Map<String, dynamic> _schedule(String id, [Object? draft]) {
       'end_date': endDate,
       'repeat_type': data['repeat_type'],
       'repeat_pattern': data['repeat_pattern'],
-      'start_time': data['start_time'] ?? '09:00',
-      'end_time': data['end_time'] ?? '10:30',
+      // The schedule contract requires null clock times for multi-day events.
+      'start_time': isMultipleDays ? null : data['start_time'] ?? _time(start),
+      'end_time': isMultipleDays ? null : data['end_time'] ?? _time(end),
       'note': data['note'] ?? 'Trao đổi tiến độ và kế hoạch tuần mới.',
       'physical_address': data['physical_address'] ?? 'Phòng họp Obee',
       'privacy': data['privacy'] ?? 'public',
@@ -516,3 +532,115 @@ final _workShifts = <Map<String, dynamic>>[
 
 String _date(DateTime value) =>
     '${value.year.toString().padLeft(4, '0')}-${value.month.toString().padLeft(2, '0')}-${value.day.toString().padLeft(2, '0')}';
+
+DateTime? _draftDateTime(Object? date, Object? time) {
+  if (date is! String || date.length < 10) {
+    return null;
+  }
+  final clock = time is String && time.length >= 5 ? time : '00:00';
+  return DateTime.tryParse('${date.substring(0, 10)}T${clock.substring(0, 5)}');
+}
+
+String _time(DateTime value) =>
+    '${value.hour.toString().padLeft(2, '0')}:'
+    '${value.minute.toString().padLeft(2, '0')}';
+
+/// Extra demo occurrences around today so every calendar view has content:
+/// overlapping meetings, a multi-day seminar and events in other months.
+List<Map<String, dynamic>> _demoSchedules() {
+  final now = DateTime.now();
+  DateTime at(int dayOffset, int hour, [int minute = 0]) =>
+      DateTime(now.year, now.month, now.day + dayOffset, hour, minute);
+
+  Map<String, dynamic> seed(
+    String id,
+    DateTime start,
+    Duration duration, {
+    required String title,
+    required String type,
+    String scheduleType = 'ordinary',
+    String? address,
+  }) {
+    final end = start.add(duration);
+    return _schedule(
+      id,
+      {
+        'title': title,
+        'type': type,
+        'schedule_type': scheduleType,
+        'start_date': _date(start),
+        'end_date': _date(end),
+        if (scheduleType != 'multiple_days') 'start_time': _time(start),
+        if (scheduleType != 'multiple_days') 'end_time': _time(end),
+        'physical_address': ?address,
+      },
+      start,
+      duration,
+    );
+  }
+
+  return [
+    seed(
+      'schedule-2',
+      at(0, 10),
+      const Duration(hours: 1),
+      title: 'Phỏng vấn ứng viên Flutter',
+      type: 'interview',
+      address: 'Online - Google Meet',
+    ),
+    seed(
+      'schedule-3',
+      at(0, 14),
+      const Duration(hours: 2),
+      title: 'Đào tạo quy trình chấm công',
+      type: 'training',
+      address: 'Phòng đào tạo',
+    ),
+    seed(
+      'schedule-4',
+      at(1, 8, 30),
+      const Duration(hours: 1),
+      title: 'Daily standup',
+      type: 'meeting',
+    ),
+    seed(
+      'schedule-5',
+      at(2, 0),
+      const Duration(hours: 47),
+      title: 'Hội thảo chuyển đổi số',
+      type: 'seminar',
+      scheduleType: 'multiple_days',
+      address: 'Trung tâm hội nghị',
+    ),
+    seed(
+      'schedule-6',
+      at(-2, 15),
+      const Duration(hours: 1, minutes: 30),
+      title: 'Gặp gỡ đối tác',
+      type: 'meetup',
+      address: 'Café The Coffee House',
+    ),
+    seed(
+      'schedule-7',
+      at(-1, 9),
+      const Duration(hours: 8),
+      title: 'Công tác Đà Nẵng',
+      type: 'business_trip',
+    ),
+    seed(
+      'schedule-8',
+      at(16, 0),
+      const Duration(hours: 23),
+      title: 'Nghỉ lễ',
+      type: 'holiday',
+      scheduleType: 'multiple_days',
+    ),
+    seed(
+      'schedule-9',
+      at(35, 9),
+      const Duration(hours: 1),
+      title: 'Review quý',
+      type: 'meeting',
+    ),
+  ];
+}

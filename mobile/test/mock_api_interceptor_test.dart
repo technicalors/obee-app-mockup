@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:obee_mobile/src/core/network/mock_api_interceptor.dart';
 import 'package:obee_mobile/src/features/attendance/data/attendance_models.dart';
 import 'package:obee_mobile/src/features/auth/data/auth_api.dart';
+import 'package:obee_mobile/src/features/schedule/data/schedule_enums.dart';
 import 'package:obee_mobile/src/features/schedule/data/schedule_models.dart';
 
 void main() {
@@ -33,8 +34,20 @@ void main() {
 
     final schedules = await dio.get<List<dynamic>>('/schedules');
     final schedule = ScheduleModel.fromJson(
-      schedules.data!.single as Map<String, dynamic>,
+      schedules.data!.first as Map<String, dynamic>,
     );
     expect(schedule.event.title, 'Họp kế hoạch sản phẩm Obee');
+
+    // Demo occurrences give the week, month and year views content.
+    final all = schedules.data!
+        .cast<Map<String, dynamic>>()
+        .map(ScheduleModel.fromJson)
+        .toList();
+    expect(all.length, greaterThan(5));
+    expect(
+      all.map((item) => item.event.scheduleType),
+      contains(ScheduleEventScheduleType.multipleDays),
+    );
+    expect(all.every((item) => !item.end.isBefore(item.start)), isTrue);
   });
 }
