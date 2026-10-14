@@ -1,0 +1,5 @@
+{
+  "OBEE_ENV": "prod",
+  "OBEE_API_BASE_URL": "https://app.example.com/api",
+  "OBEE_APP_BASE_URL": "https://app.example.com"
+}

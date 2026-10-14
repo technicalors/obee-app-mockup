@@ -1,0 +1,17 @@
+targets:
+  $default:
+    builders:
+      freezed:
+        generate_for:
+          - lib/src/features/auth/data/*.dart
+          - lib/src/features/attendance/data/attendance_models.dart
+          - lib/src/features/schedule/data/schedule_models.dart
+          - lib/src/features/profile/data/update_user_input.dart
+          - lib/src/features/requests/data/*.dart
+      json_serializable:
+        generate_for:
+          - lib/src/features/auth/data/*.dart
+          - lib/src/features/attendance/data/attendance_models.dart
+          - lib/src/features/schedule/data/schedule_models.dart
+          - lib/src/features/profile/data/update_user_input.dart
+          - lib/src/features/requests/data/*.dart

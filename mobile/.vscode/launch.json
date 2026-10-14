@@ -1,0 +1,41 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Obee dev",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "debug",
+      "toolArgs": [
+        "--flavor",
+        "dev",
+        "--dart-define-from-file",
+        "env/dev.json"
+      ]
+    },
+    {
+      "name": "Obee staging",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "debug",
+      "toolArgs": [
+        "--flavor",
+        "staging",
+        "--dart-define-from-file",
+        "env/staging.json"
+      ]
+    },
+    {
+      "name": "Obee prod",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "debug",
+      "toolArgs": [
+        "--flavor",
+        "prod",
+        "--dart-define-from-file",
+        "env/prod.json"
+      ]
+    }
+  ]
+}

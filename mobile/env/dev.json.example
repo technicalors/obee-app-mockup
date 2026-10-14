@@ -1,0 +1,5 @@
+{
+  "OBEE_ENV": "dev",
+  "OBEE_API_BASE_URL": "http://obee.local/api",
+  "OBEE_APP_BASE_URL": "http://obee.local"
+}
