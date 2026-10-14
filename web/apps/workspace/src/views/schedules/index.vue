@@ -33,20 +33,28 @@ import { showRequestError } from '#/shared/request-feedback';
 import { useAuthStore } from '#/store';
 import { getUserAvatarSource } from '#/views/users/avatar';
 
+import type { ScheduleViewMode } from './components/ScheduleInteractionBar.vue';
+
 import ScheduleCalendarSection from './components/ScheduleCalendarSection.vue';
 import ScheduleDetailDrawer from './components/ScheduleDetailDrawer.vue';
 import ScheduleFormDrawer from './components/ScheduleFormDrawer.vue';
 import ScheduleInteractionBar from './components/ScheduleInteractionBar.vue';
+import ScheduleWeekView from './components/ScheduleWeekView.vue';
 import {
   buildAuthoringPayload,
   buildDepartmentUserTreeOptions,
   createDraftFromEvent,
   createScheduleDraftForDate,
   formatDayKey,
+  formatDayLabel,
   formatMonthValue,
+  formatWeekRangeLabel,
   getAuthoringRepeatPatternValues,
   getMonthGridDateRange,
+  getWeekDates,
   parseMonthValue,
+  shiftDay,
+  shiftWeek,
 } from './schedule-page';
 
 const selectedMonthValue = ref(formatMonthValue(new Date()));
@@ -74,6 +82,28 @@ const selectedSchedule = ref<null | Schedule>(null);
 const selectedScheduleId = ref<null | string>(null);
 const visibility = ref<ScheduleVisibility>('all');
 const today = formatDayKey(new Date());
+const viewMode = ref<ScheduleViewMode>('month');
+const weekAnchorDate = ref(today);
+const dayAnchorDate = ref(today);
+
+const weekDates = computed(() => getWeekDates(weekAnchorDate.value));
+const dayDates = computed(() => [dayAnchorDate.value]);
+
+const showMonthPicker = computed(() => viewMode.value === 'month');
+
+const navigationLabel = computed(() => {
+  switch (viewMode.value) {
+    case 'week': {
+      return formatWeekRangeLabel(weekDates.value, preferences.app.locale);
+    }
+    case 'day': {
+      return formatDayLabel(dayAnchorDate.value, preferences.app.locale);
+    }
+    default: {
+      return currentMonthLabel.value;
+    }
+  }
+});
 
 const visibilityOptions = computed<
   Array<{ label: string; value: ScheduleVisibility }>
@@ -320,6 +350,15 @@ watch(
 );
 
 watch(
+  [viewMode, weekAnchorDate, dayAnchorDate],
+  async () => {
+    if (viewMode.value !== 'month') {
+      await loadSchedules();
+    }
+  },
+);
+
+watch(
   () => route.query.event_id,
   (eventId) => {
     if (typeof eventId === 'string') {
@@ -431,6 +470,22 @@ function buildSectionSchedules(userIds: string[]): Schedule[] {
   );
 }
 
+function shiftPeriod(offset: number): void {
+  switch (viewMode.value) {
+    case 'week': {
+      weekAnchorDate.value = shiftWeek(weekAnchorDate.value, offset);
+      break;
+    }
+    case 'day': {
+      dayAnchorDate.value = shiftDay(dayAnchorDate.value, offset);
+      break;
+    }
+    default: {
+      shiftMonth(offset);
+    }
+  }
+}
+
 function shiftMonth(offset: number): void {
   const nextMonth = parseMonthValue(selectedMonthValue.value);
   nextMonth.setUTCMonth(nextMonth.getUTCMonth() + offset);
@@ -438,7 +493,10 @@ function shiftMonth(offset: number): void {
 }
 
 function selectCurrentMonth(): void {
+  const todayKey = formatDayKey(new Date());
   selectedMonthValue.value = formatMonthValue(new Date());
+  weekAnchorDate.value = todayKey;
+  dayAnchorDate.value = todayKey;
 }
 
 function updateSelectedMonth(value: Dayjs | string): void {
@@ -450,6 +508,10 @@ function updateVisibility(value: ScheduleVisibility | undefined): void {
   if (value !== undefined) {
     visibility.value = value;
   }
+}
+
+function updateViewMode(mode: ScheduleViewMode): void {
+  viewMode.value = mode;
 }
 
 function updateSelectedCalendarUsers(value: string[] | undefined): void {
@@ -1013,20 +1075,26 @@ function isScheduleObserver(schedule: Schedule): boolean {
         :calendar-users-loading="authoringUsersLoading"
         :current-month-label="currentMonthLabel"
         :is-current-month-selected="isCurrentMonthSelected"
+        :navigation-label="navigationLabel"
         :on-select-current-month="selectCurrentMonth"
-        :on-shift-month="shiftMonth"
+        :on-shift-period="shiftPeriod"
         :on-update-selected-calendar-users="updateSelectedCalendarUsers"
         :on-update-selected-month="updateSelectedMonth"
+        :on-update-view-mode="updateViewMode"
         :on-update-visibility="updateVisibility"
         :selected-calendar-user-ids="selectedCalendarUserIds"
         :selected-month-value="selectedMonthValue"
+        :show-month-picker="showMonthPicker"
+        :view-mode="viewMode"
         :visibility-disabled="visibilityDisabled"
         :show-calendar-users-filter="currentCompanyId !== null"
         :visibility="visibility"
         :visibility-options="visibilityOptions"
       />
 
+      <!-- Month View -->
       <div
+        v-if="viewMode === 'month'"
         class="grid min-h-0 gap-4"
         :class="secondaryCalendarTabs.length > 0 ? 'lg:grid-cols-2' : ''"
       >
@@ -1059,6 +1127,44 @@ function isScheduleObserver(schedule: Schedule): boolean {
           section-test-id="schedule-calendar-section-secondary"
           :section-users="secondaryCalendarTabs"
           :tabs="secondaryCalendarTabs"
+          :today="today"
+          :weekday-labels="weekdayLabels"
+        />
+      </div>
+
+      <!-- Week View -->
+      <div
+        v-else-if="viewMode === 'week'"
+        class="rounded border border-border bg-background"
+        style="min-height: 600px"
+      >
+        <ScheduleWeekView
+          :allow-create="allowCreateSchedules"
+          :dates="weekDates"
+          :has-company="currentCompanyId !== null"
+          :loading="loading"
+          :on-open-create-drawer="openCreateDrawer"
+          :on-open-schedule-detail="openScheduleDetail"
+          :schedules="schedules"
+          :today="today"
+          :weekday-labels="weekdayLabels"
+        />
+      </div>
+
+      <!-- Day View -->
+      <div
+        v-else-if="viewMode === 'day'"
+        class="rounded border border-border bg-background"
+        style="min-height: 600px"
+      >
+        <ScheduleWeekView
+          :allow-create="allowCreateSchedules"
+          :dates="dayDates"
+          :has-company="currentCompanyId !== null"
+          :loading="loading"
+          :on-open-create-drawer="openCreateDrawer"
+          :on-open-schedule-detail="openScheduleDetail"
+          :schedules="schedules"
           :today="today"
           :weekday-labels="weekdayLabels"
         />

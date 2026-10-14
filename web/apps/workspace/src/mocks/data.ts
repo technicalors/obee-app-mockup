@@ -351,54 +351,97 @@ const scheduleSeed = [
     '2026-10-16T15:30:00+07:00',
     'interview',
   ],
+  [
+    'Standup hàng ngày',
+    '2026-10-14T08:30:00+07:00',
+    '2026-10-14T08:45:00+07:00',
+    'meeting',
+  ],
+  [
+    'Hội thảo công nghệ AI',
+    '2026-10-14T13:00:00+07:00',
+    '2026-10-14T16:00:00+07:00',
+    'seminar',
+  ],
+  [
+    'Họp tổng kết quý',
+    '2026-10-15T14:00:00+07:00',
+    '2026-10-15T16:30:00+07:00',
+    'meeting',
+  ],
+  [
+    'Công tác Đà Nẵng',
+    '2026-10-12T07:00:00+07:00',
+    '2026-10-14T18:00:00+07:00',
+    'business_trip',
+  ],
+  [
+    'Nghỉ lễ Quốc khánh',
+    '2026-10-17T00:00:00+07:00',
+    '2026-10-18T23:59:00+07:00',
+    'holiday',
+  ],
 ] as const;
 
 export const mockSchedules: Schedule[] = scheduleSeed.map(
-  ([title, start, end, type], index) => ({
-    end,
-    event: {
-      company_name: mockCompany.name,
-      company_phone_number: '02873001234',
-      created_at: timestamp,
-      created_by: requiredItem(mockUsers, 0).id,
-      end_date: end,
-      has_reminder: true,
-      id: `14000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
-      is_general: index === 2,
-      note: 'Dữ liệu cố định cho bản demo tương tác.',
-      observers: mockUsers.slice(3, 5).map(({ avatar, email, id, name }) => {
-        if (email === null) {
-          throw new Error(`Mock schedule observer ${id} requires an email.`);
-        }
-        return { avatar, email, id, name };
-      }),
-      participants: mockUsers.slice(0, 3).map(({ avatar, email, id, name }) => {
-        if (email === null) {
-          throw new Error(`Mock schedule participant ${id} requires an email.`);
-        }
-        return { avatar, email, id, name };
-      }),
-      physical_address: 'Phòng họp Lotus',
-      privacy: 'public',
-      remind_range: 'minute',
-      remind_value: 15,
-      repeat_end_time: null,
-      repeat_pattern: null,
-      repeat_start_time: null,
-      repeat_type: null,
-      schedule_type: 'ordinary',
-      start_date: start,
-      title,
-      type,
-      updated_at: timestamp,
-      updated_by: null,
-    },
-    event_id: `14000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
-    id: `15000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
-    one_day: true,
-    remind_at: start,
-    start,
-  }),
+  ([title, start, end, type], index) => {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    const isMultiDay =
+      startDate.toISOString().slice(0, 10) !==
+      endDate.toISOString().slice(0, 10);
+    return {
+      end,
+      event: {
+        company_name: mockCompany.name,
+        company_phone_number: '02873001234',
+        created_at: timestamp,
+        created_by: requiredItem(mockUsers, 0).id,
+        end_date: end,
+        has_reminder: true,
+        id: `14000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
+        is_general: index === 2,
+        note: 'Dữ liệu cố định cho bản demo tương tác.',
+        observers: mockUsers.slice(3, 5).map(({ avatar, email, id, name }) => {
+          if (email === null) {
+            throw new Error(
+              `Mock schedule observer ${id} requires an email.`,
+            );
+          }
+          return { avatar, email, id, name };
+        }),
+        participants: mockUsers
+          .slice(0, 3)
+          .map(({ avatar, email, id, name }) => {
+            if (email === null) {
+              throw new Error(
+                `Mock schedule participant ${id} requires an email.`,
+              );
+            }
+            return { avatar, email, id, name };
+          }),
+        physical_address: 'Phòng họp Lotus',
+        privacy: 'public',
+        remind_range: 'minute',
+        remind_value: 15,
+        repeat_end_time: null,
+        repeat_pattern: null,
+        repeat_start_time: null,
+        repeat_type: null,
+        schedule_type: isMultiDay ? 'multiple_days' : 'ordinary',
+        start_date: start,
+        title,
+        type,
+        updated_at: timestamp,
+        updated_by: null,
+      },
+      event_id: `14000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
+      id: `15000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
+      one_day: !isMultiDay,
+      remind_at: start,
+      start,
+    };
+  },
 );
 
 export const mockAttendanceRange = Array.from({ length: 31 }, (_, index) => {

@@ -718,6 +718,14 @@
       "selectVisibility": "Visibility",
       "participated": "Participated",
       "observed": "Observed"
+    },
+    "viewMode": {
+      "day": "Day",
+      "week": "Week",
+      "month": "Month"
+    },
+    "weekView": {
+      "allDay": "All day"
     }
   },
   "attendance": {

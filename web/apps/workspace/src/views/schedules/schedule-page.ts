@@ -639,7 +639,7 @@ export function formatDayKey(value: Date): string {
   return `${value.getUTCFullYear()}-${String(value.getUTCMonth() + 1).padStart(2, '0')}-${String(value.getUTCDate()).padStart(2, '0')}`;
 }
 
-function parseDayKey(value: string): Date {
+export function parseDayKey(value: string): Date {
   const [yearString = '', monthString = '', dayString = ''] = value.split('-');
   const day = Number(dayString);
   const month = Number(monthString);
@@ -656,7 +656,7 @@ function parseDayKey(value: string): Date {
   return new Date(Date.UTC(year, month - 1, day));
 }
 
-function formatDayKeyInTimeZone(value: string, timeZone: string): string {
+export function formatDayKeyInTimeZone(value: string, timeZone: string): string {
   const formatter = new Intl.DateTimeFormat('en-CA', {
     day: '2-digit',
     month: '2-digit',
@@ -746,4 +746,82 @@ export function getDraftTimeValue(
   }
 
   return formatTimeInTimeZone(dateTime, AUTHORING_TIME_ZONE);
+}
+
+export function getWeekDates(anchorDate: string): string[] {
+  const d = parseDayKey(anchorDate);
+  const dayOfWeek = d.getUTCDay();
+  const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  const monday = new Date(d);
+  monday.setUTCDate(d.getUTCDate() + mondayOffset);
+
+  return Array.from({ length: 7 }, (_, i) => {
+    const date = new Date(monday);
+    date.setUTCDate(monday.getUTCDate() + i);
+    return formatDayKey(date);
+  });
+}
+
+export function shiftWeek(anchorDate: string, offset: number): string {
+  const d = parseDayKey(anchorDate);
+  d.setUTCDate(d.getUTCDate() + offset * 7);
+  return formatDayKey(d);
+}
+
+export function shiftDay(anchorDate: string, offset: number): string {
+  const d = parseDayKey(anchorDate);
+  d.setUTCDate(d.getUTCDate() + offset);
+  return formatDayKey(d);
+}
+
+export function getWeekDateRange(dates: string[]): {
+  end: string;
+  start: string;
+} {
+  const first = dates[0];
+  const last = dates[dates.length - 1];
+  if (first === undefined || last === undefined) {
+    throw new Error('Empty dates array.');
+  }
+  return { end: last, start: first };
+}
+
+export function formatWeekRangeLabel(
+  dates: string[],
+  locale: string,
+): string {
+  const first = dates[0];
+  const last = dates[dates.length - 1];
+  if (first === undefined || last === undefined) {
+    return '';
+  }
+
+  const startDate = parseDayKey(first);
+  const endDate = parseDayKey(last);
+
+  const formatter = new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'short',
+  });
+  const yearFormatter = new Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+  });
+
+  return `${formatter.format(startDate)} – ${formatter.format(endDate)}, ${yearFormatter.format(endDate)}`;
+}
+
+export function formatDayLabel(
+  date: string,
+  locale: string,
+): string {
+  const d = parseDayKey(date);
+  const formatter = new Intl.DateTimeFormat(locale, {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+
+  const formatted = formatter.format(d);
+  return formatted.charAt(0).toUpperCase() + formatted.slice(1);
 }

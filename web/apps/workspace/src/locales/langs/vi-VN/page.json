@@ -718,6 +718,14 @@
       "selectVisibility": "Hiển thị",
       "participated": "Lịch trình đã tham gia",
       "observed": "Lịch trình đang theo dõi"
+    },
+    "viewMode": {
+      "day": "Ngày",
+      "week": "Tuần",
+      "month": "Tháng"
+    },
+    "weekView": {
+      "allDay": "Cả ngày"
     }
   },
   "attendance": {

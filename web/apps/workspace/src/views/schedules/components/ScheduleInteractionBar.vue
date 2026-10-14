@@ -12,23 +12,35 @@ import { DatePicker, Select, TreeSelect } from 'ant-design-vue';
 
 import { $t } from '#/locales';
 
+export type ScheduleViewMode = 'day' | 'month' | 'week';
+
 const props = defineProps<{
   calendarUsersLoading: boolean;
   calendarUserTreeOptions: ScheduleUserTreeOption[];
   currentMonthLabel: string;
   isCurrentMonthSelected: boolean;
+  navigationLabel: string;
   onSelectCurrentMonth: () => void;
-  onShiftMonth: (offset: number) => void;
+  onShiftPeriod: (offset: number) => void;
   onUpdateSelectedCalendarUsers: (value: string[] | undefined) => void;
   onUpdateSelectedMonth: (value: Dayjs | string) => void;
+  onUpdateViewMode: (mode: ScheduleViewMode) => void;
   onUpdateVisibility: (value: ScheduleVisibility | undefined) => void;
   selectedCalendarUserIds: string[];
   selectedMonthValue: string;
   showCalendarUsersFilter: boolean;
+  showMonthPicker: boolean;
+  viewMode: ScheduleViewMode;
   visibility: ScheduleVisibility;
   visibilityDisabled: boolean;
   visibilityOptions: Array<{ label: string; value: ScheduleVisibility }>;
 }>();
+
+const viewModeOptions: Array<{ label: string; value: ScheduleViewMode }> = [
+  { label: 'day', value: 'day' },
+  { label: 'week', value: 'week' },
+  { label: 'month', value: 'month' },
+];
 
 function handleSelectedMonthUpdate(value: Dayjs | string): void {
   props.onUpdateSelectedMonth(value);
@@ -40,6 +52,10 @@ function handleVisibilityUpdate(value: unknown): void {
 
 function handleSelectedCalendarUsersUpdate(value: unknown): void {
   props.onUpdateSelectedCalendarUsers(value as string[] | undefined);
+}
+
+function handleViewModeChange(value: unknown): void {
+  props.onUpdateViewMode(value as ScheduleViewMode);
 }
 </script>
 
@@ -60,11 +76,13 @@ function handleSelectedCalendarUsersUpdate(value: unknown): void {
           size="sm"
           class="shadow-none"
           variant="outline"
-          @click="onShiftMonth(-1)"
+          @click="onShiftPeriod(-1)"
         >
           <ChevronLeft class="size-4" />
         </VbenButton>
+
         <DatePicker
+          v-if="showMonthPicker"
           :aria-label="$t('page.schedules.actions.selectMonth')"
           :value="selectedMonthValue"
           picker="month"
@@ -73,15 +91,44 @@ function handleSelectedCalendarUsersUpdate(value: unknown): void {
           @update:value="handleSelectedMonthUpdate"
           class="[&_*]:capitalize font-bold min-w-40"
         />
+        <span
+          v-else
+          class="min-w-40 text-center text-sm font-bold capitalize text-foreground"
+          data-testid="schedule-navigation-label"
+        >
+          {{ navigationLabel }}
+        </span>
+
         <VbenButton
           :aria-label="$t('page.schedules.actions.nextMonth')"
           class="shadow-none"
           size="sm"
           variant="outline"
-          @click="onShiftMonth(1)"
+          @click="onShiftPeriod(1)"
         >
           <ChevronRight class="size-4" />
         </VbenButton>
+
+        <div
+          class="ml-2 flex rounded-md border border-border"
+          data-testid="schedule-view-mode-switcher"
+        >
+          <button
+            v-for="option in viewModeOptions"
+            :key="option.value"
+            type="button"
+            class="px-3 py-1.5 text-xs font-medium transition-colors first:rounded-l-md last:rounded-r-md"
+            :class="
+              viewMode === option.value
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+            "
+            :data-testid="`schedule-view-mode-${option.value}`"
+            @click="handleViewModeChange(option.value)"
+          >
+            {{ $t(`page.schedules.viewMode.${option.label}`) }}
+          </button>
+        </div>
       </span>
       <div
         v-if="showCalendarUsersFilter"
