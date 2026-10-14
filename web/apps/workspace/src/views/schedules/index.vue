@@ -891,7 +891,7 @@ function updateAuthoringScheduleType(value: unknown): void {
 }
 
 function updateAuthoringNullableField(
-  field: 'note' | 'physical_address',
+  field: 'meeting_url' | 'note' | 'physical_address',
   value: string,
 ): void {
   if (authoringDraft.value === null) {
@@ -899,6 +899,77 @@ function updateAuthoringNullableField(
   }
 
   authoringDraft.value[field] = value === '' ? null : value;
+}
+
+function updateAuthoringLocationType(
+  value: 'hybrid' | 'online' | 'physical',
+): void {
+  if (authoringDraft.value !== null) {
+    authoringDraft.value.location_type = value;
+  }
+}
+
+function updateAuthoringMeetingUrl(value: string): void {
+  if (authoringDraft.value !== null) {
+    authoringDraft.value.meeting_url = value === '' ? null : value;
+  }
+}
+
+function updateAuthoringEquipmentIds(value: string[]): void {
+  if (authoringDraft.value !== null) {
+    authoringDraft.value.equipment_ids = value;
+  }
+}
+
+async function updateScheduleTime(
+  scheduleId: string,
+  newStartIso: string,
+  newEndIso: string,
+): Promise<void> {
+  const target = schedules.value.find((s) => s.id === scheduleId);
+  if (!target) return;
+
+  try {
+    target.start = newStartIso;
+    target.end = newEndIso;
+    target.event.start_date = newStartIso;
+    target.event.end_date = newEndIso;
+
+    await updateScheduleEvent(target.event.id, {
+      company_name: target.event.company_name,
+      company_phone_number: target.event.company_phone_number,
+      end_date: newEndIso,
+      equipment_ids: target.event.equipment_ids,
+      has_reminder: target.event.has_reminder,
+      is_general: target.event.is_general,
+      meeting_url: target.event.meeting_url,
+      note: target.event.note,
+      observers: target.event.observers.map((u) => u.id),
+      participants: target.event.participants.map((u) => u.id),
+      physical_address: target.event.physical_address,
+      privacy: target.event.privacy,
+      remind_range: target.event.remind_range,
+      remind_value: target.event.remind_value,
+      repeat_end_time: target.event.repeat_end_time,
+      repeat_pattern: target.event.repeat_pattern,
+      repeat_start_time: target.event.repeat_start_time,
+      repeat_type: target.event.repeat_type,
+      schedule_type: target.event.schedule_type,
+      start_date: newStartIso,
+      title: target.event.title,
+      type: target.event.type,
+    });
+
+    notification.success({
+      message: 'Đã cập nhật thời gian sự kiện.',
+    });
+  } catch (error: unknown) {
+    showRequestError(
+      error,
+      $t('page.schedules.messages.unexpectedError'),
+      'Unexpected schedule time update error:',
+    );
+  }
 }
 
 function updateAuthoringField(
@@ -1209,6 +1280,7 @@ function isScheduleObserver(schedule: Schedule): boolean {
           :loading="loading"
           :on-open-create-drawer="openCreateDrawer"
           :on-open-schedule-detail="openScheduleDetail"
+          :on-update-time="updateScheduleTime"
           :schedules="schedules"
           :today="today"
           :weekday-labels="weekdayLabels"
@@ -1228,6 +1300,7 @@ function isScheduleObserver(schedule: Schedule): boolean {
           :loading="loading"
           :on-open-create-drawer="openCreateDrawer"
           :on-open-schedule-detail="openScheduleDetail"
+          :on-update-time="updateScheduleTime"
           :schedules="schedules"
           :today="today"
           :weekday-labels="weekdayLabels"
@@ -1301,6 +1374,9 @@ function isScheduleObserver(schedule: Schedule): boolean {
       :on-update-authoring-date="updateAuthoringDate"
       :on-update-authoring-field="updateAuthoringField"
       :on-update-authoring-general="updateAuthoringGeneral"
+      :on-update-authoring-location-type="updateAuthoringLocationType"
+      :on-update-authoring-meeting-url="updateAuthoringMeetingUrl"
+      :on-update-authoring-equipment-ids="updateAuthoringEquipmentIds"
       :on-update-authoring-nullable-field="updateAuthoringNullableField"
       :on-update-authoring-reminder-enabled="updateAuthoringReminderEnabled"
       :on-update-authoring-reminder-range="updateAuthoringReminderRange"
@@ -1309,6 +1385,7 @@ function isScheduleObserver(schedule: Schedule): boolean {
       :on-update-authoring-repeat-type="updateAuthoringRepeatType"
       :on-update-authoring-schedule-type="updateAuthoringScheduleType"
       :open="authoringDrawerOpen"
+      :schedules="schedules"
       :title="authoringDrawerTitle"
     />
   </Page>

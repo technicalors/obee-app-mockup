@@ -8,8 +8,11 @@ export interface ScheduleAuthoringDraft {
   company_phone_number: null;
   end_date: string;
   end_time: null | string;
+  equipment_ids: string[];
   has_reminder: boolean;
   is_general: boolean;
+  location_type: 'hybrid' | 'online' | 'physical';
+  meeting_url: null | string;
   mode: 'create' | 'edit' | 'reuse';
   note: null | string;
   observers: string[];
@@ -97,8 +100,11 @@ export function createScheduleDraftForDate(
     company_phone_number: null,
     end_date: date,
     end_time: '17:30',
+    equipment_ids: [],
     has_reminder: false,
     is_general: false,
+    location_type: 'physical',
+    meeting_url: null,
     mode: 'create',
     note: null,
     observers: [],
@@ -124,6 +130,15 @@ export function createDraftFromEvent(
   schedule: Schedule,
   mode: 'edit' | 'reuse',
 ): ScheduleAuthoringDraft {
+  const hasPhysical = Boolean(schedule.event.physical_address);
+  const hasOnline = Boolean(schedule.event.meeting_url);
+  const locationType =
+    hasPhysical && hasOnline
+      ? 'hybrid'
+      : hasOnline
+        ? 'online'
+        : 'physical';
+
   return {
     company_name: null,
     company_phone_number: null,
@@ -132,8 +147,11 @@ export function createDraftFromEvent(
       schedule.event.repeat_end_time,
       schedule.event.end_date,
     ),
+    equipment_ids: schedule.event.equipment_ids ?? [],
     has_reminder: schedule.event.has_reminder,
     is_general: schedule.event.is_general,
+    location_type: locationType,
+    meeting_url: schedule.event.meeting_url ?? null,
     mode,
     note: schedule.event.note,
     observers: schedule.event.observers.map(({ id }) => id),
@@ -171,12 +189,16 @@ export function buildAuthoringPayload(
       draft.end_time,
       usesTimeRange,
     ),
+    equipment_ids: draft.equipment_ids,
     has_reminder: draft.has_reminder,
     is_general: draft.is_general,
+    meeting_url:
+      draft.location_type === 'physical' ? null : draft.meeting_url,
     note: draft.note,
     observers: draft.observers,
     participants: draft.participants,
-    physical_address: draft.physical_address,
+    physical_address:
+      draft.location_type === 'online' ? null : draft.physical_address,
     privacy: draft.privacy,
     remind_range: draft.has_reminder ? draft.remind_range : null,
     remind_value: draft.has_reminder ? draft.remind_value : null,
