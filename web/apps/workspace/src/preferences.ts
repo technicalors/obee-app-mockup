@@ -28,11 +28,15 @@ export const workspaceBrandingPreferences = {
 export const overridesPreferences = defineOverridesPreferences({
   // overrides
   app: {
+    layout: 'header-nav',
     locale: 'vi-VN',
     name: workspaceBrandingPreferences.app.name,
     timezone: 'Asia/Ho_Chi_Minh',
   },
   logo: workspaceBrandingPreferences.logo,
+  theme: {
+    mode: 'light',
+  },
 });
 
 export const preferencesExtension =
