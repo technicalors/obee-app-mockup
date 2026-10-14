@@ -45,4 +45,4 @@ fvm flutter build web --release --base-href /mobile/app/ \
 
 ## Deploy
 
-Vercel build theo [vercel.json](vercel.json): preset **Other**, Root Directory `./`, biến môi trường `ENABLE_EXPERIMENTAL_COREPACK=1`.
+Vercel build theo [vercel.json](vercel.json): preset **Other**, Root Directory `./`, biến môi trường `ENABLE_EXPERIMENTAL_COREPACK=1`
