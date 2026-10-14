@@ -1,0 +1,18 @@
+{
+  "name": "obee-app-mockup",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "postinstall": "pnpm run install:web",
+    "install:web": "pnpm --dir web install --frozen-lockfile",
+    "dev": "pnpm --dir web dev",
+    "build": "pnpm --dir web build",
+    "preview": "pnpm --dir web preview",
+    "typecheck": "pnpm --dir web typecheck"
+  },
+  "engines": {
+    "node": "^22.18.0 || ^24.0.0",
+    "pnpm": ">=11.0.0"
+  },
+  "packageManager": "pnpm@11.7.0"
+}
