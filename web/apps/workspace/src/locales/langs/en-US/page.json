@@ -722,10 +722,16 @@
     "viewMode": {
       "day": "Day",
       "week": "Week",
-      "month": "Month"
+      "month": "Month",
+      "year": "Year"
     },
     "weekView": {
       "allDay": "All day"
+    },
+    "yearView": {
+      "eventsCount": "{count} events",
+      "clickToView": "Click to view this day",
+      "clickMonthToView": "View month"
     }
   },
   "attendance": {

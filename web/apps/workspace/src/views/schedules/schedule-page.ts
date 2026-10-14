@@ -825,3 +825,85 @@ export function formatDayLabel(
   const formatted = formatter.format(d);
   return formatted.charAt(0).toUpperCase() + formatted.slice(1);
 }
+
+export function shiftYear(year: number, offset: number): number {
+  return year + offset;
+}
+
+export function formatYearLabel(year: number, locale: string): string {
+  if (locale.startsWith('vi')) {
+    return `Năm ${year}`;
+  }
+  return String(year);
+}
+
+export function getYearDateRange(year: number): {
+  end: string;
+  start: string;
+} {
+  return {
+    end: `${year}-12-31`,
+    start: `${year}-01-01`,
+  };
+}
+
+export interface YearDayCell {
+  date: string;
+  dayNumber: number;
+  dayOfWeek: number;
+  isWeekend: boolean;
+}
+
+export interface YearMonthData {
+  days: YearDayCell[];
+  leadingEmptyDays: number;
+  monthIndex: number;
+  monthLabel: string;
+  monthNumber: number;
+  monthValue: string;
+  year: number;
+}
+
+export function buildYearGrid(year: number, locale: string): YearMonthData[] {
+  const monthFormatter = new Intl.DateTimeFormat(locale, { month: 'long' });
+
+  return Array.from({ length: 12 }, (_, monthIndex) => {
+    const monthNumber = monthIndex + 1;
+    const monthPad = String(monthNumber).padStart(2, '0');
+    const monthValue = `${year}-${monthPad}`;
+    const firstDay = new Date(Date.UTC(year, monthIndex, 1));
+    const rawDayOfWeek = firstDay.getUTCDay();
+    // Monday-indexed: 0 = Mon, ..., 6 = Sun
+    const leadingEmptyDays = rawDayOfWeek === 0 ? 6 : rawDayOfWeek - 1;
+
+    const daysCount = new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate();
+    const monthLabel = monthFormatter.format(firstDay);
+
+    const days: YearDayCell[] = Array.from({ length: daysCount }, (_, dayIdx) => {
+      const dayNumber = dayIdx + 1;
+      const dayPad = String(dayNumber).padStart(2, '0');
+      const date = `${monthValue}-${dayPad}`;
+      const dayDate = new Date(Date.UTC(year, monthIndex, dayNumber));
+      const dow = dayDate.getUTCDay();
+      const mondayIndexedDow = dow === 0 ? 6 : dow - 1;
+
+      return {
+        date,
+        dayNumber,
+        dayOfWeek: mondayIndexedDow,
+        isWeekend: dow === 0 || dow === 6,
+      };
+    });
+
+    return {
+      days,
+      leadingEmptyDays,
+      monthIndex,
+      monthLabel,
+      monthNumber,
+      monthValue,
+      year,
+    };
+  });
+}
+

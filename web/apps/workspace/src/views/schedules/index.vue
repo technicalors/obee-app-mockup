@@ -40,6 +40,7 @@ import ScheduleDetailDrawer from './components/ScheduleDetailDrawer.vue';
 import ScheduleFormDrawer from './components/ScheduleFormDrawer.vue';
 import ScheduleInteractionBar from './components/ScheduleInteractionBar.vue';
 import ScheduleWeekView from './components/ScheduleWeekView.vue';
+import ScheduleYearView from './components/ScheduleYearView.vue';
 import {
   buildAuthoringPayload,
   buildDepartmentUserTreeOptions,
@@ -49,12 +50,16 @@ import {
   formatDayLabel,
   formatMonthValue,
   formatWeekRangeLabel,
+  formatYearLabel,
   getAuthoringRepeatPatternValues,
   getMonthGridDateRange,
   getWeekDates,
+  getYearDateRange,
+  parseDayKey,
   parseMonthValue,
   shiftDay,
   shiftWeek,
+  shiftYear,
 } from './schedule-page';
 
 const selectedMonthValue = ref(formatMonthValue(new Date()));
@@ -85,6 +90,7 @@ const today = formatDayKey(new Date());
 const viewMode = ref<ScheduleViewMode>('month');
 const weekAnchorDate = ref(today);
 const dayAnchorDate = ref(today);
+const selectedYear = ref<number>(new Date().getFullYear());
 
 const weekDates = computed(() => getWeekDates(weekAnchorDate.value));
 const dayDates = computed(() => [dayAnchorDate.value]);
@@ -93,6 +99,9 @@ const showMonthPicker = computed(() => viewMode.value === 'month');
 
 const navigationLabel = computed(() => {
   switch (viewMode.value) {
+    case 'year': {
+      return formatYearLabel(selectedYear.value, preferences.app.locale);
+    }
     case 'week': {
       return formatWeekRangeLabel(weekDates.value, preferences.app.locale);
     }
@@ -133,6 +142,22 @@ const weekdayLabels = computed(() => {
 const isCurrentMonthSelected = computed(
   () => selectedMonthValue.value === currentMonthValue,
 );
+const isCurrentPeriodSelected = computed(() => {
+  switch (viewMode.value) {
+    case 'year': {
+      return selectedYear.value === new Date().getFullYear();
+    }
+    case 'week': {
+      return weekDates.value.includes(today);
+    }
+    case 'day': {
+      return dayAnchorDate.value === today;
+    }
+    default: {
+      return isCurrentMonthSelected.value;
+    }
+  }
+});
 const detailDrawerOpen = computed(() => selectedScheduleId.value !== null);
 const authoringDrawerOpen = computed(() => authoringDraft.value !== null);
 const authoringDrawerTitle = computed(() =>
@@ -350,7 +375,7 @@ watch(
 );
 
 watch(
-  [viewMode, weekAnchorDate, dayAnchorDate],
+  [viewMode, weekAnchorDate, dayAnchorDate, selectedYear],
   async () => {
     if (viewMode.value !== 'month') {
       await loadSchedules();
@@ -472,6 +497,10 @@ function buildSectionSchedules(userIds: string[]): Schedule[] {
 
 function shiftPeriod(offset: number): void {
   switch (viewMode.value) {
+    case 'year': {
+      selectedYear.value = shiftYear(selectedYear.value, offset);
+      break;
+    }
     case 'week': {
       weekAnchorDate.value = shiftWeek(weekAnchorDate.value, offset);
       break;
@@ -493,8 +522,10 @@ function shiftMonth(offset: number): void {
 }
 
 function selectCurrentMonth(): void {
-  const todayKey = formatDayKey(new Date());
-  selectedMonthValue.value = formatMonthValue(new Date());
+  const now = new Date();
+  const todayKey = formatDayKey(now);
+  selectedMonthValue.value = formatMonthValue(now);
+  selectedYear.value = now.getFullYear();
   weekAnchorDate.value = todayKey;
   dayAnchorDate.value = todayKey;
 }
@@ -511,7 +542,22 @@ function updateVisibility(value: ScheduleVisibility | undefined): void {
 }
 
 function updateViewMode(mode: ScheduleViewMode): void {
+  if (mode === 'year') {
+    selectedYear.value = Number(selectedMonthValue.value.slice(0, 4));
+  }
   viewMode.value = mode;
+}
+
+function selectMonthFromYearView(monthValue: string): void {
+  selectedMonthValue.value = monthValue;
+  viewMode.value = 'month';
+}
+
+function selectDayFromYearView(date: string): void {
+  dayAnchorDate.value = date;
+  weekAnchorDate.value = date;
+  selectedMonthValue.value = date.slice(0, 7);
+  viewMode.value = 'day';
 }
 
 function updateSelectedCalendarUsers(value: string[] | undefined): void {
@@ -647,9 +693,27 @@ async function openScheduleEventDetail(eventId: string): Promise<void> {
 }
 
 async function loadSchedules(showLoading = true): Promise<Schedule[]> {
-  const { end, start } = getMonthGridDateRange(
-    parseMonthValue(selectedMonthValue.value),
-  );
+  let start: string;
+  let end: string;
+
+  if (viewMode.value === 'year') {
+    const range = getYearDateRange(selectedYear.value);
+    start = range.start;
+    end = range.end;
+  } else if (viewMode.value === 'week') {
+    const range = getWeekDateRange(weekDates.value);
+    start = range.start;
+    end = range.end;
+  } else if (viewMode.value === 'day') {
+    start = dayDates.value[0]!;
+    end = dayDates.value[0]!;
+  } else {
+    const range = getMonthGridDateRange(
+      parseMonthValue(selectedMonthValue.value),
+    );
+    start = range.start;
+    end = range.end;
+  }
 
   if (showLoading) {
     loading.value = true;
@@ -1074,7 +1138,7 @@ function isScheduleObserver(schedule: Schedule): boolean {
         :calendar-user-tree-options="authoringUserTreeOptions"
         :calendar-users-loading="authoringUsersLoading"
         :current-month-label="currentMonthLabel"
-        :is-current-month-selected="isCurrentMonthSelected"
+        :is-current-month-selected="isCurrentPeriodSelected"
         :navigation-label="navigationLabel"
         :on-select-current-month="selectCurrentMonth"
         :on-shift-period="shiftPeriod"
@@ -1167,6 +1231,26 @@ function isScheduleObserver(schedule: Schedule): boolean {
           :schedules="schedules"
           :today="today"
           :weekday-labels="weekdayLabels"
+        />
+      </div>
+
+      <!-- Year View -->
+      <div
+        v-else-if="viewMode === 'year'"
+        class="rounded border border-border bg-background"
+      >
+        <ScheduleYearView
+          :allow-create="allowCreateSchedules"
+          :has-company="currentCompanyId !== null"
+          :loading="loading"
+          :locale="preferences.app.locale"
+          :on-open-create-drawer="openCreateDrawer"
+          :on-open-schedule-detail="openScheduleDetail"
+          :on-select-day="selectDayFromYearView"
+          :on-select-month="selectMonthFromYearView"
+          :schedules="schedules"
+          :today="today"
+          :year="selectedYear"
         />
       </div>
     </section>

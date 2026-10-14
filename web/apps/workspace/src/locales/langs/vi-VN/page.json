@@ -722,10 +722,16 @@
     "viewMode": {
       "day": "Ngày",
       "week": "Tuần",
-      "month": "Tháng"
+      "month": "Tháng",
+      "year": "Năm"
     },
     "weekView": {
       "allDay": "Cả ngày"
+    },
+    "yearView": {
+      "eventsCount": "{count} sự kiện",
+      "clickToView": "Nhấp để xem ngày này",
+      "clickMonthToView": "Xem lịch tháng"
     }
   },
   "attendance": {

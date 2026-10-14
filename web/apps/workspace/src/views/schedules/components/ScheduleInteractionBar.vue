@@ -12,7 +12,7 @@ import { DatePicker, Select, TreeSelect } from 'ant-design-vue';
 
 import { $t } from '#/locales';
 
-export type ScheduleViewMode = 'day' | 'month' | 'week';
+export type ScheduleViewMode = 'day' | 'month' | 'week' | 'year';
 
 const props = defineProps<{
   calendarUsersLoading: boolean;
@@ -40,6 +40,7 @@ const viewModeOptions: Array<{ label: string; value: ScheduleViewMode }> = [
   { label: 'day', value: 'day' },
   { label: 'week', value: 'week' },
   { label: 'month', value: 'month' },
+  { label: 'year', value: 'year' },
 ];
 
 function handleSelectedMonthUpdate(value: Dayjs | string): void {
