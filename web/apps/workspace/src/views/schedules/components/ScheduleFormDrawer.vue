@@ -9,20 +9,26 @@ import type {
 
 import type { Schedule, ScheduleEventWritePayload } from '#/api/schedules';
 
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 import { VbenButton } from '@vben/common-ui';
+import { createIconifyIcon } from '@vben/icons';
 
 import {
   Alert,
   DatePicker,
   Drawer,
   Input,
+  Radio,
   Select,
   Switch,
+  Tag,
   TimePicker,
   TreeSelect,
 } from 'ant-design-vue';
+
+import { mockEquipments } from '#/mocks/data';
+import FacilityScheduleModal from './FacilityScheduleModal.vue';
 
 import { $t } from '#/locales';
 
@@ -65,8 +71,13 @@ const props = defineProps<{
       | string[],
   ) => void;
   onUpdateAuthoringGeneral: (value: boolean | number | string) => void;
+  onUpdateAuthoringLocationType?: (
+    value: 'hybrid' | 'online' | 'physical',
+  ) => void;
+  onUpdateAuthoringMeetingUrl?: (value: string) => void;
+  onUpdateAuthoringEquipmentIds?: (value: string[]) => void;
   onUpdateAuthoringNullableField: (
-    field: 'note' | 'physical_address',
+    field: 'meeting_url' | 'note' | 'physical_address',
     value: string,
   ) => void;
   onUpdateAuthoringReminderEnabled: (value: boolean | number | string) => void;
@@ -79,6 +90,7 @@ const props = defineProps<{
     value: Dayjs | null | string,
   ) => void;
   open: boolean;
+  schedules?: Schedule[];
   title: string;
 }>();
 
@@ -146,6 +158,138 @@ const privacyValue = computed({
     props.onUpdateAuthoringField('privacy', value);
   },
 });
+
+const VideoIcon = createIconifyIcon('lucide:video');
+const MapPinIcon = createIconifyIcon('lucide:map-pin');
+const LayersIcon = createIconifyIcon('lucide:layers');
+const CalendarDaysIcon = createIconifyIcon('lucide:calendar-days');
+const AlertTriangleIcon = createIconifyIcon('lucide:alert-triangle');
+
+const facilityModalOpen = ref(false);
+
+const equipmentOptions = computed(() =>
+  mockEquipments.map((eq) => ({
+    label: `${eq.name} (${eq.code})`,
+    value: eq.id,
+  })),
+);
+
+const locationTypeValue = computed({
+  get: () => props.draft?.location_type ?? 'physical',
+  set: (val: 'hybrid' | 'online' | 'physical') => {
+    if (props.onUpdateAuthoringLocationType) {
+      props.onUpdateAuthoringLocationType(val);
+    } else if (props.draft) {
+      props.draft.location_type = val;
+    }
+  },
+});
+
+const equipmentIdsValue = computed({
+  get: () => props.draft?.equipment_ids ?? [],
+  set: (val: string[]) => {
+    if (props.onUpdateAuthoringEquipmentIds) {
+      props.onUpdateAuthoringEquipmentIds(val);
+    } else if (props.draft) {
+      props.draft.equipment_ids = val;
+    }
+  },
+});
+
+const currentTimeRange = computed(() => {
+  if (!props.draft?.start_time || !props.draft?.end_time) return null;
+  return {
+    end: props.draft.end_time,
+    start: props.draft.start_time,
+  };
+});
+
+// Check if any selected equipment is conflicted with another schedule
+const conflictedEquipments = computed(() => {
+  if (
+    !props.draft ||
+    !props.schedules ||
+    !props.draft.equipment_ids?.length ||
+    !props.draft.start_time ||
+    !props.draft.end_time
+  ) {
+    return [];
+  }
+
+  const date = props.draft.start_date;
+  const [sh, sm] = props.draft.start_time.split(':').map(Number) as [number, number];
+  const [eh, em] = props.draft.end_time.split(':').map(Number) as [number, number];
+  const curStart = sh * 60 + sm;
+  const curEnd = eh * 60 + em;
+
+  const conflicts: Array<{ equipmentName: string; eventTitle: string }> = [];
+
+  for (const eqId of props.draft.equipment_ids) {
+    const eq = mockEquipments.find((e) => e.id === eqId);
+    if (!eq) continue;
+
+    for (const s of props.schedules) {
+      // Exclude self if editing
+      if (props.draft.mode === 'edit' && s.event.id === props.draft.source_event_id) {
+        continue;
+      }
+      const sStart = s.start.slice(0, 10);
+      const sEnd = s.end.slice(0, 10);
+      if (sStart <= date && sEnd >= date && s.event.equipment_ids?.includes(eqId)) {
+        const sDate = new Date(s.start);
+        const eDate = new Date(s.end);
+        const sMin = sDate.getHours() * 60 + sDate.getMinutes();
+        const eMin = eDate.getHours() * 60 + eDate.getMinutes();
+
+        if (Math.max(curStart, sMin) < Math.min(curEnd, eMin)) {
+          conflicts.push({
+            equipmentName: eq.name,
+            eventTitle: s.event.title,
+          });
+        }
+      }
+    }
+  }
+
+  return conflicts;
+});
+
+function handleSelectFacilitySlot(eqId: string, start: string, end: string): void {
+  props.onUpdateAuthoringTime('start_time', start);
+  props.onUpdateAuthoringTime('end_time', end);
+  if (props.draft && !props.draft.equipment_ids.includes(eqId)) {
+    equipmentIdsValue.value = [...props.draft.equipment_ids, eqId];
+  }
+  facilityModalOpen.value = false;
+}
+
+function setQuickMeetingUrl(type: 'google' | 'teams' | 'zoom'): void {
+  const code = Math.random().toString(36).slice(2, 6);
+  let url = '';
+  switch (type) {
+    case 'google': {
+      url = `https://meet.google.com/obee-${code}`;
+      break;
+    }
+    case 'zoom': {
+      url = `https://zoom.us/j/8899${code}`;
+      break;
+    }
+    case 'teams': {
+      url = `https://teams.microsoft.com/l/meetup-join/obee-${code}`;
+      break;
+    }
+  }
+  if (props.onUpdateAuthoringMeetingUrl) {
+    props.onUpdateAuthoringMeetingUrl(url);
+  } else {
+    props.onUpdateAuthoringNullableField('meeting_url', url);
+  }
+}
+
+function setQuickLocation(name: string): void {
+  props.onUpdateAuthoringNullableField('physical_address', name);
+}
 
 const isCreateBlocked = computed(
   () =>
@@ -423,18 +567,160 @@ const isCreateBlocked = computed(
               />
             </label>
 
-            <label class="grid gap-1">
-              <span class="text-xs font-medium text-muted-foreground">
-                {{ $t('page.schedules.form.location') }}
-              </span>
-              <Input
-                :value="draft.physical_address ?? ''"
-                data-testid="schedule-form-physical-address"
-                @update:value="
-                  onUpdateAuthoringNullableField('physical_address', $event)
-                "
+            <!-- Location & Meeting Type Section -->
+            <div class="space-y-3 rounded-lg border border-border bg-muted/15 p-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-foreground">
+                  Hình thức & Địa điểm cuộc họp
+                </span>
+                <Radio.Group
+                  v-model:value="locationTypeValue"
+                  size="small"
+                  option-type="button"
+                  button-style="solid"
+                >
+                  <Radio.Button value="physical">
+                    <span class="flex items-center gap-1">
+                      <MapPinIcon class="size-3" />
+                      Trực tiếp
+                    </span>
+                  </Radio.Button>
+                  <Radio.Button value="online">
+                    <span class="flex items-center gap-1">
+                      <VideoIcon class="size-3" />
+                      Trực tuyến
+                    </span>
+                  </Radio.Button>
+                  <Radio.Button value="hybrid">
+                    <span class="flex items-center gap-1">
+                      Kết hợp
+                    </span>
+                  </Radio.Button>
+                </Radio.Group>
+              </div>
+
+              <!-- Physical Room / Address -->
+              <div
+                v-if="locationTypeValue === 'physical' || locationTypeValue === 'hybrid'"
+                class="grid gap-1.5"
+              >
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-muted-foreground flex items-center gap-1">
+                    <MapPinIcon class="size-3.5 text-primary" />
+                    Phòng họp / Địa điểm
+                  </span>
+                  <div class="flex items-center gap-1 text-[11px]">
+                    <span class="text-muted-foreground">Gợi ý:</span>
+                    <button
+                      type="button"
+                      class="text-primary hover:underline"
+                      @click="setQuickLocation('Phòng họp Lotus (Tầng 3)')"
+                    >
+                      P. Lotus
+                    </button>
+                    <span>&bull;</span>
+                    <button
+                      type="button"
+                      class="text-primary hover:underline"
+                      @click="setQuickLocation('Phòng họp Orchid (Tầng 2)')"
+                    >
+                      P. Orchid
+                    </button>
+                  </div>
+                </div>
+                <Input
+                  :value="draft.physical_address ?? ''"
+                  placeholder="Ví dụ: Phòng họp Lotus (Tầng 3 - 20 người)"
+                  data-testid="schedule-form-physical-address"
+                  @update:value="
+                    onUpdateAuthoringNullableField('physical_address', $event)
+                  "
+                />
+              </div>
+
+              <!-- Online Meeting URL -->
+              <div
+                v-if="locationTypeValue === 'online' || locationTypeValue === 'hybrid'"
+                class="grid gap-1.5"
+              >
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-muted-foreground flex items-center gap-1">
+                    <VideoIcon class="size-3.5 text-primary" />
+                    Đường dẫn họp trực tuyến
+                  </span>
+                  <div class="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      class="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary hover:bg-primary/20"
+                      @click="setQuickMeetingUrl('google')"
+                    >
+                      + Google Meet
+                    </button>
+                    <button
+                      type="button"
+                      class="rounded bg-sky-500/10 px-1.5 py-0.5 text-[10px] font-medium text-sky-600 hover:bg-sky-500/20"
+                      @click="setQuickMeetingUrl('zoom')"
+                    >
+                      + Zoom
+                    </button>
+                  </div>
+                </div>
+                <Input
+                  :value="draft.meeting_url ?? ''"
+                  placeholder="https://meet.google.com/... hoặc https://zoom.us/..."
+                  data-testid="schedule-form-meeting-url"
+                  @update:value="
+                    onUpdateAuthoringMeetingUrl
+                      ? onUpdateAuthoringMeetingUrl($event)
+                      : onUpdateAuthoringNullableField('meeting_url', $event)
+                  "
+                />
+              </div>
+            </div>
+
+            <!-- Facilities & Equipment Booking Section -->
+            <div class="space-y-2 rounded-lg border border-border bg-muted/15 p-3">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                  <LayersIcon class="size-3.5 text-primary" />
+                  Cơ sở vật chất & Thiết bị mượn
+                </span>
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-1.5 rounded-md border border-primary/40 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary transition hover:bg-primary/20 hover:border-primary shrink-0 whitespace-nowrap cursor-pointer"
+                  @click="facilityModalOpen = true"
+                >
+                  <CalendarDaysIcon class="size-3.5 shrink-0 text-primary" />
+                  <span>Xem lịch sử dụng</span>
+                </button>
+              </div>
+
+              <Select
+                v-model:value="equipmentIdsValue"
+                mode="multiple"
+                :options="equipmentOptions"
+                placeholder="Chọn phòng họp, máy chiếu, micro, thiết bị..."
+                class="w-full"
+                data-testid="schedule-form-equipments"
               />
-            </label>
+
+              <!-- Conflict Warning -->
+              <div
+                v-if="conflictedEquipments.length > 0"
+                class="rounded-md border border-amber-300 bg-amber-50 p-2 text-xs text-amber-800 dark:border-amber-800 dark:bg-amber-950/60 dark:text-amber-200"
+              >
+                <div class="flex items-center gap-1 font-semibold">
+                  <AlertTriangleIcon class="size-3.5 shrink-0 text-amber-600" />
+                  Cảnh báo trùng lịch cơ sở vật chất:
+                </div>
+                <ul class="mt-1 list-disc pl-4 space-y-0.5 text-[11px]">
+                  <li v-for="(c, cIdx) in conflictedEquipments" :key="cIdx">
+                    <span class="font-bold">{{ c.equipmentName }}</span> đã có lịch đặt bởi
+                    <em>"{{ c.eventTitle }}"</em> trong khung giờ này.
+                  </li>
+                </ul>
+              </div>
+            </div>
 
             <label class="grid gap-1">
               <span class="text-xs font-medium text-muted-foreground">
@@ -537,4 +823,15 @@ const isCreateBlocked = computed(
       </div>
     </template>
   </Drawer>
+
+  <!-- Facility Availability Timeline Modal -->
+  <FacilityScheduleModal
+    :open="facilityModalOpen"
+    :date="draft?.start_date ?? ''"
+    :schedules="schedules ?? []"
+    :selected-equipment-ids="draft?.equipment_ids ?? []"
+    :current-time-range="currentTimeRange"
+    @close="facilityModalOpen = false"
+    @select-time-and-equipment="handleSelectFacilitySlot"
+  />
 </template>

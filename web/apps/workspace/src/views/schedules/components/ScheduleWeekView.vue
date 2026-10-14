@@ -20,6 +20,11 @@ const props = defineProps<{
   loading: boolean;
   onOpenCreateDrawer: (date: string) => void;
   onOpenScheduleDetail: (scheduleId: string) => void;
+  onUpdateTime?: (
+    scheduleId: string,
+    newStartIso: string,
+    newEndIso: string,
+  ) => void;
   schedules: Schedule[];
   today: string;
   weekdayLabels: string[];
@@ -200,10 +205,207 @@ function getScheduleTypeLabel(schedule: Schedule): string {
   return $t(`page.schedules.form.typeOptions.${schedule.event.type}`);
 }
 
-function handleSlotClick(date: string, hour: number): void {
-  if (props.allowCreate && props.hasCompany) {
-    props.onOpenCreateDrawer(date);
-  }
+const gridColumnsRef = ref<HTMLElement | null>(null);
+
+// Drag State (Moving event)
+interface DragState {
+  currentDate: string;
+  currentStartMinute: number;
+  duration: number;
+  hasMoved: boolean;
+  initialMouseX: number;
+  initialMouseY: number;
+  originalDate: string;
+  originalStartMinute: number;
+  schedule: Schedule;
+}
+const activeDrag = ref<DragState | null>(null);
+
+// Resize State (Changing duration)
+interface ResizeState {
+  currentEndMinute: number;
+  date: string;
+  hasResized: boolean;
+  initialMouseY: number;
+  originalEndMinute: number;
+  schedule: Schedule;
+  startMinute: number;
+}
+const activeResize = ref<ResizeState | null>(null);
+
+function formatIsoTime(dateStr: string, totalMinutes: number): string {
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
+  return `${dateStr}T${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00+07:00`;
+}
+
+function formatMinutesRange(startMin: number, endMin: number): string {
+  const sh = Math.floor(startMin / 60);
+  const sm = startMin % 60;
+  const eh = Math.floor(endMin / 60);
+  const em = endMin % 60;
+  return `${String(sh).padStart(2, '0')}:${String(sm).padStart(2, '0')} - ${String(eh).padStart(2, '0')}:${String(em).padStart(2, '0')}`;
+}
+
+// Start dragging event card
+function handleEventMouseDown(
+  e: MouseEvent,
+  schedule: Schedule,
+  date: string,
+  startMinute: number,
+  endMinute: number,
+): void {
+  // Only primary mouse button
+  if (e.button !== 0) return;
+  e.preventDefault();
+
+  const duration = endMinute - startMinute;
+  activeDrag.value = {
+    currentDate: date,
+    currentStartMinute: startMinute,
+    duration,
+    hasMoved: false,
+    initialMouseX: e.clientX,
+    initialMouseY: e.clientY,
+    originalDate: date,
+    originalStartMinute: startMinute,
+    schedule,
+  };
+
+  document.body.style.userSelect = 'none';
+
+  const handleMouseMove = (moveEvent: MouseEvent): void => {
+    if (!activeDrag.value) return;
+
+    const deltaY = moveEvent.clientY - activeDrag.value.initialMouseY;
+    const deltaX = moveEvent.clientX - activeDrag.value.initialMouseX;
+
+    if (!activeDrag.value.hasMoved && (Math.abs(deltaY) > 4 || Math.abs(deltaX) > 4)) {
+      activeDrag.value.hasMoved = true;
+      document.body.style.cursor = 'grabbing';
+    }
+
+    if (activeDrag.value.hasMoved) {
+      // 15-minute snapping
+      const deltaMinutes = Math.round(((deltaY / HOUR_HEIGHT) * 60) / 15) * 15;
+      const newStart = Math.max(
+        START_HOUR * 60,
+        Math.min(
+          END_HOUR * 60 - activeDrag.value.duration,
+          activeDrag.value.originalStartMinute + deltaMinutes,
+        ),
+      );
+      activeDrag.value.currentStartMinute = newStart;
+
+      // Detect date column by mouse X
+      if (gridColumnsRef.value && props.dates.length > 1) {
+        const rect = gridColumnsRef.value.getBoundingClientRect();
+        const colWidth = rect.width / props.dates.length;
+        const colIdx = Math.floor((moveEvent.clientX - rect.left) / colWidth);
+        const clampedCol = Math.max(0, Math.min(props.dates.length - 1, colIdx));
+        activeDrag.value.currentDate = props.dates[clampedCol]!;
+      }
+    }
+  };
+
+  const handleMouseUp = (): void => {
+    window.removeEventListener('mousemove', handleMouseMove);
+    window.removeEventListener('mouseup', handleMouseUp);
+    document.body.style.userSelect = '';
+    document.body.style.cursor = '';
+
+    if (activeDrag.value) {
+      if (activeDrag.value.hasMoved && props.onUpdateTime) {
+        const newStartIso = formatIsoTime(
+          activeDrag.value.currentDate,
+          activeDrag.value.currentStartMinute,
+        );
+        const newEndIso = formatIsoTime(
+          activeDrag.value.currentDate,
+          activeDrag.value.currentStartMinute + activeDrag.value.duration,
+        );
+        props.onUpdateTime(activeDrag.value.schedule.id, newStartIso, newEndIso);
+      } else if (!activeDrag.value.hasMoved) {
+        props.onOpenScheduleDetail(schedule.id);
+      }
+      activeDrag.value = null;
+    }
+  };
+
+  window.addEventListener('mousemove', handleMouseMove);
+  window.addEventListener('mouseup', handleMouseUp);
+}
+
+// Start resizing event card from bottom
+function handleResizeMouseDown(
+  e: MouseEvent,
+  schedule: Schedule,
+  date: string,
+  startMinute: number,
+  endMinute: number,
+): void {
+  e.stopPropagation();
+  e.preventDefault();
+
+  activeResize.value = {
+    currentEndMinute: endMinute,
+    date,
+    hasResized: false,
+    initialMouseY: e.clientY,
+    originalEndMinute: endMinute,
+    schedule,
+    startMinute,
+  };
+
+  document.body.style.userSelect = 'none';
+  document.body.style.cursor = 'ns-resize';
+
+  const handleMouseMove = (moveEvent: MouseEvent): void => {
+    if (!activeResize.value) return;
+
+    const deltaY = moveEvent.clientY - activeResize.value.initialMouseY;
+    if (!activeResize.value.hasResized && Math.abs(deltaY) > 3) {
+      activeResize.value.hasResized = true;
+    }
+
+    if (activeResize.value.hasResized) {
+      const deltaMinutes = Math.round(((deltaY / HOUR_HEIGHT) * 60) / 15) * 15;
+      const newEnd = Math.max(
+        activeResize.value.startMinute + 15,
+        Math.min(END_HOUR * 60, activeResize.value.originalEndMinute + deltaMinutes),
+      );
+      activeResize.value.currentEndMinute = newEnd;
+    }
+  };
+
+  const handleMouseUp = (): void => {
+    window.removeEventListener('mousemove', handleMouseMove);
+    window.removeEventListener('mouseup', handleMouseUp);
+    document.body.style.userSelect = '';
+    document.body.style.cursor = '';
+
+    if (activeResize.value) {
+      if (
+        activeResize.value.hasResized &&
+        activeResize.value.currentEndMinute !== activeResize.value.originalEndMinute &&
+        props.onUpdateTime
+      ) {
+        const newEndIso = formatIsoTime(
+          activeResize.value.date,
+          activeResize.value.currentEndMinute,
+        );
+        props.onUpdateTime(
+          activeResize.value.schedule.id,
+          activeResize.value.schedule.start,
+          newEndIso,
+        );
+      }
+      activeResize.value = null;
+    }
+  };
+
+  window.addEventListener('mousemove', handleMouseMove);
+  window.addEventListener('mouseup', handleMouseUp);
 }
 </script>
 
@@ -295,7 +497,8 @@ function handleSlotClick(date: string, hour: number): void {
 
         <!-- Day columns -->
         <div
-          class="relative grid flex-1"
+          ref="gridColumnsRef"
+          class="relative grid flex-1 select-none"
           :style="{ gridTemplateColumns: `repeat(${dates.length}, 1fr)` }"
         >
           <!-- Grid lines -->
@@ -313,38 +516,87 @@ function handleSlotClick(date: string, hour: number): void {
               />
 
               <!-- Events -->
-              <button
+              <div
                 v-for="event in (columnEvents[date] ?? [])"
                 :key="`event-${date}-${event.schedule.id}`"
-                type="button"
-                class="absolute z-10 flex flex-col overflow-hidden rounded-md border-l-[3px] px-1.5 py-1 text-left shadow-sm transition-shadow hover:shadow-md"
-                :class="getScheduleTypeClass(event.schedule)"
+                class="group absolute z-10 flex flex-col overflow-hidden rounded-md border-l-[3px] px-2 py-1 text-left shadow-sm transition hover:shadow-md cursor-grab active:cursor-grabbing select-none"
+                :class="[
+                  getScheduleTypeClass(event.schedule),
+                  activeDrag?.schedule.id === event.schedule.id ? 'opacity-30 pointer-events-none' : '',
+                ]"
                 :style="{
                   top: `${getEventTop(event.startMinute)}px`,
-                  height: `${getEventHeight(event.startMinute, event.endMinute)}px`,
+                  height: `${getEventHeight(
+                    event.startMinute,
+                    activeResize?.schedule.id === event.schedule.id
+                      ? activeResize.currentEndMinute
+                      : event.endMinute,
+                  )}px`,
                   left: `calc(${event.left * 100}% + 2px)`,
                   width: `calc(${event.width * 100}% - 4px)`,
                 }"
-                @click.stop="onOpenScheduleDetail(event.schedule.id)"
+                @mousedown="handleEventMouseDown($event, event.schedule, date, event.startMinute, event.endMinute)"
               >
-                <span class="truncate text-[10px] font-bold leading-tight">
-                  {{ event.schedule.event.title }}
-                </span>
+                <div class="flex items-center justify-between gap-1">
+                  <span class="truncate text-[11px] font-bold leading-tight">
+                    {{ event.schedule.event.title }}
+                  </span>
+                  <span
+                    v-if="event.schedule.event.meeting_url"
+                    class="size-2 rounded-full bg-primary shrink-0"
+                    title="Có link họp trực tuyến"
+                  />
+                </div>
                 <span
-                  v-if="getEventHeight(event.startMinute, event.endMinute) > 36"
-                  class="truncate text-[9px] opacity-90"
+                  v-if="getEventHeight(event.startMinute, event.endMinute) > 34"
+                  class="truncate text-[10px] opacity-90 font-medium"
                 >
-                  {{ formatEventTime(event.schedule) }}
+                  {{
+                    activeResize?.schedule.id === event.schedule.id
+                      ? formatMinutesRange(event.startMinute, activeResize.currentEndMinute)
+                      : formatEventTime(event.schedule)
+                  }}
                 </span>
                 <span
-                  v-if="getEventHeight(event.startMinute, event.endMinute) > 52"
+                  v-if="getEventHeight(event.startMinute, event.endMinute) > 50"
                   class="truncate text-[9px] opacity-75"
                 >
                   {{ getScheduleTypeLabel(event.schedule) }}
                 </span>
-              </button>
+
+                <!-- Bottom Resize Handle -->
+                <div
+                  class="absolute bottom-0 left-0 right-0 h-3 cursor-ns-resize flex items-end justify-center pb-0.5 opacity-60 hover:opacity-100 group-hover:opacity-100 transition-opacity z-20"
+                  title="Kéo viền để thay đổi thời lượng"
+                  @mousedown.stop="handleResizeMouseDown($event, event.schedule, date, event.startMinute, event.endMinute)"
+                >
+                  <div class="h-1 w-8 rounded-full bg-foreground/40 hover:bg-primary transition-colors" />
+                </div>
+              </div>
             </div>
           </template>
+
+          <!-- Dragging Ghost Preview -->
+          <div
+            v-if="activeDrag && activeDrag.hasMoved"
+            class="pointer-events-none absolute z-40 flex flex-col overflow-hidden rounded-md border-2 border-dashed border-primary bg-primary/25 px-2 py-1 shadow-2xl backdrop-blur-xs ring-2 ring-primary"
+            :style="{
+              top: `${getEventTop(activeDrag.currentStartMinute)}px`,
+              height: `${getEventHeight(activeDrag.currentStartMinute, activeDrag.currentStartMinute + activeDrag.duration)}px`,
+              left: `calc(${(dates.indexOf(activeDrag.currentDate) / dates.length) * 100}% + 4px)`,
+              width: `calc(${100 / dates.length}% - 8px)`,
+            }"
+          >
+            <span class="truncate text-[11px] font-bold text-foreground">
+              {{ activeDrag.schedule.event.title }}
+            </span>
+            <span class="text-[10px] font-bold text-primary">
+              {{ formatMinutesRange(activeDrag.currentStartMinute, activeDrag.currentStartMinute + activeDrag.duration) }}
+            </span>
+            <span class="text-[9px] text-muted-foreground">
+              {{ activeDrag.currentDate }}
+            </span>
+          </div>
 
           <!-- Current time indicator -->
           <div

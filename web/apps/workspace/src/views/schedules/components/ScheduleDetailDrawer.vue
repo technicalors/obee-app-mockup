@@ -42,6 +42,25 @@ const ObserversIcon = createIconifyIcon('lucide:share-2');
 const ReminderIcon = createIconifyIcon('lucide:bell');
 const LocationIcon = createIconifyIcon('lucide:map-pin');
 const NoteIcon = createIconifyIcon('lucide:file-text');
+const VideoIcon = createIconifyIcon('lucide:video');
+const LayersIcon = createIconifyIcon('lucide:layers');
+const CopyIcon = createIconifyIcon('lucide:copy');
+const CheckIcon = createIconifyIcon('lucide:check');
+const ExternalLinkIcon = createIconifyIcon('lucide:external-link');
+
+const copied = ref(false);
+
+async function copyMeetingUrl(url: string): Promise<void> {
+  try {
+    await navigator.clipboard.writeText(url);
+    copied.value = true;
+    setTimeout(() => {
+      copied.value = false;
+    }, 2000);
+  } catch {
+    // fallback
+  }
+}
 
 const participantsExpanded = ref(false);
 const observersExpanded = ref(false);
@@ -316,6 +335,80 @@ function getReminderLabel(schedule: Schedule): string {
                 {{ getReminderLabel(schedule) }}
               </dd>
             </div>
+            <!-- Online Meeting Section -->
+            <div
+              v-if="schedule.event.meeting_url"
+              class="rounded-xl border border-primary/25 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-4 space-y-2.5"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <div class="flex size-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                    <VideoIcon class="size-4" />
+                  </div>
+                  <div>
+                    <div class="text-xs font-bold uppercase tracking-wider text-primary">
+                      Họp trực tuyến
+                    </div>
+                    <div class="text-[11px] text-muted-foreground">
+                      Sẵn sàng tham gia cuộc họp
+                    </div>
+                  </div>
+                </div>
+
+                <a
+                  :href="schedule.event.meeting_url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground shadow-sm transition hover:bg-primary/90"
+                >
+                  Tham gia
+                  <ExternalLinkIcon class="size-3" />
+                </a>
+              </div>
+
+              <div class="flex items-center justify-between rounded-md border border-border/80 bg-background/90 px-3 py-1.5 text-xs">
+                <span class="truncate font-mono text-muted-foreground">
+                  {{ schedule.event.meeting_url }}
+                </span>
+                <button
+                  type="button"
+                  class="ml-3 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline shrink-0"
+                  @click="copyMeetingUrl(schedule.event.meeting_url!)"
+                >
+                  <CheckIcon v-if="copied" class="size-3 text-emerald-600" />
+                  <CopyIcon v-else class="size-3" />
+                  {{ copied ? 'Đã sao chép' : 'Sao chép' }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Facilities & Equipment -->
+            <div
+              v-if="schedule.event.equipments?.length || schedule.event.equipment_ids?.length"
+              class="flex items-start gap-3"
+            >
+              <dt class="pt-0.5 text-muted-foreground">
+                <LayersIcon
+                  class="size-4"
+                  data-testid="schedule-detail-equipment-icon"
+                />
+              </dt>
+              <dd class="space-y-1.5 leading-5 text-foreground">
+                <div class="text-xs font-medium text-muted-foreground">
+                  Cơ sở vật chất & Thiết bị:
+                </div>
+                <div class="flex flex-wrap gap-1.5">
+                  <span
+                    v-for="(eq, eqIdx) in (schedule.event.equipments ?? [])"
+                    :key="eqIdx"
+                    class="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-foreground border border-border"
+                  >
+                    🏢 {{ eq.name }}
+                  </span>
+                </div>
+              </dd>
+            </div>
+
             <div
               v-if="schedule.event.physical_address !== null"
               class="flex items-start gap-3"

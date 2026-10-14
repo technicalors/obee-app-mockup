@@ -22,9 +22,22 @@ const scheduleEventSchema = z.object({
   created_at: z.string(),
   created_by: z.string(),
   end_date: z.string(),
+  equipment_ids: z.nullable(z.array(z.string())).optional(),
+  equipments: z
+    .nullable(
+      z.array(
+        z.object({
+          code: z.string(),
+          id: z.string(),
+          name: z.string(),
+        }),
+      ),
+    )
+    .optional(),
   has_reminder: z.boolean(),
   id: z.string(),
   is_general: z.boolean(),
+  meeting_url: z.nullable(z.string()).optional(),
   note: z.nullable(z.string()),
   observers: z.array(scheduleUserSchema),
   participants: z.array(scheduleUserSchema),
@@ -55,8 +68,10 @@ const scheduleEventWritePayloadSchema = z.object({
   company_name: z.nullable(z.string()),
   company_phone_number: z.nullable(z.string()),
   end_date: z.string(),
+  equipment_ids: z.nullable(z.array(z.string())).optional(),
   has_reminder: z.boolean(),
   is_general: z.boolean(),
+  meeting_url: z.nullable(z.string()).optional(),
   note: z.nullable(z.string()),
   observers: z.array(z.string()),
   participants: z.array(z.string()),

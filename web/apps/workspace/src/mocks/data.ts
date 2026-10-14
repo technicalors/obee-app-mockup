@@ -224,6 +224,41 @@ export const mockAuthUser: AuthUser = {
 
 export const mockEquipments: Equipment[] = [
   {
+    code: 'ROOM-LOTUS',
+    created_at: timestamp,
+    id: '11000000-0000-4000-8000-000000000010',
+    name: 'Phòng họp Lotus (Tầng 3 - 20 người)',
+    updated_at: timestamp,
+  },
+  {
+    code: 'ROOM-ORCHID',
+    created_at: timestamp,
+    id: '11000000-0000-4000-8000-000000000011',
+    name: 'Phòng họp Orchid (Tầng 2 - 10 người)',
+    updated_at: timestamp,
+  },
+  {
+    code: 'EQ-PROJECTOR-01',
+    created_at: timestamp,
+    id: '11000000-0000-4000-8000-000000000012',
+    name: 'Máy chiếu Sony 4K Laser',
+    updated_at: timestamp,
+  },
+  {
+    code: 'EQ-POLYCOM-01',
+    created_at: timestamp,
+    id: '11000000-0000-4000-8000-000000000013',
+    name: 'Bộ Hội nghị Polycom Group 500',
+    updated_at: timestamp,
+  },
+  {
+    code: 'EQ-JABRA-01',
+    created_at: timestamp,
+    id: '11000000-0000-4000-8000-000000000014',
+    name: 'Loa & Micro Jabra Speak 710',
+    updated_at: timestamp,
+  },
+  {
     code: 'OB-MBP-023',
     created_at: timestamp,
     id: '11000000-0000-4000-8000-000000000001',
@@ -326,11 +361,33 @@ export const mockNotifications: InboxNotification[] = notificationMessages.map(
   }),
 );
 
+const todayStr = new Date().toISOString().slice(0, 10);
+
 const scheduleSeed = [
+  // Events for today (dynamic so timeline and calendar always have today data)
+  [
+    'Họp Kế hoạch & Chiến lược Sản phẩm',
+    `${todayStr}T08:30:00+07:00`,
+    `${todayStr}T11:30:00+07:00`,
+    'meeting',
+  ],
+  [
+    'Phỏng vấn Ứng viên Senior Frontend',
+    `${todayStr}T09:30:00+07:00`,
+    `${todayStr}T12:00:00+07:00`,
+    'interview',
+  ],
+  [
+    'Hội nghị Khách hàng & Đối tác Doanh nghiệp',
+    `${todayStr}T14:00:00+07:00`,
+    `${todayStr}T17:30:00+07:00`,
+    'seminar',
+  ],
+  // Fixed demo events in October 2026
   [
     'Họp Sprint Planning',
     '2026-10-13T09:00:00+07:00',
-    '2026-10-13T10:00:00+07:00',
+    '2026-10-10T10:00:00+07:00',
     'meeting',
   ],
   [
@@ -420,7 +477,97 @@ export const mockSchedules: Schedule[] = scheduleSeed.map(
             }
             return { avatar, email, id, name };
           }),
-        physical_address: 'Phòng họp Lotus',
+        equipment_ids:
+          index === 0
+            ? ['11000000-0000-4000-8000-000000000010', '11000000-0000-4000-8000-000000000012']
+            : index === 1
+              ? ['11000000-0000-4000-8000-000000000011']
+              : index === 2
+                ? ['11000000-0000-4000-8000-000000000010', '11000000-0000-4000-8000-000000000013']
+                : index === 3
+                  ? ['11000000-0000-4000-8000-000000000010', '11000000-0000-4000-8000-000000000012']
+                  : index === 4
+                    ? ['11000000-0000-4000-8000-000000000011']
+                    : [],
+        equipments:
+          index === 0
+            ? [
+                {
+                  code: 'ROOM-LOTUS',
+                  id: '11000000-0000-4000-8000-000000000010',
+                  name: 'Phòng họp Lotus (Tầng 3 - 20 người)',
+                },
+                {
+                  code: 'EQ-PROJECTOR-01',
+                  id: '11000000-0000-4000-8000-000000000012',
+                  name: 'Máy chiếu Sony 4K Laser',
+                },
+              ]
+            : index === 1
+              ? [
+                  {
+                    code: 'ROOM-ORCHID',
+                    id: '11000000-0000-4000-8000-000000000011',
+                    name: 'Phòng họp Orchid (Tầng 2 - 10 người)',
+                  },
+                ]
+              : index === 2
+                ? [
+                    {
+                      code: 'ROOM-LOTUS',
+                      id: '11000000-0000-4000-8000-000000000010',
+                      name: 'Phòng họp Lotus (Tầng 3 - 20 người)',
+                    },
+                    {
+                      code: 'EQ-POLYCOM-01',
+                      id: '11000000-0000-4000-8000-000000000013',
+                      name: 'Bộ Hội nghị Polycom Group 500',
+                    },
+                  ]
+                : index === 3
+                  ? [
+                      {
+                        code: 'ROOM-LOTUS',
+                        id: '11000000-0000-4000-8000-000000000010',
+                        name: 'Phòng họp Lotus (Tầng 3 - 20 người)',
+                      },
+                      {
+                        code: 'EQ-PROJECTOR-01',
+                        id: '11000000-0000-4000-8000-000000000012',
+                        name: 'Máy chiếu Sony 4K Laser',
+                      },
+                    ]
+                  : index === 4
+                    ? [
+                        {
+                          code: 'ROOM-ORCHID',
+                          id: '11000000-0000-4000-8000-000000000011',
+                          name: 'Phòng họp Orchid (Tầng 2 - 10 người)',
+                        },
+                      ]
+                    : [],
+        meeting_url:
+          index === 0
+            ? 'https://meet.google.com/obee-strategy-plan'
+            : index === 1
+              ? 'https://zoom.us/j/9887766554'
+              : index === 2
+                ? 'https://teams.microsoft.com/l/meetup-join/obee-partner'
+                : index === 3
+                  ? 'https://meet.google.com/obee-sprint-plan'
+                  : index === 4
+                    ? 'https://zoom.us/j/9876543210'
+                    : index === 8
+                      ? 'https://teams.microsoft.com/l/meetup-join/obee-ai-workshop'
+                      : null,
+        physical_address:
+          index === 0 || index === 2 || index === 3
+            ? 'Phòng họp Lotus (Tầng 3 - 20 người)'
+            : index === 1 || index === 4
+              ? 'Phòng họp Orchid (Tầng 2 - 10 người)'
+              : index === 10
+                ? 'Chi nhánh Đà Nẵng - 120 Bạch Đằng'
+                : 'Phòng họp Lotus',
         privacy: 'public',
         remind_range: 'minute',
         remind_value: 15,
