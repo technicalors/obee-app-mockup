@@ -520,111 +520,255 @@ export const mockNotifications: InboxNotification[] = notificationMessages.map(
   }),
 );
 
+function getRelativeDate(offsetDays = 0): string {
+  const date = new Date();
+  date.setDate(date.getDate() + offsetDays);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+const todayStr = getRelativeDate(0);
+const tomorrowStr = getRelativeDate(1);
+const dayAfterStr = getRelativeDate(2);
+
 const scheduleSeed = [
+  // --- Hôm nay (Today): Đầy đủ lịch đặt phòng & thiết bị cho Facility Timeline ---
   {
-    end: '2026-10-15T10:00:00+07:00',
+    end: `${todayStr}T11:30:00+07:00`,
+    equipment_ids: [
+      '11000000-0000-4000-8000-000000000010', // ROOM-LOTUS
+      '11000000-0000-4000-8000-000000000001', // EQ-PROJECTOR-01
+    ],
     id: 'schedule-today-planning',
     location: 'Phòng họp Lotus',
+    meeting_url: null,
     privacy: 'public' as const,
     scheduleType: 'one_day' as const,
-    start: '2026-10-15T08:30:00+07:00',
-    title: 'Họp giao ban & Kế hoạch tuần',
+    start: `${todayStr}T08:30:00+07:00`,
+    title: 'Họp Kế hoạch & Chiến lược Sản phẩm Q4',
     type: 'meeting' as const,
   },
   {
-    end: '2026-10-15T15:30:00+07:00',
-    id: 'schedule-today-review',
+    end: `${todayStr}T12:00:00+07:00`,
+    equipment_ids: [
+      '11000000-0000-4000-8000-000000000011', // ROOM-ORCHID
+      '11000000-0000-4000-8000-000000000002', // EQ-SPEAKER-01
+    ],
+    id: 'schedule-today-interview',
     location: 'Phòng họp Orchid',
+    meeting_url: null,
     privacy: 'private' as const,
     scheduleType: 'one_day' as const,
-    start: '2026-10-15T14:00:00+07:00',
-    title: 'Review thiết kế & Trải nghiệm giao diện mới',
+    start: `${todayStr}T09:30:00+07:00`,
+    title: 'Phỏng vấn Ứng viên Senior Frontend (Vòng 2)',
+    type: 'interview' as const,
+  },
+  {
+    end: `${todayStr}T12:00:00+07:00`,
+    equipment_ids: [
+      '11000000-0000-4000-8000-000000000012', // ROOM-LAB
+      '11000000-0000-4000-8000-000000000004', // EQ-MACBOOK-01
+    ],
+    id: 'schedule-today-brainstorm',
+    location: 'Phòng Sáng Tạo Lab',
+    meeting_url: null,
+    privacy: 'public' as const,
+    scheduleType: 'one_day' as const,
+    start: `${todayStr}T10:00:00+07:00`,
+    title: 'Brainstorm kiến trúc hệ thống Chat Matrix & Personal Tasks',
+    type: 'meeting' as const,
+  },
+  {
+    end: `${todayStr}T17:30:00+07:00`,
+    equipment_ids: [
+      '11000000-0000-4000-8000-000000000010', // ROOM-LOTUS
+      '11000000-0000-4000-8000-000000000003', // EQ-RALLY-PLUS
+    ],
+    id: 'schedule-today-client-summit',
+    location: 'Phòng họp Lotus (Hybrid: Trực tiếp & Online)',
+    meeting_url: 'https://meet.google.com/obee-client-summit',
+    privacy: 'public' as const,
+    scheduleType: 'one_day' as const,
+    start: `${todayStr}T14:00:00+07:00`,
+    title: 'Hội nghị Khách hàng & Đối tác Doanh nghiệp',
+    type: 'seminar' as const,
+  },
+  {
+    end: `${todayStr}T16:00:00+07:00`,
+    equipment_ids: [
+      '11000000-0000-4000-8000-000000000011', // ROOM-ORCHID
+      '11000000-0000-4000-8000-000000000002', // EQ-SPEAKER-01
+    ],
+    id: 'schedule-today-training',
+    location: 'Phòng họp Orchid',
+    meeting_url: null,
+    privacy: 'private' as const,
+    scheduleType: 'one_day' as const,
+    start: `${todayStr}T14:00:00+07:00`,
+    title: 'Đào tạo quy trình Phân ca & Duyệt nghỉ phép trực tuyến',
     type: 'training' as const,
   },
   {
-    end: '2026-10-16T17:00:00+07:00',
-    id: 'schedule-weekly-demo',
-    location: 'Online: Google Meet',
+    end: `${todayStr}T18:00:00+07:00`,
+    equipment_ids: [
+      '11000000-0000-4000-8000-000000000013', // ROOM-GRAND
+      '11000000-0000-4000-8000-000000000001', // EQ-PROJECTOR-01
+      '11000000-0000-4000-8000-000000000003', // EQ-RALLY-PLUS
+    ],
+    id: 'schedule-today-townhall',
+    location: 'Hội trường Grand Hall',
+    meeting_url: 'https://meet.google.com/obee-townhall',
     privacy: 'public' as const,
     scheduleType: 'one_day' as const,
-    start: '2026-10-16T15:00:00+07:00',
-    title: 'Demo sản phẩm Sprint 42 cho khách hàng',
+    start: `${todayStr}T15:30:00+07:00`,
+    title: 'Town Hall - Toàn thể Công ty & Vinh danh nhân sự xuất sắc',
     type: 'meetup' as const,
   },
+
+  // --- Ngày mai (Tomorrow) ---
   {
-    end: '2026-10-20T18:00:00+07:00',
-    id: 'schedule-seminar',
-    location: 'Grand Hall',
+    end: `${tomorrowStr}T11:30:00+07:00`,
+    equipment_ids: [
+      '11000000-0000-4000-8000-000000000010', // ROOM-LOTUS
+      '11000000-0000-4000-8000-000000000001', // EQ-PROJECTOR-01
+    ],
+    id: 'schedule-tomorrow-bod',
+    location: 'Phòng họp Lotus',
+    meeting_url: null,
+    privacy: 'public' as const,
+    scheduleType: 'one_day' as const,
+    start: `${tomorrowStr}T09:00:00+07:00`,
+    title: 'Họp điều hành Ban Giám đốc & Trưởng bộ phận',
+    type: 'meeting' as const,
+  },
+  {
+    end: `${tomorrowStr}T16:30:00+07:00`,
+    equipment_ids: [
+      '11000000-0000-4000-8000-000000000011', // ROOM-ORCHID
+      '11000000-0000-4000-8000-000000000003', // EQ-RALLY-PLUS
+      '11000000-0000-4000-8000-000000000004', // EQ-MACBOOK-01
+    ],
+    id: 'schedule-tomorrow-demo',
+    location: 'Phòng họp Orchid',
+    meeting_url: 'https://meet.google.com/obee-demo-eval',
+    privacy: 'public' as const,
+    scheduleType: 'one_day' as const,
+    start: `${tomorrowStr}T14:00:00+07:00`,
+    title: 'Demo giải pháp chuyển đổi số cho Đoàn chuyên gia đánh giá',
+    type: 'meetup' as const,
+  },
+
+  // --- Ngày mốt (Day after tomorrow) ---
+  {
+    end: `${dayAfterStr}T12:00:00+07:00`,
+    equipment_ids: [
+      '11000000-0000-4000-8000-000000000013', // ROOM-GRAND
+      '11000000-0000-4000-8000-000000000001', // EQ-PROJECTOR-01
+    ],
+    id: 'schedule-dayafter-workshop',
+    location: 'Hội trường Grand Hall',
+    meeting_url: null,
+    privacy: 'public' as const,
+    scheduleType: 'one_day' as const,
+    start: `${dayAfterStr}T09:30:00+07:00`,
+    title: 'Workshop An toàn thông tin & Bảo mật dữ liệu doanh nghiệp',
+    type: 'seminar' as const,
+  },
+
+  // --- Sự kiện nhiều ngày & định kỳ cố định ---
+  {
+    end: `${getRelativeDate(6)}T18:00:00+07:00`,
+    equipment_ids: [
+      '11000000-0000-4000-8000-000000000013', // ROOM-GRAND
+    ],
+    id: 'schedule-multiday-exhibition',
+    location: 'Hội trường Grand Hall',
+    meeting_url: null,
     privacy: 'public' as const,
     scheduleType: 'multiple_days' as const,
-    start: '2026-10-18T09:00:00+07:00',
-    title: 'Hội thảo Chuyển đổi số & Quản trị Tự động',
+    start: `${getRelativeDate(4)}T08:00:00+07:00`,
+    title: 'Tuần lễ Triển lãm Công nghệ & Đổi mới sáng tạo 2026',
     type: 'seminar' as const,
   },
 ];
 
-export const mockSchedules: Schedule[] = scheduleSeed.map((item, index) => ({
-  end: item.end,
-  event: {
-    can_edit: true,
-    company_name: null,
-    company_phone_number: null,
-    created_at: timestamp,
-    created_by: mockUsers[0]!.id,
-    creator: { id: mockUsers[0]!.id, name: mockUsers[0]!.name },
-    department_company_id: mockOrganizations[0]!.id,
-    end_date: item.end.slice(0, 10),
-    end_time: item.end.slice(11, 19),
-    has_reminder: true,
-    id: `event-${index + 1}`,
-    is_general: true,
-    is_joined: true,
-    location: item.location,
-    location_type: item.location.includes('Online') ? 'online' : 'physical',
-    meeting_url: item.location.includes('Online')
-      ? 'https://meet.google.com/obee-demo'
-      : null,
-    note: 'Lịch demo tương tác trực tiếp.',
-    observers: [mockUsers[1]!, mockUsers[2]!].map((u) => ({
-      avatar: u.avatar,
-      email: u.email,
-      id: u.id,
-      name: u.name,
-    })),
+export const mockSchedules: Schedule[] = scheduleSeed.map((item, index) => {
+  const eqItems = (item.equipment_ids || [])
+    .map((id) => {
+      const found = mockFacilityResources.find((f) => f.id === id);
+      return found ? { code: found.code, id: found.id, name: found.name } : null;
+    })
+    .filter((x): x is { code: string; id: string; name: string } => x !== null);
+
+  return {
+    end: item.end,
+    event: {
+      can_edit: true,
+      company_name: null,
+      company_phone_number: null,
+      created_at: timestamp,
+      created_by: mockUsers[0]!.id,
+      creator: { id: mockUsers[0]!.id, name: mockUsers[0]!.name },
+      department_company_id: mockOrganizations[0]!.id,
+      end_date: item.end.slice(0, 10),
+      end_time: item.end.slice(11, 19),
+      equipment_ids: item.equipment_ids,
+      equipments: eqItems,
+      has_reminder: true,
+      id: `event-${index + 1}`,
+      is_general: true,
+      is_joined: true,
+      location: item.location,
+      location_type: item.location.includes('Online')
+        ? 'online'
+        : item.location.includes('Hybrid')
+          ? 'hybrid'
+          : 'physical',
+      meeting_url: item.meeting_url ?? null,
+      note: 'Dữ liệu lịch trình tương tác trực quan cho phòng họp và thiết bị.',
+      observers: [mockUsers[1]!, mockUsers[2]!].map((u) => ({
+        avatar: u.avatar,
+        email: u.email,
+        id: u.id,
+        name: u.name,
+      })),
+      one_day: item.scheduleType === 'one_day',
+      participants: mockUsers.map((u) => ({
+        avatar: u.avatar,
+        email: u.email,
+        id: u.id,
+        name: u.name,
+      })),
+      physical_address: null,
+      privacy: item.privacy,
+      remind_range: 'minute' as const,
+      remind_value: 15,
+      repeat_end_time: null,
+      repeat_pattern: null,
+      repeat_start_time: null,
+      repeat_type: null,
+      schedule_type:
+        item.scheduleType === 'one_day'
+          ? ('ordinary' as const)
+          : item.scheduleType,
+      start_date: item.start.slice(0, 10),
+      start_time: item.start.slice(11, 19),
+      title: item.title,
+      type: item.type,
+      updated_at: timestamp,
+      updated_by: mockUsers[0]!.id,
+    },
+    event_id: `event-${index + 1}`,
+    id: item.id,
     one_day: item.scheduleType === 'one_day',
-    participants: mockUsers.map((u) => ({
-      avatar: u.avatar,
-      email: u.email,
-      id: u.id,
-      name: u.name,
-    })),
-    physical_address: null,
-    privacy: item.privacy,
-    remind_range: 'minute' as const,
-    remind_value: 15,
-    repeat_end_time: null,
-    repeat_pattern: null,
-    repeat_start_time: null,
-    repeat_type: null,
-    schedule_type:
-      item.scheduleType === 'one_day'
-        ? ('ordinary' as const)
-        : item.scheduleType,
-    start_date: item.start.slice(0, 10),
-    start_time: item.start.slice(11, 19),
-    title: item.title,
-    type: item.type,
-    updated_at: timestamp,
-    updated_by: mockUsers[0]!.id,
-  },
-  event_id: `event-${index + 1}`,
-  id: item.id,
-  one_day: item.scheduleType === 'one_day',
-  remind_at: null,
-  repeat: false,
-  start: item.start,
-  user_id: mockUsers[0]!.id,
-}));
+    remind_at: null,
+    repeat: false,
+    start: item.start,
+    user_id: mockUsers[0]!.id,
+  };
+});
 
 export const mockAttendanceRange = Array.from({ length: 31 }, (_, index) => {
   const day = String(index + 1).padStart(2, '0');
@@ -675,15 +819,6 @@ export const mockAttendanceRange = Array.from({ length: 31 }, (_, index) => {
     total_work_seconds: 28_800 + (index % 5) * 600,
   };
 });
-
-function getRelativeDate(offsetDays = 0): string {
-  const date = new Date();
-  date.setDate(date.getDate() + offsetDays);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
 
 // Personal Tasks
 const personalTaskListIds = {

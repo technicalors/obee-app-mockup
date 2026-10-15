@@ -59,7 +59,6 @@ import { createChatGroupActions } from './chat-group-actions';
 import {
   getDirectChatAlias,
   normalizeMatrixLocalpart,
-  resolveChatUserDisplayName,
   stripReplyFallback,
 } from './chat-utils';
 import {

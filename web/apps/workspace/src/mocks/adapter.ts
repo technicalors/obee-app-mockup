@@ -220,10 +220,71 @@ function resolveMockResponse(
   // Schedules
   if (path === '/schedules' && method === 'GET')
     return success(config, schedulesStore);
-  if (path === '/schedule-events' && method === 'POST')
-    return success(config, {});
-  if (path.startsWith('/schedule-events/') && method === 'DELETE')
+  if (path === '/schedule-events' && method === 'POST') {
+    const payload = typeof config.data === 'string' ? JSON.parse(config.data) : config.data;
+    const eventId = `event-${Date.now()}`;
+    const scheduleId = `schedule-${Date.now()}`;
+    const eqItems = (payload.equipment_ids || []).map((id: string) => {
+      const found = facilityResourcesStore.find((f) => f.id === id);
+      return found ? { code: found.code, id: found.id, name: found.name } : null;
+    }).filter((x: any) => x !== null);
+    const newSchedule = {
+      end: `${payload.end_date}T${payload.end_time || '17:00:00'}+07:00`,
+      event: {
+        can_edit: true,
+        company_name: null,
+        company_phone_number: null,
+        created_at: new Date().toISOString(),
+        created_by: mockAuthUser.id,
+        creator: { id: mockAuthUser.id, name: mockAuthUser.name },
+        department_company_id: mockOrganizations[0]!.id,
+        end_date: payload.end_date,
+        end_time: payload.end_time,
+        equipment_ids: payload.equipment_ids || [],
+        equipments: eqItems,
+        has_reminder: payload.has_reminder ?? true,
+        id: eventId,
+        is_general: payload.is_general ?? true,
+        is_joined: true,
+        location: payload.location ?? 'Phòng họp Lotus',
+        location_type: payload.location_type ?? 'physical',
+        meeting_url: payload.meeting_url ?? null,
+        note: payload.note ?? null,
+        observers: [],
+        one_day: payload.schedule_type === 'ordinary',
+        participants: [mockAuthUser].map((u) => ({ avatar: u.avatar, email: u.email, id: u.id, name: u.name })),
+        physical_address: null,
+        privacy: payload.privacy ?? 'public',
+        remind_range: payload.remind_range ?? 'minute',
+        remind_value: payload.remind_value ?? 15,
+        repeat_end_time: null,
+        repeat_pattern: null,
+        repeat_start_time: null,
+        repeat_type: null,
+        schedule_type: payload.schedule_type ?? 'ordinary',
+        start_date: payload.start_date,
+        start_time: payload.start_time,
+        title: payload.title,
+        type: payload.type ?? 'meeting',
+        updated_at: new Date().toISOString(),
+        updated_by: mockAuthUser.id,
+      },
+      event_id: eventId,
+      id: scheduleId,
+      one_day: payload.schedule_type === 'ordinary',
+      remind_at: null,
+      repeat: false,
+      start: `${payload.start_date}T${payload.start_time || '09:00:00'}+07:00`,
+      user_id: mockAuthUser.id,
+    };
+    schedulesStore.push(newSchedule);
+    return success(config, newSchedule, 201);
+  }
+  if (path.startsWith('/schedule-events/') && method === 'DELETE') {
+    const eventId = resourceId(path);
+    schedulesStore = schedulesStore.filter((s) => s.event_id !== eventId && s.id !== eventId);
     return success(config, { message: 'Đã xóa lịch demo.' });
+  }
   if (path.startsWith('/schedule-events/') && method === 'PUT')
     return success(config, {});
   if (path.endsWith('/join'))
