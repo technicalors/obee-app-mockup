@@ -12,12 +12,15 @@ function serveMobileDev(): Plugin {
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         const url = (req.url || '').split('?')[0];
-        if (url === '/mobile' || url.startsWith('/mobile/')) {
-          let relativePath = url.replace(/^\/mobile\/?/, '');
+        // /mobile is layout v1, /mobile2 the alternative schedule layout.
+        const match = /^\/(mobile2?)(?:\/|$)/.exec(url);
+        if (match) {
+          const root = match[1];
+          let relativePath = url.slice(root.length + 2);
           if (!relativePath || relativePath.endsWith('/')) {
             relativePath += 'index.html';
           }
-          const filePath = path.resolve(process.cwd(), 'public/mobile', relativePath);
+          const filePath = path.resolve(process.cwd(), 'public', root, relativePath);
           if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
             const ext = path.extname(filePath);
             const mimeTypes: Record<string, string> = {
@@ -37,7 +40,7 @@ function serveMobileDev(): Plugin {
             fs.createReadStream(filePath).pipe(res);
             return;
           }
-          const indexPath = path.resolve(process.cwd(), 'public/mobile/index.html');
+          const indexPath = path.resolve(process.cwd(), 'public', root, 'index.html');
           if (fs.existsSync(indexPath)) {
             res.setHeader('Content-Type', 'text/html; charset=utf-8');
             fs.createReadStream(indexPath).pipe(res);

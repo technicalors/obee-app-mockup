@@ -21,6 +21,7 @@ class ScheduleMonthCalendar extends StatelessWidget {
     required this.schedulesByDate,
     required this.onDaySelected,
     this.selectedWeekDate,
+    this.rounded = false,
     super.key,
   });
 
@@ -30,6 +31,11 @@ class ScheduleMonthCalendar extends StatelessWidget {
   final Map<String, List<ScheduleModel>> schedulesByDate;
   final ValueChanged<DateTime> onDaySelected;
   final DateTime? selectedWeekDate;
+
+  /// Google Calendar style used by the `/mobile2` layout: each day is a
+  /// rounded tile with small gaps, today is a filled pill and events are
+  /// solid rounded chips. The page behind should use `surfaceContainer`.
+  final bool rounded;
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +86,9 @@ class ScheduleMonthCalendar extends StatelessWidget {
         final colorScheme = Theme.of(context).colorScheme;
 
         return DecoratedBox(
-          decoration: BoxDecoration(color: colorScheme.surface),
+          decoration: BoxDecoration(
+            color: rounded ? Colors.transparent : colorScheme.surface,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -98,7 +106,7 @@ class ScheduleMonthCalendar extends StatelessWidget {
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                             letterSpacing: 0.2,
-                            color: i >= 5
+                            color: i >= 5 && !rounded
                                 ? colorScheme.onSurfaceVariant.withValues(
                                     alpha: 0.6,
                                   )
@@ -123,6 +131,7 @@ class ScheduleMonthCalendar extends StatelessWidget {
                   isFirstWeek: true,
                   isLastWeek: true,
                   cellWidth: cellWidth,
+                  rounded: rounded,
                 )
               else if (constraints.maxHeight.isFinite)
                 Expanded(
@@ -147,6 +156,7 @@ class ScheduleMonthCalendar extends StatelessWidget {
                                 isLastWeek: w == weekCount - 1,
                                 cellWidth: cellWidth,
                                 minRowHeight: targetRowHeight,
+                                rounded: rounded,
                               ),
                           ],
                         ),
@@ -165,6 +175,7 @@ class ScheduleMonthCalendar extends StatelessWidget {
                     isFirstWeek: w == 0,
                     isLastWeek: w == weekCount - 1,
                     cellWidth: cellWidth,
+                    rounded: rounded,
                   ),
                 ],
             ],
@@ -186,6 +197,7 @@ class _ScheduleCalendarWeekRow extends StatelessWidget {
     required this.isLastWeek,
     required this.cellWidth,
     this.minRowHeight = _defaultMinRowHeight,
+    this.rounded = false,
   });
 
   final List<ScheduleCalendarCell> weekCells;
@@ -197,6 +209,7 @@ class _ScheduleCalendarWeekRow extends StatelessWidget {
   final bool isLastWeek;
   final double cellWidth;
   final double minRowHeight;
+  final bool rounded;
 
   static const double _topPadding = 4.0;
   static const double _dayNumberHeight = 28.0;
@@ -254,8 +267,9 @@ class _ScheduleCalendarWeekRow extends StatelessWidget {
                         scheduleDateKey(weekCells[col].date) == selectedKey,
                     isToday: scheduleDateKey(weekCells[col].date) == todayKey,
                     isWeekend: col >= 5,
+                    rounded: rounded,
                     onTap: () => onDaySelected(weekCells[col].date),
-                    showBottomBorder: !isLastWeek,
+                    showBottomBorder: !isLastWeek && !rounded,
                   ),
                 ),
               ],
@@ -266,8 +280,9 @@ class _ScheduleCalendarWeekRow extends StatelessWidget {
             if (segment.lane < _maxVisibleLanes)
               Positioned(
                 top: laneTop(segment.lane),
-                left: segment.startColumn * cellWidth + 2.0,
-                width: segment.span * cellWidth - 4.0,
+                // Rounded tiles have a gap, so chips sit a bit further in.
+                left: segment.startColumn * cellWidth + (rounded ? 4.0 : 2.0),
+                width: segment.span * cellWidth - (rounded ? 8.0 : 4.0),
                 height: _badgeHeight,
                 child: _CalendarEventSegmentDetector(
                   cellWidth: cellWidth,
@@ -275,7 +290,10 @@ class _ScheduleCalendarWeekRow extends StatelessWidget {
                   span: segment.span,
                   weekCells: weekCells,
                   onDaySelected: onDaySelected,
-                  child: _CalendarEventSegmentBadge(segment: segment),
+                  child: _CalendarEventSegmentBadge(
+                    segment: segment,
+                    rounded: rounded,
+                  ),
                 ),
               ),
           // 3. Overflow counters
@@ -369,6 +387,7 @@ class _CalendarDayCellBackground extends StatelessWidget {
     required this.isSelected,
     required this.isToday,
     required this.isWeekend,
+    required this.rounded,
     required this.onTap,
     required this.showBottomBorder,
   });
@@ -378,6 +397,7 @@ class _CalendarDayCellBackground extends StatelessWidget {
   final bool isSelected;
   final bool isToday;
   final bool isWeekend;
+  final bool rounded;
   final VoidCallback onTap;
   final bool showBottomBorder;
 
@@ -395,11 +415,57 @@ class _CalendarDayCellBackground extends StatelessWidget {
     } else if (isSelected) {
       textColor = colorScheme.onPrimaryContainer;
     } else if (!cell.inCurrentMonth) {
-      textColor = colorScheme.onSurfaceVariant.withValues(alpha: 0.35);
-    } else if (isWeekend) {
+      textColor = rounded
+          ? colorScheme.onSurfaceVariant
+          : colorScheme.onSurfaceVariant.withValues(alpha: 0.35);
+    } else if (isWeekend && !rounded) {
       textColor = colorScheme.onSurfaceVariant;
     } else {
       textColor = colorScheme.onSurface;
+    }
+
+    if (rounded) {
+      // Google Calendar tile: rounded card with a small gap, the day number
+      // in a pill that is filled for today and tonal when selected.
+      return Padding(
+        padding: const EdgeInsets.all(1.5),
+        child: Material(
+          color: colorScheme.surfaceBright,
+          borderRadius: BorderRadius.circular(10),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            key: ValueKey('schedule-day-$dateKey'),
+            onTap: onTap,
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  width: 32,
+                  height: 22,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(11),
+                    color: circleColor,
+                  ),
+                  child: Text(
+                    '${cell.date.day}',
+                    style: TextStyle(
+                      color: textColor,
+                      fontSize: 13,
+                      fontWeight: isToday || isSelected
+                          ? FontWeight.w700
+                          : FontWeight.w600,
+                      height: 1.0,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
     }
 
     return InkWell(
@@ -452,9 +518,13 @@ class _CalendarDayCellBackground extends StatelessWidget {
 }
 
 class _CalendarEventSegmentBadge extends StatelessWidget {
-  const _CalendarEventSegmentBadge({required this.segment});
+  const _CalendarEventSegmentBadge({
+    required this.segment,
+    required this.rounded,
+  });
 
   final CalendarEventSegment segment;
+  final bool rounded;
 
   @override
   Widget build(BuildContext context) {
@@ -462,6 +532,35 @@ class _CalendarEventSegmentBadge extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final badgeBg = type.backgroundColorFor(colorScheme);
     final badgeFg = type.foregroundColorFor(colorScheme);
+
+    if (rounded) {
+      // Google Calendar style: solid type color with white text. Single-day
+      // and multi-day events share the shape; multi-day bars are rounded only
+      // on the ends that start or finish in this week.
+      const radius = Radius.circular(4);
+      return Container(
+        decoration: BoxDecoration(
+          color: type.harmonizedColor(colorScheme),
+          borderRadius: BorderRadius.horizontal(
+            left: segment.isFirstSegment ? radius : Radius.zero,
+            right: segment.isLastSegment ? radius : Radius.zero,
+          ),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        alignment: Alignment.centerLeft,
+        child: segment.text.isEmpty
+            ? null
+            : Text(
+                segment.text,
+                style: _eventTextStyle.copyWith(color: Colors.white),
+                maxLines: 1,
+                overflow: segment.isLastSegment
+                    ? TextOverflow.ellipsis
+                    : TextOverflow.clip,
+                softWrap: false,
+              ),
+      );
+    }
 
     if (segment.isMultiDay) {
       return Container(

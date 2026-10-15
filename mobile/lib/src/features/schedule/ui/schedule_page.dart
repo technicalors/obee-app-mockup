@@ -12,6 +12,7 @@ import 'package:obee_mobile/src/features/schedule/ui/schedule_detail_page.dart';
 import 'package:obee_mobile/src/features/schedule/ui/schedule_form_page.dart';
 import 'package:obee_mobile/src/features/schedule/ui/widgets/schedule_main_day_panel.dart';
 import 'package:obee_mobile/src/features/schedule/ui/widgets/schedule_main_month_calendar.dart';
+import 'package:obee_mobile/src/features/schedule/ui/widgets/schedule_swipe_pager.dart';
 import 'package:obee_mobile/src/features/schedule/ui/widgets/schedule_main_header.dart';
 import 'package:obee_mobile/src/features/schedule/ui/widgets/schedule_week_time_grid.dart';
 import 'package:obee_mobile/src/features/schedule/ui/widgets/schedule_year_view.dart';
@@ -258,7 +259,7 @@ class _SchedulePageState extends ConsumerState<SchedulePage> {
                     scheduleState,
                     canCreateSchedule,
                   ),
-                  ScheduleViewMode.week => _SwipePager(
+                  ScheduleViewMode.week => ScheduleSwipePager(
                     pageKey: ValueKey(
                       'week-${scheduleDateKey(scheduleWeekStart(scheduleState.selectedDate))}',
                     ),
@@ -275,7 +276,7 @@ class _SchedulePageState extends ConsumerState<SchedulePage> {
                           : null,
                     ),
                   ),
-                  ScheduleViewMode.year => _SwipePager(
+                  ScheduleViewMode.year => ScheduleSwipePager(
                     pageKey: ValueKey('year-${scheduleState.month.year}'),
                     direction: _pageDirection,
                     onShift: _shiftRange,
@@ -299,7 +300,7 @@ class _SchedulePageState extends ConsumerState<SchedulePage> {
     final selectedDate = _selectedDate;
 
     if (selectedDate == null) {
-      return _SwipePager(
+      return ScheduleSwipePager(
         pageKey: ValueKey('month-${scheduleDateKey(scheduleState.month)}'),
         direction: _pageDirection,
         onShift: _shiftRange,
@@ -348,63 +349,6 @@ class _SchedulePageState extends ConsumerState<SchedulePage> {
           ),
         ),
       ],
-    );
-  }
-}
-
-/// Horizontal swipe navigation with a slide transition between pages.
-class _SwipePager extends StatelessWidget {
-  const _SwipePager({
-    required this.pageKey,
-    required this.direction,
-    required this.onShift,
-    required this.child,
-  });
-
-  final Key pageKey;
-  final int direction;
-  final ValueChanged<int> onShift;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onHorizontalDragEnd: (details) {
-        final velocity = details.primaryVelocity;
-        if (velocity == null) {
-          return;
-        }
-        if (velocity < -200) {
-          onShift(1);
-        } else if (velocity > 200) {
-          onShift(-1);
-        }
-      },
-      child: ClipRect(
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 260),
-          switchInCurve: Curves.easeOutCubic,
-          switchOutCurve: Curves.easeInCubic,
-          transitionBuilder: (child, animation) {
-            final isIncoming = child.key == pageKey;
-            final begin = Offset(
-              isIncoming ? 0.25 * direction : -0.25 * direction,
-              0,
-            );
-            return FadeTransition(
-              opacity: animation,
-              child: SlideTransition(
-                position: Tween(
-                  begin: begin,
-                  end: Offset.zero,
-                ).animate(animation),
-                child: child,
-              ),
-            );
-          },
-          child: KeyedSubtree(key: pageKey, child: child),
-        ),
-      ),
     );
   }
 }

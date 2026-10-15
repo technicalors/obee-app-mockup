@@ -15,7 +15,8 @@ pnpm dev
 | Giao diện | URL |
 | --- | --- |
 | Web | http://localhost:5666/ |
-| Mobile | http://localhost:5666/mobile/ |
+| Mobile — phương án 1 | http://localhost:5666/mobile/ |
+| Mobile — phương án 2 (lịch kiểu Google Calendar, có tab Công việc) | http://localhost:5666/mobile2/ |
 
 **Đăng nhập:** dữ liệu được mock ở tầng request, nhập mật khẩu bất kỳ để vào bằng tài khoản quản trị mặc định.
 
@@ -65,6 +66,7 @@ pnpm dev
 | `web/` | Mockup web (pnpm workspace) |
 | `mobile/` | Mã nguồn app Flutter — xem [mobile/README.md](mobile/README.md) |
 | `web/apps/workspace/public/mobile/app/` | Bản build Flutter web dùng cho `/mobile/` |
+| `web/apps/workspace/public/mobile2/app/` | Bản build phương án 2 dùng cho `/mobile2/` |
 | `screenshots/` | Ảnh chụp màn hình |
 
 ## Cập nhật bản mobile preview
@@ -81,6 +83,8 @@ fvm flutter build web --release --base-href /mobile/app/ \
   --dart-define=OBEE_MOCK_API=true \
   --output ../web/apps/workspace/public/mobile/app
 ```
+
+Phương án 2 dùng cùng mã nguồn, chỉ khác cờ `OBEE_UI_VARIANT=v2`, `--base-href /mobile2/app/` và thư mục output `public/mobile2/app`.
 
 ## Deploy
 

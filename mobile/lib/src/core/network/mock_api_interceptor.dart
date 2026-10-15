@@ -8,6 +8,9 @@ final class MockApiInterceptor extends Interceptor {
     _schedule('schedule-1'),
     ..._demoSchedules(),
   ];
+  late final List<Map<String, dynamic>> _taskLists = _demoTaskLists();
+  late final List<Map<String, dynamic>> _tasks = _demoTasks();
+  var _taskSequence = 100;
   late final List<Map<String, dynamic>> _requests = [
     _absenceRequest('request-1'),
   ];
@@ -144,6 +147,9 @@ final class MockApiInterceptor extends Interceptor {
       return Map<String, dynamic>.from(_demoUser);
     }
 
+    final taskResponse = _taskResponse(method, path, options.data);
+    if (!identical(taskResponse, _notFound)) return taskResponse;
+
     if (method == 'GET' && path == '/schedules') {
       return _schedules.map(Map<String, dynamic>.from).toList(growable: false);
     }
@@ -237,6 +243,104 @@ final class MockApiInterceptor extends Interceptor {
         checkedAt: DateTime(now.year, now.month, now.day, 8, 3),
       ),
     ];
+  }
+
+  /// In-memory Google Tasks style lists and tasks.
+  Object? _taskResponse(String method, String path, Object? data) {
+    final body = data is Map
+        ? Map<String, dynamic>.from(data)
+        : <String, dynamic>{};
+    final now = DateTime.now().toIso8601String();
+
+    if (path == '/task-lists') {
+      if (method == 'GET') {
+        return _taskLists.map(Map<String, dynamic>.from).toList();
+      }
+      if (method == 'POST') {
+        final list = {
+          'id': 'list-${++_taskSequence}',
+          'title': body['title'] ?? 'Danh sách mới',
+          'is_default': false,
+        };
+        _taskLists.add(list);
+        return Map<String, dynamic>.from(list);
+      }
+    }
+    if (path.startsWith('/task-lists/')) {
+      final id = path.split('/').last;
+      final index = _taskLists.indexWhere((list) => list['id'] == id);
+      if (index < 0) return _notFound;
+      if (method == 'PATCH') {
+        _taskLists[index] = {..._taskLists[index], 'title': body['title']};
+        return Map<String, dynamic>.from(_taskLists[index]);
+      }
+      if (method == 'DELETE') {
+        _taskLists.removeAt(index);
+        _tasks.removeWhere((task) => task['list_id'] == id);
+        return null;
+      }
+    }
+
+    if (path == '/tasks') {
+      if (method == 'GET') {
+        return _tasks.map(Map<String, dynamic>.from).toList();
+      }
+      if (method == 'POST') {
+        // New tasks go to the top of their list (or parent), like Google Tasks.
+        final siblings = _tasks.where(
+          (task) =>
+              task['list_id'] == body['list_id'] &&
+              task['parent_id'] == body['parent_id'],
+        );
+        final top = siblings.isEmpty
+            ? 0
+            : siblings
+                  .map((task) => task['position'] as int)
+                  .reduce((a, b) => a < b ? a : b);
+        final starred = body['starred'] == true;
+        final task = {
+          'id': 'task-${++_taskSequence}',
+          'list_id': body['list_id'],
+          'parent_id': body['parent_id'],
+          'title': body['title'] ?? '',
+          'notes': body['notes'],
+          'due_date': body['due_date'],
+          'starred': starred,
+          'starred_at': starred ? now : null,
+          'completed': false,
+          'completed_at': null,
+          // Subtasks keep insertion order; top-level tasks are prepended.
+          'position': body['parent_id'] == null ? top - 1 : siblings.length,
+          'created_at': now,
+        };
+        _tasks.add(task);
+        return Map<String, dynamic>.from(task);
+      }
+    }
+    if (path.startsWith('/tasks/')) {
+      final id = path.split('/').last;
+      final index = _tasks.indexWhere((task) => task['id'] == id);
+      if (index < 0) return _notFound;
+      if (method == 'PATCH') {
+        final task = {..._tasks[index], ...body};
+        if (body.containsKey('completed')) {
+          task['completed_at'] = body['completed'] == true ? now : null;
+        }
+        if (body.containsKey('starred')) {
+          task['starred_at'] = body['starred'] == true ? now : null;
+        }
+        _tasks[index] = task;
+        return Map<String, dynamic>.from(task);
+      }
+      if (method == 'DELETE') {
+        _tasks.removeWhere(
+          (task) => task['id'] == id || task['parent_id'] == id,
+        );
+        return null;
+      }
+    }
+
+    return _notFound;
   }
 }
 
@@ -641,6 +745,105 @@ List<Map<String, dynamic>> _demoSchedules() {
       const Duration(hours: 1),
       title: 'Review quý',
       type: 'meeting',
+    ),
+  ];
+}
+
+List<Map<String, dynamic>> _demoTaskLists() => [
+  {'id': 'list-default', 'title': 'Công việc của tôi', 'is_default': true},
+  {'id': 'list-project', 'title': 'Dự án Obee', 'is_default': false},
+];
+
+/// Demo tasks relative to today: overdue, due today, upcoming, undated,
+/// starred, completed and a parent with subtasks.
+List<Map<String, dynamic>> _demoTasks() {
+  final now = DateTime.now();
+  String day(int offset) =>
+      _date(DateTime(now.year, now.month, now.day + offset));
+  final stamp = now.toIso8601String();
+
+  Map<String, dynamic> task(
+    String id,
+    String title, {
+    String listId = 'list-default',
+    String? parentId,
+    String? notes,
+    String? due,
+    bool starred = false,
+    bool completed = false,
+    int position = 0,
+  }) => {
+    'id': id,
+    'list_id': listId,
+    'parent_id': parentId,
+    'title': title,
+    'notes': notes,
+    'due_date': due,
+    'starred': starred,
+    'starred_at': starred ? stamp : null,
+    'completed': completed,
+    'completed_at': completed ? stamp : null,
+    'position': position,
+    'created_at': stamp,
+  };
+
+  return [
+    task(
+      'task-1',
+      'Gửi báo cáo tuần cho trưởng phòng',
+      due: day(0),
+      starred: true,
+      notes: 'Tổng hợp số liệu chấm công và tiến độ dự án.',
+      position: 0,
+    ),
+    task('task-2', 'Chuẩn bị tài liệu họp kế hoạch', due: day(1), position: 1),
+    task(
+      'task-3',
+      'Slide giới thiệu sản phẩm',
+      parentId: 'task-2',
+      position: 0,
+    ),
+    task(
+      'task-4',
+      'Số liệu doanh thu quý 3',
+      parentId: 'task-2',
+      completed: true,
+      position: 1,
+    ),
+    task(
+      'task-5',
+      'Gia hạn hợp đồng thuê văn phòng',
+      due: day(-2),
+      position: 2,
+    ),
+    task('task-6', 'Đặt phòng họp cho buổi phỏng vấn', position: 3),
+    task(
+      'task-7',
+      'Đăng ký khoá đào tạo an toàn lao động',
+      completed: true,
+      position: 4,
+    ),
+    task(
+      'task-8',
+      'Hoàn thiện màn hình lịch trình',
+      listId: 'list-project',
+      due: day(3),
+      starred: true,
+      position: 0,
+    ),
+    task(
+      'task-9',
+      'Viết test cho tính năng công việc',
+      listId: 'list-project',
+      due: day(5),
+      position: 1,
+    ),
+    task(
+      'task-10',
+      'Review thiết kế mobile phương án 2',
+      listId: 'list-project',
+      completed: true,
+      position: 2,
     ),
   ];
 }

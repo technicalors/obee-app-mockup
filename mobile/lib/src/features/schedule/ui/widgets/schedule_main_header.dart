@@ -163,9 +163,16 @@ class _ScheduleHeaderState extends State<ScheduleHeader> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildFilters(),
+                      ScheduleFilterFields(
+                        selectedUserId: widget.selectedUserId,
+                        organizationUsers: widget.organizationUsers,
+                        visibility: widget.visibility,
+                        isVisibilityEnabled: widget.isVisibilityEnabled,
+                        onSelectedUserChanged: widget.onSelectedUserChanged,
+                        onVisibilityChanged: widget.onVisibilityChanged,
+                      ),
                       const SizedBox(height: 12),
-                      const _EventTypeLegend(),
+                      const ScheduleEventTypeLegend(),
                     ],
                   ),
                 )
@@ -174,21 +181,42 @@ class _ScheduleHeaderState extends State<ScheduleHeader> {
       ],
     );
   }
+}
 
-  Widget _buildFilters() {
+/// User and visibility filters shared by both schedule layouts.
+class ScheduleFilterFields extends StatelessWidget {
+  const ScheduleFilterFields({
+    required this.selectedUserId,
+    required this.organizationUsers,
+    required this.visibility,
+    required this.isVisibilityEnabled,
+    required this.onSelectedUserChanged,
+    required this.onVisibilityChanged,
+    super.key,
+  });
+
+  final String? selectedUserId;
+  final List<UserTreeSelectionUser> organizationUsers;
+  final ScheduleVisibilityFilter visibility;
+  final bool isVisibilityEnabled;
+  final ValueChanged<String> onSelectedUserChanged;
+  final ValueChanged<ScheduleVisibilityFilter> onVisibilityChanged;
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
       children: [
         Expanded(
           child: DropdownButtonFormField<String>(
             key: const ValueKey('schedule-user-dropdown'),
-            initialValue: widget.selectedUserId,
+            initialValue: selectedUserId,
             isExpanded: true,
             items: [
-              for (final user in widget.organizationUsers)
+              for (final user in organizationUsers)
                 DropdownMenuItem(value: user.id, child: Text(user.name)),
             ],
             selectedItemBuilder: (context) => [
-              for (final user in widget.organizationUsers)
+              for (final user in organizationUsers)
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
@@ -200,7 +228,7 @@ class _ScheduleHeaderState extends State<ScheduleHeader> {
             ],
             onChanged: (value) {
               if (value != null) {
-                widget.onSelectedUserChanged(value);
+                onSelectedUserChanged(value);
               }
             },
             decoration: const InputDecoration(labelText: 'Hiển thị lịch trình'),
@@ -210,7 +238,7 @@ class _ScheduleHeaderState extends State<ScheduleHeader> {
         Expanded(
           child: DropdownButtonFormField<ScheduleVisibilityFilter>(
             key: const ValueKey('schedule-visibility-dropdown'),
-            initialValue: widget.visibility,
+            initialValue: visibility,
             isExpanded: true,
             items: [
               for (final item in ScheduleVisibilityFilter.values)
@@ -227,16 +255,16 @@ class _ScheduleHeaderState extends State<ScheduleHeader> {
                   ),
                 ),
             ],
-            onChanged: widget.isVisibilityEnabled
+            onChanged: isVisibilityEnabled
                 ? (value) {
                     if (value != null) {
-                      widget.onVisibilityChanged(value);
+                      onVisibilityChanged(value);
                     }
                   }
                 : null,
             decoration: InputDecoration(
               labelText: 'Phạm vi',
-              helperText: widget.isVisibilityEnabled
+              helperText: isVisibilityEnabled
                   ? null
                   : 'Chỉ xem lịch của đồng nghiệp',
             ),
@@ -286,8 +314,9 @@ class _TodayButton extends StatelessWidget {
   }
 }
 
-class _EventTypeLegend extends StatelessWidget {
-  const _EventTypeLegend();
+/// Color key for schedule types.
+class ScheduleEventTypeLegend extends StatelessWidget {
+  const ScheduleEventTypeLegend({super.key});
 
   @override
   Widget build(BuildContext context) {

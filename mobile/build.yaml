@@ -8,6 +8,7 @@ targets:
           - lib/src/features/schedule/data/schedule_models.dart
           - lib/src/features/profile/data/update_user_input.dart
           - lib/src/features/requests/data/*.dart
+          - lib/src/features/tasks/data/task_models.dart
       json_serializable:
         generate_for:
           - lib/src/features/auth/data/*.dart
@@ -15,3 +16,4 @@ targets:
           - lib/src/features/schedule/data/schedule_models.dart
           - lib/src/features/profile/data/update_user_input.dart
           - lib/src/features/requests/data/*.dart
+          - lib/src/features/tasks/data/task_models.dart

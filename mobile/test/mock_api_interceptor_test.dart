@@ -5,6 +5,7 @@ import 'package:obee_mobile/src/features/attendance/data/attendance_models.dart'
 import 'package:obee_mobile/src/features/auth/data/auth_api.dart';
 import 'package:obee_mobile/src/features/schedule/data/schedule_enums.dart';
 import 'package:obee_mobile/src/features/schedule/data/schedule_models.dart';
+import 'package:obee_mobile/src/features/tasks/data/task_models.dart';
 
 void main() {
   late Dio dio;
@@ -49,5 +50,62 @@ void main() {
       contains(ScheduleEventScheduleType.multipleDays),
     );
     expect(all.every((item) => !item.end.isBefore(item.start)), isTrue);
+  });
+
+  test('serves Google Tasks style lists and tasks', () async {
+    final lists = await dio.get<List<dynamic>>('/task-lists');
+    final parsedLists = lists.data!
+        .cast<Map<String, dynamic>>()
+        .map(TaskListModel.fromJson)
+        .toList();
+    expect(parsedLists.where((list) => list.isDefault), hasLength(1));
+
+    final tasks = await dio.get<List<dynamic>>('/tasks');
+    final parsed = tasks.data!
+        .cast<Map<String, dynamic>>()
+        .map(TaskModel.fromJson)
+        .toList();
+    expect(parsed.any((task) => task.isSubtask), isTrue);
+    expect(parsed.any((task) => task.completed), isTrue);
+    expect(parsed.any((task) => task.starred), isTrue);
+
+    final created = TaskModel.fromJson(
+      (await dio.post<Map<String, dynamic>>(
+        '/tasks',
+        data: const TaskDraft(
+          listId: 'list-default',
+          title: 'New task',
+          starred: true,
+        ).toRequestJson(),
+      )).data!,
+    );
+    expect(created.starredAt, isNotNull);
+    // New top-level tasks go first in their list.
+    final minPosition = parsed
+        .where((task) => task.listId == 'list-default' && !task.isSubtask)
+        .map((task) => task.position)
+        .reduce((a, b) => a < b ? a : b);
+    expect(created.position, lessThan(minPosition));
+
+    final completed = TaskModel.fromJson(
+      (await dio.patch<Map<String, dynamic>>(
+        '/tasks/${created.id}',
+        data: {'completed': true},
+      )).data!,
+    );
+    expect(completed.completed, isTrue);
+    expect(completed.completedAt, isNotNull);
+
+    await dio.delete<void>('/tasks/task-2');
+    final remaining = (await dio.get<List<dynamic>>(
+      '/tasks',
+    )).data!.cast<Map<String, dynamic>>().map(TaskModel.fromJson);
+    // Deleting a parent removes its subtasks too.
+    expect(
+      remaining.where(
+        (task) => task.id == 'task-2' || task.parentId == 'task-2',
+      ),
+      isEmpty,
+    );
   });
 }

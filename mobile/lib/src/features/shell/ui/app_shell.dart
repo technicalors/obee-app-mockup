@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:obee_mobile/src/features/auth/state/auth_controller.dart';
 import 'package:go_router/go_router.dart';
+import 'package:obee_mobile/src/app/ui_variant.dart';
 import 'package:obee_mobile/src/core/widgets/app_top_bar.dart';
 
 enum AppShellIcon {
@@ -17,14 +18,17 @@ enum AppShellIcon {
 const _wideShellBreakpoint = 840.0;
 
 class AppShell extends StatelessWidget {
-  const AppShell({required this.child, super.key});
+  const AppShell({required this.child, this.showTasks = isUiV2, super.key});
 
   final Widget child;
+
+  /// The "Công việc" tab ships only in the `/mobile2` preview build.
+  final bool showTasks;
 
   @override
   Widget build(BuildContext context) {
     final location = GoRouterState.of(context).matchedLocation;
-    final destinations = _destinations();
+    final destinations = _destinations(showTasks: showTasks);
     final selectedIndex = _selectedIndex(location, destinations);
 
     return LayoutBuilder(
@@ -184,7 +188,7 @@ class _ShellDestination {
   final IconData icon;
 }
 
-List<_ShellDestination> _destinations() {
+List<_ShellDestination> _destinations({required bool showTasks}) {
   return [
     _ShellDestination(
       path: '/app/attendance',
@@ -207,6 +211,12 @@ List<_ShellDestination> _destinations() {
       label: 'Lịch trình',
       icon: Icons.calendar_month_outlined,
     ),
+    if (showTasks)
+      _ShellDestination(
+        path: '/app/tasks',
+        label: 'Công việc',
+        icon: Icons.task_alt,
+      ),
     _ShellDestination(
       path: '/app/profile',
       label: 'Hồ sơ',

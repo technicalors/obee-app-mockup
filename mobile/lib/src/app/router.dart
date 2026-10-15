@@ -1,3 +1,6 @@
+import 'package:obee_mobile/src/app/ui_variant.dart';
+import 'package:obee_mobile/src/features/tasks/ui/task_detail_page.dart';
+import 'package:obee_mobile/src/features/tasks/ui/tasks_page.dart';
 import 'package:obee_mobile/src/features/auth/ui/auth_bootstrap_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,6 +23,7 @@ import 'package:obee_mobile/src/features/profile/ui/profile_page.dart';
 import 'package:obee_mobile/src/features/schedule/ui/schedule_detail_page.dart';
 import 'package:obee_mobile/src/features/schedule/ui/schedule_form_page.dart';
 import 'package:obee_mobile/src/features/schedule/ui/schedule_page.dart';
+import 'package:obee_mobile/src/features/schedule/ui/v2/schedule_page_v2.dart';
 import 'package:obee_mobile/src/features/shell/ui/app_shell.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -124,6 +128,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
+        path: '/app/tasks/:id',
+        builder: (context, state) =>
+            TaskDetailPage(taskId: state.pathParameters['id']!),
+      ),
+      GoRoute(
         path: '/app/profile/edit',
         builder: (context, state) => const EditProfilePage(),
       ),
@@ -151,7 +160,12 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/app/schedule',
             // This route used to return a placeholder feature page. Keeping the
             // path stable avoids any shell or navigation changes elsewhere.
-            builder: (context, state) => const SchedulePage(),
+            builder: (context, state) =>
+                isUiV2 ? const SchedulePageV2() : const SchedulePage(),
+          ),
+          GoRoute(
+            path: TasksPage.routePath,
+            builder: (context, state) => const TasksPage(),
           ),
           GoRoute(
             path: '/app/profile',

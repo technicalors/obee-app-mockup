@@ -12,6 +12,7 @@ class ScheduleYearView extends StatelessWidget {
     required this.today,
     required this.schedulesByDate,
     required this.onMonthSelected,
+    this.roundedToday = false,
     super.key,
   });
 
@@ -19,6 +20,9 @@ class ScheduleYearView extends StatelessWidget {
   final DateTime today;
   final Map<String, List<ScheduleModel>> schedulesByDate;
   final ValueChanged<DateTime> onMonthSelected;
+
+  /// Draws day highlights as rounded squares instead of circles.
+  final bool roundedToday;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +47,7 @@ class ScheduleYearView extends StatelessWidget {
               month: month,
               today: today,
               schedulesByDate: schedulesByDate,
+              roundedToday: roundedToday,
               onTap: () => onMonthSelected(month),
             );
           },
@@ -57,12 +62,14 @@ class _MiniMonth extends StatelessWidget {
     required this.month,
     required this.today,
     required this.schedulesByDate,
+    required this.roundedToday,
     required this.onTap,
   });
 
   final DateTime month;
   final DateTime today;
   final Map<String, List<ScheduleModel>> schedulesByDate;
+  final bool roundedToday;
   final VoidCallback onTap;
 
   @override
@@ -125,6 +132,7 @@ class _MiniMonth extends StatelessWidget {
                               child: week * 7 + col < cells.length
                                   ? _MiniDay(
                                       cell: cells[week * 7 + col],
+                                      rounded: roundedToday,
                                       isToday:
                                           scheduleDateKey(
                                             cells[week * 7 + col].date,
@@ -157,11 +165,13 @@ class _MiniDay extends StatelessWidget {
     required this.cell,
     required this.isToday,
     required this.hasSchedules,
+    required this.rounded,
   });
 
   final ScheduleCalendarCell cell;
   final bool isToday;
   final bool hasSchedules;
+  final bool rounded;
 
   @override
   Widget build(BuildContext context) {
@@ -181,7 +191,9 @@ class _MiniDay extends StatelessWidget {
         width: 15,
         height: 15,
         alignment: Alignment.center,
-        decoration: BoxDecoration(shape: BoxShape.circle, color: fill),
+        decoration: rounded
+            ? BoxDecoration(borderRadius: BorderRadius.circular(4), color: fill)
+            : BoxDecoration(shape: BoxShape.circle, color: fill),
         child: Text(
           '${cell.date.day}',
           style: TextStyle(

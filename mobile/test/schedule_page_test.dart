@@ -17,6 +17,8 @@ import 'package:obee_mobile/src/features/schedule/ui/schedule_detail_page.dart';
 import 'package:obee_mobile/src/features/schedule/ui/widgets/schedule_detail_content.dart';
 import 'package:obee_mobile/src/features/schedule/ui/schedule_form_page.dart';
 import 'package:obee_mobile/src/features/schedule/ui/schedule_page.dart';
+import 'package:obee_mobile/src/features/schedule/ui/v2/schedule_page_v2.dart';
+import 'package:obee_mobile/src/features/schedule/ui/widgets/schedule_main_month_calendar.dart';
 
 void main() {
   // Smoke test for replacing the placeholder route with the real schedule UI.
@@ -2432,6 +2434,223 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+
+  group('schedule layout v2', () {
+    Widget v2(DateTime now) => SchedulePageV2(now: now);
+
+    List<ScheduleModel> v2Schedules() => [
+      _schedule(
+        id: 'schedule-today',
+        title: 'Planning',
+        start: DateTime(2026, 6, 10, 9),
+        end: DateTime(2026, 6, 10, 10),
+      ),
+      _schedule(
+        id: 'schedule-later',
+        title: 'Client review',
+        type: ScheduleEventType.seminar,
+        start: DateTime(2026, 6, 12, 14),
+        end: DateTime(2026, 6, 12, 15),
+      ),
+    ];
+
+    testWidgets('tapping a day opens the day drawer like layout v1', (
+      tester,
+    ) async {
+      await _pumpSchedulePage(
+        tester,
+        api: FakeScheduleApi(schedules: v2Schedules()),
+        now: DateTime(2026, 6, 10),
+        page: v2,
+      );
+
+      expect(find.text('Tháng 6, 2026'), findsOneWidget);
+      // Full grid only: titles in the cells, no drawer yet.
+      expect(find.text('Planning'), findsOneWidget);
+      expect(find.text('Client review'), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('schedule-day-panel-close')),
+        findsNothing,
+      );
+
+      await tester.tap(
+        find.byKey(const ValueKey('schedule-day-2026-06-12')),
+        warnIfMissed: false,
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Lịch ngày 12/06'), findsOneWidget);
+      expect(find.text('Client review'), findsNWidgets(2));
+      // The grid collapses to the tapped week.
+      expect(
+        find.byKey(const ValueKey('schedule-day-2026-06-01')),
+        findsNothing,
+      );
+
+      await tester.tap(find.byKey(const ValueKey('schedule-day-panel-close')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Lịch ngày 12/06'), findsNothing);
+      expect(
+        find.byKey(const ValueKey('schedule-day-2026-06-01')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('view menu switches between year, month and week', (
+      tester,
+    ) async {
+      final api = FakeScheduleApi(schedules: v2Schedules());
+      await _pumpSchedulePage(
+        tester,
+        api: api,
+        now: DateTime(2026, 6, 10),
+        page: v2,
+      );
+
+      await _selectViewMode(tester, ScheduleViewMode.week);
+
+      expect(find.text('8 – 14/06'), findsOneWidget);
+      // Only the selected week's row is shown.
+      expect(
+        find.byKey(const ValueKey('schedule-day-2026-06-08')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey('schedule-day-2026-06-15')),
+        findsNothing,
+      );
+      expect(find.text('Planning'), findsNWidgets(2));
+      expect(api.fetchSchedulesRequests.last.endFrom, DateTime(2026, 6, 8));
+
+      await _selectViewMode(tester, ScheduleViewMode.year);
+
+      expect(find.byKey(const ValueKey('schedule-year-grid')), findsOneWidget);
+      expect(find.text('2026'), findsOneWidget);
+
+      await tester.tap(find.byKey(const ValueKey('schedule-year-month-9')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Tháng 9, 2026'), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('schedule-day-2026-09-15')),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.byKey(const ValueKey('schedule-today-button')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Tháng 6, 2026'), findsOneWidget);
+    });
+
+    testWidgets('multi-day events render as a bar across their days', (
+      tester,
+    ) async {
+      await _pumpSchedulePage(
+        tester,
+        api: FakeScheduleApi(
+          schedules: [
+            _schedule(
+              id: 'schedule-conference',
+              title: 'Hội nghị',
+              type: ScheduleEventType.seminar,
+              scheduleType: ScheduleEventScheduleType.multipleDays,
+              start: DateTime(2026, 6, 9),
+              end: DateTime(2026, 6, 11),
+            ),
+          ],
+        ),
+        now: DateTime(2026, 6, 10),
+        page: v2,
+      );
+
+      // One bar in the grid spanning 9–11/06, plus the agenda card for today.
+      final barText = find.descendant(
+        of: find.byType(ScheduleMonthCalendar),
+        matching: find.text('Hội nghị'),
+      );
+      expect(barText, findsOneWidget);
+      final bar = tester.getRect(
+        find.ancestor(of: barText, matching: find.byType(Container)).first,
+      );
+      final firstDay = tester.getRect(
+        find.byKey(const ValueKey('schedule-day-2026-06-09')),
+      );
+      final lastDay = tester.getRect(
+        find.byKey(const ValueKey('schedule-day-2026-06-11')),
+      );
+      expect(bar.left, closeTo(firstDay.left, 4));
+      expect(bar.right, closeTo(lastDay.right, 4));
+    });
+
+    testWidgets('filter toggle shows the shared filter fields', (tester) async {
+      await _pumpSchedulePage(
+        tester,
+        api: FakeScheduleApi(),
+        now: DateTime(2026, 6, 10),
+        page: v2,
+      );
+
+      await tester.tap(find.byKey(const ValueKey('schedule-filter-toggle')));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byKey(const ValueKey('schedule-user-dropdown')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey('schedule-visibility-dropdown')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('create actions are hidden without the create permission', (
+      tester,
+    ) async {
+      await _pumpSchedulePage(
+        tester,
+        api: FakeScheduleApi(),
+        now: DateTime(2026, 6, 10),
+        auth: _FakeObserverAuthController.new,
+        page: v2,
+      );
+
+      expect(find.byKey(const ValueKey('schedule-create-fab')), findsNothing);
+      expect(
+        find.byKey(const ValueKey('schedule-v2-empty-create')),
+        findsNothing,
+      );
+    });
+
+    testWidgets('add button opens the create form', (tester) async {
+      await _pumpSchedulePage(
+        tester,
+        api: FakeScheduleApi(),
+        now: DateTime(2026, 6, 10),
+        page: v2,
+      );
+
+      await tester.tap(find.byTooltip('Thêm lịch trình mới'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Tiêu đề'), findsOneWidget);
+    });
+
+    for (final mode in ScheduleViewMode.values) {
+      testWidgets('${mode.name} view fits a narrow phone', (tester) async {
+        await _pumpSchedulePage(
+          tester,
+          api: FakeScheduleApi(schedules: v2Schedules()),
+          now: DateTime(2026, 6, 10),
+          size: const Size(320, 640),
+          page: v2,
+        );
+        await _selectViewMode(tester, mode);
+
+        expect(tester.takeException(), isNull);
+      });
+    }
+  });
 }
 
 Future<void> _pumpSchedulePage(
@@ -2440,6 +2659,7 @@ Future<void> _pumpSchedulePage(
   required DateTime now,
   AuthController Function() auth = _FakeAuthController.new,
   Size size = const Size(800, 1400),
+  Widget Function(DateTime now)? page,
 }) async {
   await tester.binding.setSurfaceSize(size);
   addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -2453,7 +2673,7 @@ Future<void> _pumpSchedulePage(
       ),
       GoRoute(
         path: '/app/schedule',
-        builder: (context, state) => SchedulePage(now: now),
+        builder: (context, state) => page?.call(now) ?? SchedulePage(now: now),
       ),
     ],
   );
