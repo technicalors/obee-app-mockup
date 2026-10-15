@@ -1,0 +1,67 @@
+{
+  "routeTitle": "Facilities",
+  "listTitle": "Facility list",
+  "listDescription": "Manage rooms and equipment in the facility catalog.",
+  "columns": {
+    "sequence": "No.",
+    "code": "Facility code",
+    "name": "Facility name",
+    "type": "Type",
+    "quantity": "Quantity",
+    "note": "Note",
+    "createdAt": "Created at",
+    "updatedAt": "Updated at",
+    "actions": "Actions"
+  },
+  "filters": {
+    "search": "Search",
+    "searchPlaceholder": "Search facilities...",
+    "type": "Type"
+  },
+  "fields": {
+    "code": "Facility code",
+    "name": "Facility name",
+    "type": "Type",
+    "quantity": "Quantity",
+    "note": "Note",
+    "createdAt": "Created at",
+    "updatedAt": "Updated at"
+  },
+  "types": {
+    "room": "Room",
+    "equipment": "Equipment"
+  },
+  "actions": {
+    "create": "Add facility",
+    "view": "View details",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "create": {
+    "title": "Add facility"
+  },
+  "edit": {
+    "title": "Edit facility"
+  },
+  "detail": {
+    "title": "Facility details"
+  },
+  "delete": {
+    "title": "Delete facility",
+    "description": "Are you sure you want to delete {name}? This action cannot be undone."
+  },
+  "validation": {
+    "codeRequired": "Enter the facility code",
+    "nameRequired": "Enter the facility name",
+    "quantityPositive": "Quantity must be a positive integer",
+    "quantityMax": "Quantity cannot exceed 2,147,483,647"
+  },
+  "messages": {
+    "created": "Facility created",
+    "updated": "Facility updated",
+    "deleted": "Facility deleted",
+    "unexpectedError": "An unexpected error occurred"
+  }
+}

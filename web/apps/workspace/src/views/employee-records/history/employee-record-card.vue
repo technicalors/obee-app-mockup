@@ -23,24 +23,24 @@ const workHistoryColumns = [
   {
     dataIndex: 'date',
     key: 'date',
-    title: $t('page.employeeHistory.columns.date'),
+    title: $t('employeeHistory.columns.date'),
     width: 130,
   },
   {
     dataIndex: 'positionDepartment',
     key: 'positionDepartment',
-    title: $t('page.employeeHistory.columns.positionDepartment'),
+    title: $t('employeeHistory.columns.positionDepartment'),
   },
   {
     dataIndex: 'position',
     key: 'position',
-    title: $t('page.employeeHistory.columns.position'),
+    title: $t('employeeHistory.columns.position'),
     width: 160,
   },
   {
     dataIndex: 'note',
     key: 'note',
-    title: $t('page.employeeHistory.columns.note'),
+    title: $t('employeeHistory.columns.note'),
     width: 160,
   },
 ];
@@ -49,24 +49,24 @@ const educationHistoryColumns = [
   {
     dataIndex: 'date',
     key: 'date',
-    title: $t('page.employeeHistory.columns.date'),
+    title: $t('employeeHistory.columns.date'),
     width: 130,
   },
   {
     dataIndex: 'content',
     key: 'content',
-    title: $t('page.employeeHistory.columns.content'),
+    title: $t('employeeHistory.columns.content'),
   },
   {
     dataIndex: 'level',
     key: 'level',
-    title: $t('page.employeeHistory.columns.level'),
+    title: $t('employeeHistory.columns.level'),
     width: 160,
   },
   {
     dataIndex: 'note',
     key: 'note',
-    title: $t('page.employeeHistory.columns.note'),
+    title: $t('employeeHistory.columns.note'),
     width: 160,
   },
 ];
@@ -75,18 +75,18 @@ const achievementsColumns = [
   {
     dataIndex: 'date',
     key: 'date',
-    title: $t('page.employeeHistory.columns.date'),
+    title: $t('employeeHistory.columns.date'),
     width: 130,
   },
   {
     dataIndex: 'award',
     key: 'award',
-    title: $t('page.employeeHistory.columns.award'),
+    title: $t('employeeHistory.columns.award'),
   },
   {
     dataIndex: 'note',
     key: 'note',
-    title: $t('page.employeeHistory.columns.note'),
+    title: $t('employeeHistory.columns.note'),
     width: 160,
   },
 ];
@@ -95,18 +95,18 @@ const hrNotesColumns = [
   {
     dataIndex: 'date',
     key: 'date',
-    title: $t('page.employeeHistory.columns.date'),
+    title: $t('employeeHistory.columns.date'),
     width: 130,
   },
   {
     dataIndex: 'content',
     key: 'content',
-    title: $t('page.employeeHistory.columns.content'),
+    title: $t('employeeHistory.columns.content'),
   },
   {
     dataIndex: 'note',
     key: 'note',
-    title: $t('page.employeeHistory.columns.note'),
+    title: $t('employeeHistory.columns.note'),
     width: 160,
   },
 ];
@@ -114,53 +114,51 @@ const hrNotesColumns = [
 const historySections = [
   {
     columns: workHistoryColumns,
-    emptyDescription: $t('page.employeeHistory.emptyHistory.workHistoryDesc'),
-    emptyTitle: $t('page.employeeHistory.emptyHistory.workHistory'),
+    emptyDescription: $t('employeeHistory.emptyHistory.workHistoryDesc'),
+    emptyTitle: $t('employeeHistory.emptyHistory.workHistory'),
     icon: 'lucide:briefcase',
     key: 'work-history',
     rows: [],
-    title: $t('page.employeeHistory.sections.workHistory'),
+    title: $t('employeeHistory.sections.workHistory'),
   },
   {
     columns: educationHistoryColumns,
-    emptyDescription: $t(
-      'page.employeeHistory.emptyHistory.educationHistoryDesc',
-    ),
-    emptyTitle: $t('page.employeeHistory.emptyHistory.educationHistory'),
+    emptyDescription: $t('employeeHistory.emptyHistory.educationHistoryDesc'),
+    emptyTitle: $t('employeeHistory.emptyHistory.educationHistory'),
     icon: 'lucide:graduation-cap',
     key: 'education-history',
     rows: [],
-    title: $t('page.employeeHistory.sections.educationHistory'),
+    title: $t('employeeHistory.sections.educationHistory'),
   },
   {
     columns: achievementsColumns,
-    emptyDescription: $t('page.employeeHistory.emptyHistory.achievementsDesc'),
-    emptyTitle: $t('page.employeeHistory.emptyHistory.achievements'),
+    emptyDescription: $t('employeeHistory.emptyHistory.achievementsDesc'),
+    emptyTitle: $t('employeeHistory.emptyHistory.achievements'),
     icon: 'lucide:award',
     key: 'achievements',
     rows: [],
-    title: $t('page.employeeHistory.sections.achievements'),
+    title: $t('employeeHistory.sections.achievements'),
   },
   {
     columns: hrNotesColumns,
-    emptyDescription: $t('page.employeeHistory.emptyHistory.hrNotesDesc'),
-    emptyTitle: $t('page.employeeHistory.emptyHistory.hrNotes'),
+    emptyDescription: $t('employeeHistory.emptyHistory.hrNotesDesc'),
+    emptyTitle: $t('employeeHistory.emptyHistory.hrNotes'),
     icon: 'lucide:file-text',
     key: 'hr-notes',
     rows: [],
-    title: $t('page.employeeHistory.sections.hrNotes'),
+    title: $t('employeeHistory.sections.hrNotes'),
   },
 ];
 
 function genderLabel(sex: null | string): string {
-  if (sex === 'male') return $t('page.users.gender.male');
-  if (sex === 'female') return $t('page.users.gender.female');
+  if (sex === 'male') return $t('users.gender.male');
+  if (sex === 'female') return $t('users.gender.female');
   return $t('common.notProvided');
 }
 
 function educationLabel(level: null | string): string {
   if (!level) return $t('common.notProvided');
-  return $t(`page.users.educationLevels.${level}`);
+  return $t(`users.educationLevels.${level}`);
 }
 </script>
 
@@ -171,7 +169,7 @@ function educationLabel(level: null | string): string {
         <div class="flex items-center gap-2.5">
           <div class="h-4 w-1 rounded-full bg-primary"></div>
           <h2 class="employee-record-section-title">
-            {{ $t('page.employeeHistory.sections.personalInfo') }}
+            {{ $t('employeeHistory.sections.personalInfo') }}
           </h2>
         </div>
       </template>
@@ -182,96 +180,74 @@ function educationLabel(level: null | string): string {
         :column="{ lg: 2, md: 2, sm: 1, xl: 2, xs: 1 }"
       >
         <DescriptionsItem
-          :label="$t('page.employeeHistory.fields.fullName')"
+          :label="$t('employeeHistory.fields.fullName')"
           :span="2"
         >
           {{ user.name }}
         </DescriptionsItem>
-        <DescriptionsItem :label="$t('page.employeeHistory.fields.gender')">
+        <DescriptionsItem :label="$t('employeeHistory.fields.gender')">
           {{ genderLabel(user.profile?.sex ?? null) }}
         </DescriptionsItem>
-        <DescriptionsItem
-          :label="$t('page.employeeHistory.fields.employeeCode')"
-        >
+        <DescriptionsItem :label="$t('employeeHistory.fields.employeeCode')">
           {{ user.profile?.code ?? $t('common.notProvided') }}
         </DescriptionsItem>
-        <DescriptionsItem
-          :label="$t('page.employeeHistory.fields.dateOfBirth')"
-        >
+        <DescriptionsItem :label="$t('employeeHistory.fields.dateOfBirth')">
           {{ user.profile?.birthday ?? $t('common.notProvided') }}
         </DescriptionsItem>
-        <DescriptionsItem :label="$t('page.employeeHistory.fields.age')">
+        <DescriptionsItem :label="$t('employeeHistory.fields.age')">
           {{ user.profile?.age ?? $t('common.notProvided') }}
         </DescriptionsItem>
-        <DescriptionsItem :label="$t('page.employeeHistory.fields.joinedAt')">
+        <DescriptionsItem :label="$t('employeeHistory.fields.joinedAt')">
           {{ user.profile?.joined_at ?? $t('common.notProvided') }}
         </DescriptionsItem>
-        <DescriptionsItem :label="$t('page.employeeHistory.fields.seniority')">
+        <DescriptionsItem :label="$t('employeeHistory.fields.seniority')">
           {{ user.profile?.seniority ?? $t('common.notProvided') }}
         </DescriptionsItem>
-        <DescriptionsItem :label="$t('page.employeeHistory.fields.workUnit')">
-          {{
-            user.departments.length === 0
-              ? $t('common.notProvided')
-              : user.departments
-                  .map((department) => department.name)
-                  .join(' > ')
-          }}
+        <DescriptionsItem :label="$t('employeeHistory.fields.workUnit')">
+          {{ user.organization?.name ?? $t('common.notProvided') }}
         </DescriptionsItem>
-        <DescriptionsItem
-          :label="$t('page.employeeHistory.fields.currentPosition')"
-        >
+        <DescriptionsItem :label="$t('employeeHistory.fields.currentPosition')">
           {{ user.profile?.position?.name ?? $t('common.notProvided') }}
         </DescriptionsItem>
         <DescriptionsItem
-          :label="$t('page.employeeHistory.fields.address')"
+          :label="$t('employeeHistory.fields.address')"
           :span="2"
         >
           {{ user.profile?.address ?? $t('common.notProvided') }}
         </DescriptionsItem>
-        <DescriptionsItem :label="$t('page.employeeHistory.fields.email')">
+        <DescriptionsItem :label="$t('employeeHistory.fields.email')">
           {{ user.email ?? $t('common.notProvided') }}
         </DescriptionsItem>
-        <DescriptionsItem :label="$t('page.employeeHistory.fields.phone')">
+        <DescriptionsItem :label="$t('employeeHistory.fields.phone')">
           {{ user.profile?.phone_number ?? $t('common.notProvided') }}
         </DescriptionsItem>
-        <DescriptionsItem :label="$t('page.employeeHistory.fields.citizenId')">
+        <DescriptionsItem :label="$t('employeeHistory.fields.citizenId')">
           {{
             user.profile?.citizen_identification_card ??
             $t('common.notProvided')
           }}
         </DescriptionsItem>
-        <DescriptionsItem
-          :label="$t('page.employeeHistory.fields.socialInsurance')"
-        >
+        <DescriptionsItem :label="$t('employeeHistory.fields.socialInsurance')">
           {{
             user.profile?.social_insurance_number ?? $t('common.notProvided')
           }}
         </DescriptionsItem>
-        <DescriptionsItem
-          :label="$t('page.employeeHistory.fields.healthInsurance')"
-        >
+        <DescriptionsItem :label="$t('employeeHistory.fields.healthInsurance')">
           {{
             user.profile?.health_insurance_card_number ??
             $t('common.notProvided')
           }}
         </DescriptionsItem>
-        <DescriptionsItem
-          :label="$t('page.employeeHistory.fields.educationLevel')"
-        >
+        <DescriptionsItem :label="$t('employeeHistory.fields.educationLevel')">
           {{ educationLabel(user.profile?.education_level ?? null) }}
         </DescriptionsItem>
-        <DescriptionsItem
-          :label="$t('page.employeeHistory.fields.personalTaxId')"
-        >
+        <DescriptionsItem :label="$t('employeeHistory.fields.personalTaxId')">
           {{
             user.profile?.personal_tax_identification_number ??
             $t('common.notProvided')
           }}
         </DescriptionsItem>
-        <DescriptionsItem
-          :label="$t('page.employeeHistory.fields.dependentTaxId')"
-        >
+        <DescriptionsItem :label="$t('employeeHistory.fields.dependentTaxId')">
           {{
             user.profile?.dependent_tax_identification_number ??
             $t('common.notProvided')

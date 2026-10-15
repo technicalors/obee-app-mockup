@@ -1,0 +1,57 @@
+{
+  "routeTitle": "Roles",
+  "listTitle": "Role management",
+  "listDescription": "Configure system permissions for roles and accounts.",
+  "columns": {
+    "resource": "Resource"
+  },
+  "filters": {
+    "resource": "Search resources"
+  },
+  "fields": {
+    "name": "Role name",
+    "description": "Description"
+  },
+  "actions": {
+    "create": "Create role",
+    "edit": "Edit role",
+    "save": "Save",
+    "undo": "Undo",
+    "cancel": "Cancel",
+    "retry": "Retry",
+    "viewAny": "View all",
+    "view": "View",
+    "createAction": "Create",
+    "update": "Update",
+    "deleteAction": "Delete"
+  },
+  "matrixActions": {
+    "review": "Review requests",
+    "viewAny": "View all",
+    "view": "View",
+    "create": "Create",
+    "update": "Update",
+    "delete": "Delete"
+  },
+  "create": {
+    "title": "Create role"
+  },
+  "edit": {
+    "title": "Edit role"
+  },
+  "permissionAccessDenied": "You can view roles, but do not have access to the permission catalog. This page is read-only.",
+  "leave": {
+    "title": "Unsaved role changes",
+    "confirm": "Discard unsaved role permission changes?",
+    "discard": "Discard"
+  },
+  "aria": {
+    "permission": "Toggle {action} permission for {resource}"
+  },
+  "messages": {
+    "created": "Role created",
+    "updated": "Role updated",
+    "loadFailed": "Unable to load roles.",
+    "unexpectedError": "An unexpected error occurred"
+  }
+}

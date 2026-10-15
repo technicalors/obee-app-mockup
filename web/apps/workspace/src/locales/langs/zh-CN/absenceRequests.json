@@ -1,0 +1,244 @@
+{
+  "routeTitle": "申请",
+  "title": "申请",
+  "balance": "剩余年假：{remaining} 天",
+  "empty": "暂无申请。",
+  "tabs": {
+    "all": "全部申请",
+    "pending": "待处理申请",
+    "approved": "已接受",
+    "rejected": "已拒绝",
+    "my": "我的申请",
+    "review": "待我审批"
+  },
+  "states": {
+    "loadFailed": "目前无法加载申请。",
+    "noRequests": "没有找到申请。",
+    "noReviewRequests": "暂无待审批的申请。",
+    "listLoadingTitle": "正在加载申请",
+    "listLoadingDescription": "加载完成后，当前申请列表将在此显示。",
+    "listErrorTitle": "无法加载申请列表",
+    "listErrorDescription": "目前无法加载申请列表。请稍后重试。",
+    "emptyPendingTitle": "暂无待处理申请",
+    "emptyPendingDescription": "当前没有正在等待处理的申请。",
+    "emptyApprovedTitle": "暂无已接受申请",
+    "emptyApprovedDescription": "当前没有已接受的申请。",
+    "emptyRejectedTitle": "暂无已拒绝/需调整申请",
+    "emptyRejectedDescription": "当前没有被拒绝或需要调整的申请。",
+    "emptyAllTitle": "暂无申请",
+    "emptyAllDescription": "此标签页下暂无申请显示。",
+    "emptyMyTitle": "您尚未创建任何申请",
+    "emptyMyDescription": "提交后，您创建的申请将显示在这里。",
+    "emptyReviewTitle": "暂无需要审批的内容",
+    "emptyReviewDescription": "当前没有等待处理的待审批申请。",
+    "emptyFilteredTitle": "没有符合当前筛选条件的申请",
+    "emptyFilteredDescription": "请尝试清除或调整当前筛选条件以查看更多申请。"
+  },
+  "filters": {
+    "title": "筛选申请",
+    "description": "缩小当前申请列表的范围。",
+    "fields": {
+      "requestType": "申请类型",
+      "status": "状态",
+      "reviewer": "审批人",
+      "requester": "申请人",
+      "dateRange": "创建日期",
+      "from": "开始日期",
+      "to": "结束日期"
+    },
+    "actions": {
+      "open": "筛选",
+      "openWithCount": "筛选 ({count})",
+      "apply": "应用筛选",
+      "reset": "重置",
+      "clear": "清除筛选",
+      "clearAll": "清除全部"
+    },
+    "all": "全部"
+  },
+  "types": {
+    "ANNUAL": "年假申请",
+    "UNPAID": "无薪假申请",
+    "BUSINESS_TRIP": "出差申请"
+  },
+  "statuses": {
+    "pending": "待审批",
+    "returned": "已退回",
+    "approved": "已批准",
+    "rejected": "已拒绝"
+  },
+  "labels": {
+    "requester": "申请人",
+    "reviewer": "审批人"
+  },
+  "create": {
+    "title": "创建申请",
+    "editTitle": "编辑申请",
+    "description": "发起新的申请。",
+    "fields": {
+      "timeoffType": "休假类型",
+      "reviewer": "审批人",
+      "startDate": "开始时间",
+      "endDate": "结束时间",
+      "timeoffDate": "请假日期",
+      "timeoffShift": "工作班次",
+      "reason": "原因",
+      "address": "出差地点",
+      "company": "公司"
+    },
+    "placeholders": {
+      "timeoffType": "选择休假类型",
+      "reviewer": "选择审批人",
+      "startDate": "选择开始时间",
+      "endDate": "选择结束时间",
+      "timeoffDate": "选择请假日期",
+      "reason": "填写申请原因",
+      "address": "填写出差地点"
+    },
+    "options": {
+      "timeoffType": {
+        "ANNUAL": "年假",
+        "UNPAID": "无薪假"
+      }
+    },
+    "hints": {
+      "timeoff": "选择符合本次申请的休假类型。",
+      "businessTrip": "出差申请将包含行程地点信息。"
+    },
+    "balance": {
+      "title": "年假余额",
+      "loadingTitle": "正在加载年假余额",
+      "loadingDescription": "加载完成后将显示年假余额信息。",
+      "sufficientDescription": "您的年假余额足够支持本次申请。",
+      "insufficientDescription": "年假余额不足以支持本次申请。",
+      "crossCycleDescription": "申请跨越多个年假周期；提交时会分别检查各周期余额。",
+      "referenceDescription": "显示开始日期的余额。提交时将检查排班日期及各年假周期余额。",
+      "unavailableTitle": "年假余额不可用",
+      "unavailableDescription": "目前无法加载年假余额。请稍后重试。",
+      "remaining": "剩余",
+      "used": "已用",
+      "entitlement": "额度",
+      "cycle": "周期",
+      "cycleUnavailable": "无",
+      "daysValue": "{count} 天"
+    },
+    "actions": {
+      "open": "创建申请",
+      "openTimeoff": "请假申请",
+      "openBusinessTrip": "出差申请",
+      "submit": "提交审批",
+      "cancel": "取消"
+    },
+    "validation": {
+      "reviewerRequired": "请为此申请选择审批人。",
+      "addressRequired": "请输入出差地点。",
+      "startDateRequired": "请选择开始日期和时间。",
+      "endDateRequired": "请选择结束日期和时间。",
+      "dateRangeInvalid": "开始时间必须早于结束时间。",
+      "timeoffSingleDay": "请假申请的开始和结束时间必须在同一天。",
+      "reasonRequired": "请输入申请原因。"
+    },
+    "shiftSelection": {
+      "selectDateFirst": "请先选择请假日期",
+      "custom": "自定义时间范围",
+      "placeholder": "选择班次或自定义时间范围",
+      "loading": "正在加载已分配的班次...",
+      "loadFailed": "无法加载当天已分配的班次。",
+      "empty": "当天未分配班次。请选择“自定义时间范围”设置请假时间。",
+      "wholeShift": "{name}（{start} → {end}）",
+      "wholeShiftOvernight": "{name}（{start} → 次日 {end}）",
+      "period": "时段 {index}：{start} → {end}",
+      "periodOvernight": "时段 {index}：{start} → 次日 {end}",
+      "retry": "重试"
+    }
+  },
+  "detail": {
+    "durationDays": "{days} 天",
+    "title": "申请详情",
+    "description": "查看完整的申请信息。",
+    "fields": {
+      "duration": "申请时长",
+      "createdAt": "申请时间",
+      "submittedAt": "提交审批时间",
+      "approvedAt": "审批时间",
+      "rejectedAt": "拒绝时间",
+      "requester": "申请人",
+      "reviewer": "审批人",
+      "requestId": "申请编号",
+      "startAt": "开始时间",
+      "endAt": "结束时间",
+      "reason": "原因",
+      "rejectReason": "拒绝原因",
+      "returnNote": "需要调整的内容",
+      "address": "出差地点",
+      "approvalNote": "审批备注"
+    },
+    "review": {
+      "title": "审批操作",
+      "description": "选择您要如何处理此待审批申请。",
+      "rejectNoteLabel": "拒绝原因备注",
+      "rejectNotePlaceholder": "请说明拒绝此申请的原因",
+      "rejectNoteRequired": "在拒绝此申请前，请输入拒绝备注。",
+      "returnNoteLabel": "需要修改的内容",
+      "returnNoteRequired": "请说明需要修改的内容。",
+      "confirmApproveTitle": "批准此申请？",
+      "confirmApproveDescription": "该申请将被标记为已批准。",
+      "confirmApprove": "确认批准",
+      "confirmRejectTitle": "拒绝此申请？",
+      "confirmRejectDescription": "该申请将被标记为已拒绝，并附带您的备注。",
+      "confirmReject": "确认拒绝",
+      "confirmCancel": "取消"
+    },
+    "requester": {
+      "title": "申请人操作",
+      "description": "如果不再需要提交此待审批申请，可将其取消。",
+      "confirmDeleteTitle": "取消此申请？",
+      "confirmDeleteDescription": "该待审批申请将被永久取消。",
+      "confirmDelete": "确认取消",
+      "confirmCancel": "取消"
+    },
+    "actions": {
+      "edit": "编辑",
+      "return": "需要调整",
+      "delete": "取消申请",
+      "deleting": "正在取消...",
+      "approve": "接受",
+      "approving": "正在接受...",
+      "reject": "拒绝",
+      "rejecting": "正在拒绝...",
+      "close": "关闭"
+    }
+  },
+  "actions": {
+    "create": "提交申请",
+    "detail": "详情",
+    "refresh": "刷新",
+    "cancel": "取消",
+    "approve": "接受",
+    "reject": "拒绝",
+    "return": "需要调整",
+    "delete": "取消申请",
+    "close": "关闭"
+  },
+  "deleteConfirm": "取消这条待审批的申请吗？",
+  "messages": {
+    "loadFailed": "无法加载申请列表。",
+    "balanceFailed": "无法加载年假余额。",
+    "invalidForm": "请检查必填项、时间和出差地点。",
+    "saveFailed": "无法保存申请。",
+    "created": "申请已提交。",
+    "returned": "申请已退回修改。",
+    "approved": "申请已批准。",
+    "rejected": "申请已拒绝。",
+    "deleted": "申请已取消。"
+  },
+  "paginationSummary": "显示第 {start}–{end} 条，共 {total} 条申请",
+  "coverage": {
+    "loading": "正在计算申请时长…",
+    "error": "无法计算申请时长，请重试。",
+    "retry": "重试",
+    "total": "申请时长：",
+    "assignedDays": "{days} 天已排班",
+    "unassignedDays": "，{days} 天未排班"
+  }
+}

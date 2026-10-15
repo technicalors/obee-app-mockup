@@ -38,16 +38,16 @@ interface MountedPage {
   page: ReturnType<typeof useAttendancePage>;
 }
 
-function makeContext() {
+function makeContext(hasShiftToday = true) {
   return {
     assigned_locations: [
       {
         created_at: '2026-06-23T08:00:00+07:00',
-        departments: [],
+        organizations: [],
         excluded_users: [],
         id: 'location-1',
         ips: [],
-        is_active: true,
+        deleted_at: null,
         latitude: 20.859812,
         longitude: 106.697857,
         name: 'HQ',
@@ -57,6 +57,7 @@ function makeContext() {
         validation_mode: 'location',
       },
     ],
+    has_shift_today: hasShiftToday,
     ip_address: '127.0.0.1',
     user: {
       id: 'user-1',
@@ -174,6 +175,22 @@ describe('useAttendancePage', () => {
     mounted.app.unmount();
   });
 
+  it('disables punching when no shift is assigned for today', async () => {
+    attendanceApiState.getAttendanceContext.mockResolvedValue(
+      makeContext(false),
+    );
+    const mounted = mountComposable();
+    await flushAsync();
+
+    expect(mounted.page.canPunch.value).toBe(false);
+    expect(mounted.page.noShiftToday.value).toBe(true);
+
+    await mounted.page.handlePunch();
+
+    expect(attendanceApiState.createAttendanceLog).not.toHaveBeenCalled();
+    mounted.app.unmount();
+  });
+
   it('requests geolocation instead of posting when punching without a position', async () => {
     const getCurrentPosition = vi.fn();
     Object.defineProperty(window.navigator, 'geolocation', {
@@ -275,9 +292,7 @@ describe('useAttendancePage', () => {
       '2026-06-16',
     );
     expect(mounted.page.selectedDayPunches.value).toHaveLength(2);
-    expect(mounted.page.selectedDayStatusText.value).toBe(
-      'page.attendance.onTime',
-    );
+    expect(mounted.page.selectedDayStatusText.value).toBe('attendance.onTime');
 
     mounted.app.unmount();
   });
@@ -303,9 +318,7 @@ describe('useAttendancePage', () => {
 
     await mounted.page.openDayDetail('2026-06-20');
 
-    expect(mounted.page.selectedDayStatusText.value).toBe(
-      'page.attendance.late',
-    );
+    expect(mounted.page.selectedDayStatusText.value).toBe('attendance.late');
 
     mounted.app.unmount();
   });
@@ -331,9 +344,7 @@ describe('useAttendancePage', () => {
 
     await mounted.page.openDayDetail('2026-06-16');
 
-    expect(mounted.page.selectedDayStatusText.value).toBe(
-      'page.attendance.onTime',
-    );
+    expect(mounted.page.selectedDayStatusText.value).toBe('attendance.onTime');
 
     mounted.app.unmount();
   });
@@ -367,7 +378,7 @@ describe('useAttendancePage', () => {
 
     expect(requestFeedbackState.showRequestError).toHaveBeenCalledWith(
       error,
-      'page.attendance.messages.unexpectedError',
+      'attendance.messages.unexpectedError',
       'Failed to load attendance context.',
     );
 

@@ -4,6 +4,7 @@ import type {
   UpdateUserPayload,
   User,
   UserIndexQuery,
+  UserTreeSelectionUser,
 } from '#/api/contracts';
 
 import { z } from '@vben/common-ui';
@@ -11,9 +12,11 @@ import { z } from '@vben/common-ui';
 import {
   createUserPayloadSchema,
   resetUserPasswordPayloadSchema,
+  trashedFilterSchema,
   updateUserPayloadSchema,
   userIndexQuerySchema,
   userSchema,
+  userTreeSelectionUserSchema,
 } from '#/api/contracts';
 import { requestClient } from '#/api/request';
 import { createCollectionResourceApi, createResourceApi } from '#/api/resource';
@@ -33,15 +36,18 @@ const baseUsersResource = createResourceApi<
   updateResponseSchema: userSchema,
 });
 
-const companyUsersQuerySchema = z.object({
-  department_company_id: z.string(),
+const userTreeQuerySchema = z.object({
+  organization_id: z.string().uuid().optional(),
+  root_organization_id: z.string().uuid().optional(),
+  permission_name: z.string().optional(),
+  trashed: trashedFilterSchema.optional(),
 });
-type CompanyUsersQuery = z.input<typeof companyUsersQuerySchema>;
+type UserTreeQuery = z.input<typeof userTreeQuerySchema>;
 
-export const companyUsersResource = createCollectionResourceApi<
-  User,
-  CompanyUsersQuery
->('/users', userSchema, companyUsersQuerySchema);
+export const userTreeResource = createCollectionResourceApi<
+  UserTreeSelectionUser,
+  UserTreeQuery
+>('/users/tree', userTreeSelectionUserSchema, userTreeQuerySchema);
 
 export const usersResource = {
   create: (payload: CreateUserPayload): Promise<User> =>
@@ -50,6 +56,9 @@ export const usersResource = {
   getAll: baseUsersResource.getAll,
   getById: (id: number | string): Promise<User> =>
     baseUsersResource.getById(id),
+  restore: async (id: number | string): Promise<void> => {
+    await requestClient.post(`/users/${id}/restore`);
+  },
   resetPassword: async (
     id: number | string,
     payload: ResetUserPasswordPayload,

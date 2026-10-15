@@ -19,7 +19,7 @@ function makeLocation(
 ): AttendanceLocation {
   return {
     created_at: '2026-06-23T08:00:00+07:00',
-    departments: [],
+    organizations: [],
     excluded_users: [],
     id: 'location-1',
     ips: [
@@ -31,7 +31,7 @@ function makeLocation(
         updated_at: '2026-06-23T08:00:00+07:00',
       },
     ],
-    is_active: true,
+    deleted_at: null,
     latitude: 10,
     longitude: 106,
     name: 'HQ',
@@ -59,6 +59,36 @@ function makeSummary(
 }
 
 describe('attendance rules', () => {
+  it.each([
+    { latitude: -10, longitude: -74 },
+    { latitude: 90, longitude: 0 },
+    { latitude: -90, longitude: 180 },
+  ])('allows distant coordinates %s with a worldwide radius', (coordinates) => {
+    const location = {
+      ...makeLocation('location'),
+      radius_meters: 2_000_000_000,
+    };
+    const eligibility = evaluateAttendanceEligibility(
+      location,
+      coordinates,
+      '192.0.2.1',
+    );
+    expect(eligibility.eligible).toBe(true);
+    expect(eligibility.distance_meters).toBeLessThanOrEqual(
+      Math.PI * 6_371_000,
+    );
+    expect(
+      evaluateAttendanceEligibility(location, null, '192.0.2.1').eligible,
+    ).toBe(false);
+    expect(
+      evaluateAttendanceEligibility(
+        { ...location, validation_mode: 'both' },
+        coordinates,
+        '192.0.2.1',
+      ).eligible,
+    ).toBe(false);
+  });
+
   it('calculates haversine distance in meters', () => {
     expect(
       haversineMeters(

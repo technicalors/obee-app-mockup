@@ -1,0 +1,151 @@
+{
+  "routeTitle": "Công việc cá nhân",
+  "eyebrow": "Không gian cá nhân",
+  "title": "Công việc",
+  "description": "Quản lý công việc cá nhân.",
+  "requestFailed": "Không thể tải hoặc lưu công việc cá nhân. Vui lòng thử lại.",
+  "lists": {
+    "title": "Danh sách",
+    "all": "Tất cả công việc",
+    "starred": "Được gắn dấu sao",
+    "today": "Hôm nay",
+    "myTasks": "Công việc của tôi",
+    "createList": "Tạo danh sách mới",
+    "tasks": "công việc",
+    "tasksCount": "{count} công việc",
+    "openCount": "{count} việc cần làm",
+    "navigationLabel": "Chọn danh sách công việc",
+    "name": "Tên danh sách",
+    "namePlaceholder": "Nhập tên danh sách",
+    "create": "Tạo",
+    "renameList": "Đổi tên {title}",
+    "renameListTitle": "Đổi tên danh sách",
+    "deleteList": "Xóa {title}",
+    "deleteConfirm": "Xóa danh sách này cùng toàn bộ công việc bên trong?",
+    "noListsHint": "Tạo danh sách ở thanh bên để bắt đầu thêm công việc."
+  },
+  "sidebar": {
+    "open": "Hiện danh sách",
+    "close": "Ẩn danh sách"
+  },
+  "create": {
+    "button": "Tạo",
+    "modalTitle": "Công việc mới",
+    "titleLabel": "Tiêu đề",
+    "titlePlaceholder": "Thêm tiêu đề",
+    "notesPlaceholder": "Thêm nội dung mô tả"
+  },
+  "recurrence": {
+    "label": "Lặp lại",
+    "none": "Không lặp lại",
+    "daily": "Hằng ngày",
+    "weekdaysPreset": "Mọi ngày trong tuần (thứ Hai đến thứ Sáu)",
+    "weekly": "Hằng tuần vào {weekday}",
+    "monthly": "Hằng tháng vào ngày {day}",
+    "yearly": "Hằng năm vào ngày {date}",
+    "custom": "Tùy chỉnh",
+    "customTitle": "Tùy chỉnh lặp lại",
+    "repeatEvery": "Lặp lại mỗi",
+    "unit": "Đơn vị",
+    "units": {
+      "day": "ngày",
+      "dayPlural": "ngày",
+      "week": "tuần",
+      "weekPlural": "tuần",
+      "month": "tháng",
+      "monthPlural": "tháng",
+      "month_weekday": "tháng (cùng thứ và tuần trong tháng)",
+      "month_weekdayPlural": "tháng (cùng thứ và tuần trong tháng)",
+      "year": "năm",
+      "yearPlural": "năm"
+    },
+    "on": "Vào",
+    "weekdaysRequired": "Vui lòng chọn ít nhất một ngày trong tuần",
+    "ends": "Kết thúc",
+    "never": "Không bao giờ",
+    "endsOnDate": "Vào ngày",
+    "endsAfter": "Sau số lần lặp",
+    "endDate": "Ngày kết thúc",
+    "count": "Số lần lặp",
+    "untilBeforeDueDate": "Ngày kết thúc không được trước ngày đến hạn",
+    "weekdaysDistinct": "Mỗi thứ chỉ được chọn một lần",
+    "weekdays": {
+      "sun": "CN",
+      "mon": "T2",
+      "tue": "T3",
+      "wed": "T4",
+      "thu": "T5",
+      "fri": "T6",
+      "sat": "T7"
+    }
+  },
+  "inlineAdd": {
+    "placeholder": "Thêm công việc",
+    "send": "Thêm công việc"
+  },
+  "quickAdd": {
+    "cancel": "Hủy"
+  },
+  "taskList": {
+    "loading": "Đang tải công việc...",
+    "emptyTitle": "Không có công việc nào",
+    "completedSection": "Đã hoàn thành ({count})",
+    "openSection": "Cần làm ({count})",
+    "subtasks": "công việc con",
+    "subtask": "Việc con",
+    "overdue": "Quá hạn",
+    "today": "Hôm nay",
+    "tomorrow": "Ngày mai",
+    "noResultsTitle": "Không tìm thấy công việc"
+  },
+  "taskDetail": {
+    "title": "Chi tiết công việc",
+    "titlePlaceholder": "Nhập tiêu đề công việc...",
+    "notes": "Chi tiết",
+    "notesPlaceholder": "Thêm chi tiết hoặc ghi chú...",
+    "dueDate": "Ngày hết hạn",
+    "dueDatePlaceholder": "Chọn ngày",
+    "list": "Danh sách",
+    "status": "Trạng thái",
+    "starred": "Gắn dấu sao",
+    "subtasks": "Công việc con",
+    "addSubtask": "Thêm việc con",
+    "subtaskPlaceholder": "Nhập tiêu đề việc con...",
+    "delete": "Xóa công việc",
+    "deleteConfirm": "Bạn có chắc chắn muốn xóa công việc này không?",
+    "autoSaveHint": "Thay đổi được lưu khi bạn rời ô nhập văn bản hoặc chọn danh sách, ngày đến hạn."
+  },
+  "filters": {
+    "search": "Tìm công việc",
+    "searchPlaceholder": "Tìm theo tiêu đề hoặc ghi chú...",
+    "status": "Trạng thái",
+    "all": "Tất cả",
+    "open": "Đang làm",
+    "completed": "Hoàn thành",
+    "clearSearch": "Xóa tìm kiếm",
+    "today": "Hôm nay",
+    "starred": "Gắn sao"
+  },
+  "taskStatus": {
+    "needsAction": "Đang làm",
+    "completed": "Hoàn thành"
+  },
+  "extensions": {
+    "starred": "Được gắn dấu sao"
+  },
+  "actions": {
+    "create": "Thêm công việc",
+    "refresh": "Làm mới",
+    "close": "Đóng",
+    "star": "Đánh dấu công việc",
+    "removeStar": "Bỏ đánh dấu công việc",
+    "markOpen": "Mở lại “{title}”",
+    "markCompleted": "Hoàn thành “{title}”",
+    "openDetail": "Mở chi tiết “{title}”",
+    "delete": "Xóa",
+    "deleteNamed": "Xóa “{title}”",
+    "addSubtaskNamed": "Thêm việc con cho “{title}”",
+    "add": "Thêm",
+    "save": "Lưu"
+  }
+}

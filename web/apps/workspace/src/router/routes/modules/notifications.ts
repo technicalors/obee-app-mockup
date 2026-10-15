@@ -7,7 +7,8 @@ const routes: RouteRecordRaw[] = [
     component: () => import('#/views/notifications/index.vue'),
     meta: {
       icon: 'lucide:bell',
-      title: $t('page.notifications.routeTitle'),
+      hideInMenu: true,
+      title: $t('notifications.routeTitle'),
     },
     name: 'Notifications',
     path: '/notifications',

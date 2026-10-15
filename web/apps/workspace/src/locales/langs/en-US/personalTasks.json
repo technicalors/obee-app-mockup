@@ -1,0 +1,151 @@
+{
+  "routeTitle": "Personal Tasks",
+  "eyebrow": "Personal workspace",
+  "title": "Tasks",
+  "description": "Manage personal tasks.",
+  "requestFailed": "Could not save or load personal tasks. Please try again.",
+  "lists": {
+    "title": "Lists",
+    "all": "All tasks",
+    "starred": "Starred",
+    "today": "Today",
+    "myTasks": "My tasks",
+    "createList": "New list",
+    "tasks": "tasks",
+    "tasksCount": "{count} tasks",
+    "openCount": "{count} open tasks",
+    "navigationLabel": "Choose a task list",
+    "name": "List name",
+    "namePlaceholder": "Enter a list name",
+    "create": "Create",
+    "renameList": "Rename {title}",
+    "renameListTitle": "Rename list",
+    "deleteList": "Delete {title}",
+    "deleteConfirm": "Delete this list and all tasks inside?",
+    "noListsHint": "Create a list from the sidebar to start adding tasks."
+  },
+  "sidebar": {
+    "open": "Show lists",
+    "close": "Hide lists"
+  },
+  "create": {
+    "button": "Create",
+    "modalTitle": "New task",
+    "titleLabel": "Title",
+    "titlePlaceholder": "Add title",
+    "notesPlaceholder": "Add description"
+  },
+  "recurrence": {
+    "label": "Repeat",
+    "none": "Does not repeat",
+    "daily": "Daily",
+    "weekdaysPreset": "Every weekday (Monday to Friday)",
+    "weekly": "Weekly on {weekday}",
+    "monthly": "Monthly on day {day}",
+    "yearly": "Annually on {date}",
+    "custom": "Custom",
+    "customTitle": "Custom recurrence",
+    "repeatEvery": "Repeat every",
+    "unit": "Unit",
+    "units": {
+      "day": "day",
+      "dayPlural": "days",
+      "week": "week",
+      "weekPlural": "weeks",
+      "month": "month",
+      "monthPlural": "months",
+      "month_weekday": "month (same weekday occurrence)",
+      "month_weekdayPlural": "months (same weekday occurrence)",
+      "year": "year",
+      "yearPlural": "years"
+    },
+    "on": "On",
+    "weekdaysRequired": "Please select at least one day of the week",
+    "ends": "Ends",
+    "never": "Never",
+    "endsOnDate": "On date",
+    "endsAfter": "After occurrences",
+    "endDate": "End date",
+    "count": "Occurrences",
+    "untilBeforeDueDate": "The end date cannot be before the due date",
+    "weekdaysDistinct": "Choose each weekday only once",
+    "weekdays": {
+      "sun": "Sun",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat"
+    }
+  },
+  "inlineAdd": {
+    "placeholder": "Add a task",
+    "send": "Add task"
+  },
+  "quickAdd": {
+    "cancel": "Cancel"
+  },
+  "taskList": {
+    "loading": "Loading tasks...",
+    "emptyTitle": "No tasks yet",
+    "completedSection": "Completed ({count})",
+    "openSection": "To do ({count})",
+    "subtasks": "subtasks",
+    "subtask": "Subtask",
+    "overdue": "Overdue",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "noResultsTitle": "No matching tasks"
+  },
+  "taskDetail": {
+    "title": "Task details",
+    "titlePlaceholder": "Enter task title...",
+    "notes": "Details",
+    "notesPlaceholder": "Add details or notes...",
+    "dueDate": "Due date",
+    "dueDatePlaceholder": "Select date",
+    "list": "List",
+    "status": "Status",
+    "starred": "Starred",
+    "subtasks": "Subtasks",
+    "addSubtask": "Add subtask",
+    "subtaskPlaceholder": "Enter subtask title...",
+    "delete": "Delete task",
+    "deleteConfirm": "Are you sure you want to delete this task?",
+    "autoSaveHint": "Changes are saved when you leave a text field or choose a list or date."
+  },
+  "filters": {
+    "search": "Search tasks",
+    "searchPlaceholder": "Search titles or notes...",
+    "status": "Status",
+    "all": "All",
+    "open": "Open",
+    "completed": "Completed",
+    "clearSearch": "Clear search",
+    "today": "Today",
+    "starred": "Starred"
+  },
+  "taskStatus": {
+    "needsAction": "Open",
+    "completed": "Completed"
+  },
+  "extensions": {
+    "starred": "Starred"
+  },
+  "actions": {
+    "create": "Add task",
+    "refresh": "Refresh",
+    "close": "Close",
+    "star": "Star task",
+    "removeStar": "Remove star from task",
+    "markOpen": "Mark “{title}” as open",
+    "markCompleted": "Mark “{title}” as completed",
+    "openDetail": "Open details for “{title}”",
+    "delete": "Delete",
+    "deleteNamed": "Delete “{title}”",
+    "addSubtaskNamed": "Add a subtask to “{title}”",
+    "add": "Add",
+    "save": "Save"
+  }
+}

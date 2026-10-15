@@ -46,12 +46,12 @@ async function handleAvatarChange(event: Event): Promise<void> {
     const user = await usersResource.updateAvatar(props.user.id, file);
     emit('avatarUpdated', user);
     notification.success({
-      message: $t('page.employeeHistory.messages.avatarUpdated'),
+      message: $t('employeeHistory.messages.avatarUpdated'),
     });
   } catch (error) {
     showRequestError(
       error,
-      $t('page.employeeHistory.messages.unexpectedError'),
+      $t('employeeHistory.messages.unexpectedError'),
       'Unexpected employee avatar upload error:',
     );
   } finally {
@@ -86,7 +86,7 @@ async function handleAvatarChange(event: Event): Promise<void> {
           <template #icon>
             <IconifyIcon icon="lucide:camera" />
           </template>
-          {{ $t('page.employeeHistory.actions.changeAvatar') }}
+          {{ $t('employeeHistory.actions.changeAvatar') }}
         </Button>
         <input
           ref="avatarInput"
@@ -103,11 +103,14 @@ async function handleAvatarChange(event: Event): Promise<void> {
         <p class="employee-summary-code">
           {{ user.profile?.code ?? $t('common.notProvided') }}
         </p>
-        <Tag :bordered="false" :color="user.is_active ? 'success' : 'default'">
+        <Tag
+          :bordered="false"
+          :color="user.deleted_at === null ? 'success' : 'default'"
+        >
           {{
-            user.is_active
-              ? $t('page.employeeHistory.status.active')
-              : $t('page.employeeHistory.status.inactive')
+            user.deleted_at === null
+              ? $t('employeeHistory.status.active')
+              : $t('employeeHistory.status.inactive')
           }}
         </Tag>
       </div>
@@ -120,7 +123,7 @@ async function handleAvatarChange(event: Event): Promise<void> {
             icon="lucide:briefcase"
             class="size-3.5 text-muted-foreground/80"
           />
-          <span>{{ $t('page.employeeHistory.fields.currentPosition') }}</span>
+          <span>{{ $t('employeeHistory.fields.currentPosition') }}</span>
         </dt>
         <dd>{{ user.profile?.position?.name ?? $t('common.notProvided') }}</dd>
       </div>
@@ -131,16 +134,10 @@ async function handleAvatarChange(event: Event): Promise<void> {
             icon="lucide:building-2"
             class="size-3.5 text-muted-foreground/80"
           />
-          <span>{{ $t('page.employeeHistory.fields.workUnit') }}</span>
+          <span>{{ $t('employeeHistory.fields.workUnit') }}</span>
         </dt>
         <dd>
-          {{
-            user.departments.length === 0
-              ? $t('common.notProvided')
-              : user.departments
-                  .map((department) => department.name)
-                  .join(' > ')
-          }}
+          {{ user.organization?.name ?? $t('common.notProvided') }}
         </dd>
       </div>
 
@@ -150,7 +147,7 @@ async function handleAvatarChange(event: Event): Promise<void> {
             icon="lucide:mail"
             class="size-3.5 text-muted-foreground/80"
           />
-          <span>{{ $t('page.employeeHistory.fields.email') }}</span>
+          <span>{{ $t('employeeHistory.fields.email') }}</span>
         </dt>
         <dd class="break-all">{{ user.email ?? $t('common.notProvided') }}</dd>
       </div>
@@ -161,7 +158,7 @@ async function handleAvatarChange(event: Event): Promise<void> {
             icon="lucide:phone"
             class="size-3.5 text-muted-foreground/80"
           />
-          <span>{{ $t('page.employeeHistory.fields.phone') }}</span>
+          <span>{{ $t('employeeHistory.fields.phone') }}</span>
         </dt>
         <dd>{{ user.profile?.phone_number ?? $t('common.notProvided') }}</dd>
       </div>

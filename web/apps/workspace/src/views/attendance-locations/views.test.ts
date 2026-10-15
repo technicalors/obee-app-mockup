@@ -74,7 +74,7 @@ describe('attendance locations separate pages views', () => {
   it('renders editable attendance location content across four tabs', () => {
     expect(detailFormSource).toContain('<Tabs.TabPane key="basic">');
     expect(detailFormSource).toContain('<Tabs.TabPane key="ips">');
-    expect(detailFormSource).toContain('<Tabs.TabPane key="departments">');
+    expect(detailFormSource).toContain('<Tabs.TabPane key="organizations">');
     expect(detailFormSource).toContain('<Tabs.TabPane key="users">');
   });
 
@@ -87,21 +87,30 @@ describe('attendance locations separate pages views', () => {
     expect(detailFormSource).not.toContain('showIpInput');
   });
 
-  it('uses searchable checkboxes for department assignment', () => {
-    expect(detailFormSource).toContain('departmentSearch');
-    expect(detailFormSource).toContain('filteredDepartmentOptions');
+  it('uses searchable checkboxes for direct organization assignment', () => {
+    expect(detailFormSource).toContain('organizationSearch');
+    expect(detailFormSource).toContain('filteredOrganizationOptions');
     expect(detailFormSource).toContain('<Checkbox.Group');
     expect(detailFormSource).not.toContain(
-      ':placeholder="\n                    $t(\'page.attendanceLocations.placeholders.departments\')\n                  "',
+      ':placeholder="\n                    $t(\'attendanceLocations.placeholders.organizations\')\n                  "',
     );
   });
 
-  it('treats empty department and user selections as company-wide assignment', () => {
+  it('preserves applicable-user and custom-rule sections while replacing only per-user selectors', () => {
+    expect(detailFormSource).toContain('filteredApplicableUsers');
+    expect(detailFormSource).toContain('customUserRules');
+    expect(detailFormSource).toContain('organizationSearch');
+    expect(detailFormSource.match(/<UserTreeSelect\b/g)).toHaveLength(2);
+    expect(detailFormSource).toContain('formState.user_ids');
+    expect(detailFormSource).toContain('formState.excluded_user_ids');
+  });
+
+  it('treats empty organization and user selections as root-wide assignment', () => {
     expect(detailFormSource).toContain(
       'const hasExplicitAssignments = computed',
     );
     expect(detailFormSource).toContain(
-      '? selectedUserIds.has(userId) || departmentUserIds.value.has(userId)',
+      '? selectedUserIds.has(userId) || organizationUserIds.value.has(userId)',
     );
     expect(detailFormSource).toContain(': true;');
   });
@@ -135,16 +144,16 @@ describe('attendance locations separate pages views', () => {
 
   it('localizes map status messages and style control labels', () => {
     expect(mapboxMapPickerSource).toContain(
-      "$t('page.attendanceLocations.actions.switchToSatellite')",
+      "$t('attendanceLocations.actions.switchToSatellite')",
     );
     expect(mapboxMapPickerSource).toContain(
-      "$t('page.attendanceLocations.actions.switchToStandard')",
+      "$t('attendanceLocations.actions.switchToStandard')",
     );
     expect(mapboxMapPickerSource).toContain(
-      "$t('page.attendanceLocations.messages.mapboxKeyMissing')",
+      "$t('attendanceLocations.messages.mapboxKeyMissing')",
     );
     expect(mapboxMapPickerSource).toContain(
-      "$t('page.attendanceLocations.messages.mapboxUnavailable')",
+      "$t('attendanceLocations.messages.mapboxUnavailable')",
     );
     expect(mapboxMapPickerSource).not.toContain('Switch to Satellite');
     expect(mapboxMapPickerSource).not.toContain('Switch to Standard');

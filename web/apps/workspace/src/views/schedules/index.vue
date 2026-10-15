@@ -27,7 +27,7 @@ import {
   leaveScheduleEvent,
   updateScheduleEvent,
 } from '#/api/schedules';
-import { companyUsersResource } from '#/api/users';
+import { usersResource } from '#/api/users';
 import { $t } from '#/locales';
 import { showRequestError } from '#/shared/request-feedback';
 import { useAuthStore } from '#/store';
@@ -54,8 +54,8 @@ import {
   getAuthoringRepeatPatternValues,
   getMonthGridDateRange,
   getWeekDates,
+  getWeekDateRange,
   getYearDateRange,
-  parseDayKey,
   parseMonthValue,
   shiftDay,
   shiftWeek,
@@ -74,7 +74,7 @@ const userStore = useUserStore();
 const authStore = useAuthStore();
 const route = useRoute();
 const currentUserId = computed(() => userStore.userInfo?.userId || null);
-const currentCompanyId = computed(() => authStore.user?.company_id || null);
+const currentCompanyId = computed(() => authStore.user?.root_organization_id || null);
 const authoringDraft = ref<null | ScheduleAuthoringDraft>(null);
 const authoringUserOptions = ref<ScheduleAuthoringOption[]>([]);
 const authoringUserTreeOptions = ref<ScheduleUserTreeOption[]>([]);
@@ -625,9 +625,11 @@ async function loadAuthoringUsers(): Promise<void> {
   authoringUsersLoading.value = true;
 
   try {
-    const users = await companyUsersResource.getAll({
-      department_company_id: currentCompanyId.value,
+    const result = await usersResource.getAll({
+      page: 1,
+      per_page: 100,
     });
+    const users = result.items;
 
     authoringUserOptions.value = users.map((user) => ({
       avatar: getUserAvatarSource(user),

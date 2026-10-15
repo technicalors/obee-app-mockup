@@ -2,36 +2,42 @@ import type { RouteRecordRaw } from 'vue-router';
 
 import { $t } from '#/locales';
 
+const hiddenRedirect = {
+  hideInBreadcrumb: true,
+  hideInMenu: true,
+  hideInTab: true,
+  title: $t('dashboard.title'),
+} as const;
+
 const routes: RouteRecordRaw[] = [
   {
+    name: 'Overview',
+    path: '/overview',
+    component: () => import('#/views/dashboard/analytics/index.vue'),
     meta: {
+      affixTab: true,
       icon: 'lucide:layout-dashboard',
       order: -1,
-      title: $t('page.dashboard.title'),
+      title: $t('dashboard.title'),
     },
-    name: 'Dashboard',
+  },
+  {
+    name: 'LegacyDashboardRedirect',
     path: '/dashboard',
-    children: [
-      {
-        name: 'Analytics',
-        path: '/analytics',
-        component: () => import('#/views/dashboard/analytics/index.vue'),
-        meta: {
-          affixTab: true,
-          icon: 'lucide:area-chart',
-          title: $t('page.dashboard.analytics'),
-        },
-      },
-      {
-        name: 'Workspace',
-        path: '/workspace',
-        component: () => import('#/views/dashboard/workspace/index.vue'),
-        meta: {
-          icon: 'carbon:workspace',
-          title: $t('page.dashboard.workspace'),
-        },
-      },
-    ],
+    redirect: '/overview',
+    meta: hiddenRedirect,
+  },
+  {
+    name: 'LegacyAnalyticsRedirect',
+    path: '/analytics',
+    redirect: '/overview',
+    meta: hiddenRedirect,
+  },
+  {
+    name: 'LegacyWorkspaceRedirect',
+    path: '/workspace',
+    redirect: '/overview',
+    meta: hiddenRedirect,
   },
 ];
 

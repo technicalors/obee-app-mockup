@@ -1,0 +1,150 @@
+{
+  "routeTitle": "Attendance Locations",
+  "title": "Attendance Locations",
+  "description": "Manage attendance locations, radius, coordinates, IPs, and validation modes.",
+  "listTitle": "Attendance Location List",
+  "listDescription": "Review and configure geofences, IP rules, and validation criteria.",
+  "columns": {
+    "name": "Location Name",
+    "coordinates": "Coordinates (Lat/Lng)",
+    "radius": "Radius",
+    "validationMode": "Validation Mode",
+    "status": "Status",
+    "createdAt": "Created at",
+    "actions": "Actions"
+  },
+  "filters": {
+    "search": "Search",
+    "searchPlaceholder": "Location name...",
+    "validationMode": "Validation Mode",
+    "status": "Status"
+  },
+  "fields": {
+    "name": "Location Name",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "radius": "Radius (meters)",
+    "validationMode": "Validation Mode",
+    "status": "Status",
+    "ips": "Allowed IPs",
+    "users": "Assigned Users",
+    "excludedUsers": "Excluded Users",
+    "mapLocation": "Map Location",
+    "createdAt": "Created at",
+    "updatedAt": "Updated at",
+    "organizations": "Assigned organizations"
+  },
+  "placeholders": {
+    "name": "Please enter",
+    "validationMode": "Please select",
+    "latitude": "e.g. 10.762622",
+    "longitude": "e.g. 106.660172",
+    "radius": "e.g. 100",
+    "ips": "Enter an IP address",
+    "mapSearch": "Search for a place...",
+    "users": "Select assigned users",
+    "excludedUsers": "Select excluded users",
+    "organizationSearch": "Search organizations",
+    "organizations": "Select assigned organizations"
+  },
+  "sections": {
+    "basic": "Basic Information",
+    "location": "GPS Coordinates",
+    "ips": "IP Address Rules",
+    "assignments": "Assignments & Exceptions",
+    "information": "System Information"
+  },
+  "tabs": {
+    "basic": "Basic Information",
+    "ips": "IP List",
+    "users": "User List",
+    "organizations": "Organization list"
+  },
+  "help": {
+    "largeRadiusMap": "For radii over 10 km, the map shows the location pin without the coverage area.",
+    "mapPicker": "Click or drag the marker on the map to choose coordinates.",
+    "ips": "Employees can check in only from these IPs when IP validation is enabled.",
+    "ipInput": "Add each IP address or IP range as a tag.",
+    "users": "These employees can use this attendance location even when they do not belong to a selected organization.",
+    "excludedUsers": "These employees cannot check in here even when their organization is assigned.",
+    "organizations": "Choose organizations that can use this attendance location. Leave empty to apply it to all organizations."
+  },
+  "actions": {
+    "create": "Create Location",
+    "view": "View Details",
+    "edit": "Edit",
+    "delete": "Delete",
+    "locateCurrent": "Use current location",
+    "switchToSatellite": "Switch to satellite",
+    "switchToStandard": "Switch to standard",
+    "save": "Save",
+    "cancel": "Cancel",
+    "restore": "Restore"
+  },
+  "validationMode": {
+    "location": "GPS only",
+    "ip": "IP only",
+    "both": "GPS & IP",
+    "either": "GPS or IP"
+  },
+  "values": {
+    "anyIp": "Any IP",
+    "allUsers": "All users",
+    "allOrganizations": "All organizations"
+  },
+  "status": {
+    "active": "Active",
+    "deleted": "Deleted",
+    "all": "All"
+  },
+  "create": {
+    "title": "Create Attendance Location"
+  },
+  "edit": {
+    "title": "Edit Attendance Location"
+  },
+  "detail": {
+    "title": "Attendance Location Details"
+  },
+  "delete": {
+    "title": "Delete Attendance Location",
+    "description": "Are you sure you want to delete {name}? Employees will no longer be able to check in here; the location can be restored."
+  },
+  "validation": {
+    "radiusRange": "Radius must be an integer between 1 and {max} meters.",
+    "nameRequired": "Enter the location name",
+    "latitudeRequired": "Enter the latitude (-90 to 90)",
+    "longitudeRequired": "Enter the longitude (-180 to 180)",
+    "radiusRequired": "Enter a valid radius in meters",
+    "validationModeRequired": "Select a validation mode"
+  },
+  "messages": {
+    "created": "Attendance location created",
+    "updated": "Attendance location updated",
+    "deleted": "Attendance location deleted",
+    "mapboxKeyMissing": "Mapbox access key is missing.",
+    "mapboxUnavailable": "WebGL is unavailable or Mapbox failed to load.",
+    "geolocationPermissionDenied": "Location access was denied.",
+    "geolocationSuccess": "Current location retrieved successfully.",
+    "geolocationTimeout": "Timed out while retrieving the current location.",
+    "geolocationUnknown": "An unknown error occurred while retrieving the current location.",
+    "geolocationUnavailable": "Location information is unavailable.",
+    "geolocationUnsupported": "This browser does not support GPS location retrieval.",
+    "unexpectedError": "An unexpected error occurred",
+    "restored": "Attendance location restored"
+  },
+  "customAssign": {
+    "applicableUsers": "Applicable Users",
+    "searchActiveUsers": "Search applicable users...",
+    "noActiveUsers": "No applicable users found",
+    "excludeBtn": "Exclude",
+    "customRules": "Custom Rules (Include / Exclude)",
+    "noCustomRules": "No custom rules yet",
+    "includeBtn": "Include User",
+    "excludeBtnAction": "Exclude User",
+    "includePlaceholder": "Select user to include...",
+    "excludePlaceholder": "Select user to exclude...",
+    "selectedOrganizations": "Selected organizations",
+    "noOrganizationSelected": "No organizations selected"
+  }
+}

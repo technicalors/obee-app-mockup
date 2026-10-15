@@ -1,0 +1,75 @@
+{
+  "titles": {
+    "catalog": "Shift configuration & catalog",
+    "create": "Add work shift",
+    "edit": "Edit work shift"
+  },
+  "fields": {
+    "name": "Shift name",
+    "overnight": "Work across midnight",
+    "start": "Start",
+    "end": "End",
+    "shift": "Work shift"
+  },
+  "placeholders": {
+    "name": "For example: Office shift, Night shift",
+    "shift": "Select a work shift"
+  },
+  "labels": {
+    "assignmentDay": "Assignment day",
+    "nextDay": "Next day",
+    "catalogCount": "{count} work shifts",
+    "periodsCount": "Work periods ({count})",
+    "periodCount": "{count} periods",
+    "period": "Period {index}",
+    "periodLabel": "Period {index}:",
+    "periods": "Work periods:",
+    "hours": "{count} hours",
+    "totalHours": "Total: {hours}",
+    "estimatedHours": "Estimated total working time:",
+    "nextDayHint": "next day"
+  },
+  "actions": {
+    "configure": "Configure shifts",
+    "create": "Add work shift",
+    "addShift": "Add shift",
+    "submitCreate": "Create work shift",
+    "save": "Save changes",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "close": "Close",
+    "retry": "Retry",
+    "addPeriod": "Add period",
+    "deletePeriod": "Delete period",
+    "deletePeriodLabel": "Delete period {index}"
+  },
+  "states": {
+    "loading": "Loading shift catalog...",
+    "loadFailed": "Could not load the shift catalog",
+    "empty": "No work shifts yet.",
+    "emptyOrganization": "This organization has no work shifts yet."
+  },
+  "editWarning": {
+    "description": "Changes apply to every date assigned to this shift, including past dates. To change hours for a specific period, create a new shift and reassign it."
+  },
+  "deleteConfirm": {
+    "title": "Delete this work shift?",
+    "description": "Assigned shifts cannot be deleted."
+  },
+  "validation": {
+    "nameRequired": "Shift name is required.",
+    "periodRequired": "A shift must have at least one work period.",
+    "startDay": "The shift must start on its assignment day.",
+    "endAfterStart": "Period {index}: End time must be after start time.",
+    "overlap": "Work periods must not overlap.",
+    "organizationRequired": "The root organization has not been selected."
+  },
+  "messages": {
+    "created": "Work shift created successfully.",
+    "updated": "Work shift updated successfully.",
+    "deleted": "Work shift deleted successfully.",
+    "saveFailed": "Could not save the work shift.",
+    "deleteFailed": "Could not delete the work shift."
+  }
+}

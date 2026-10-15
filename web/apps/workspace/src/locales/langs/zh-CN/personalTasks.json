@@ -1,0 +1,151 @@
+{
+  "routeTitle": "个人任务",
+  "eyebrow": "个人工作区",
+  "title": "任务",
+  "description": "管理个人任务。",
+  "requestFailed": "无法保存或加载个人任务，请重试。",
+  "lists": {
+    "title": "任务列表",
+    "all": "全部任务",
+    "starred": "已加星标",
+    "today": "今天",
+    "myTasks": "我的任务",
+    "createList": "新建列表",
+    "tasks": "个任务",
+    "tasksCount": "{count} 个任务",
+    "openCount": "{count} 个未完成任务",
+    "navigationLabel": "选择任务列表",
+    "name": "列表名称",
+    "namePlaceholder": "输入列表名称",
+    "create": "创建",
+    "renameList": "重命名 {title}",
+    "renameListTitle": "重命名列表",
+    "deleteList": "删除 {title}",
+    "deleteConfirm": "删除此列表及其中的所有任务？",
+    "noListsHint": "从侧边栏创建列表，然后即可添加任务。"
+  },
+  "sidebar": {
+    "open": "显示列表",
+    "close": "隐藏列表"
+  },
+  "create": {
+    "button": "创建",
+    "modalTitle": "新建任务",
+    "titleLabel": "标题",
+    "titlePlaceholder": "添加标题",
+    "notesPlaceholder": "添加说明"
+  },
+  "recurrence": {
+    "label": "重复",
+    "none": "不重复",
+    "daily": "每天",
+    "weekdaysPreset": "每个工作日（周一至周五）",
+    "weekly": "每周的{weekday}",
+    "monthly": "每月{day}日",
+    "yearly": "每年的{date}",
+    "custom": "自定义",
+    "customTitle": "自定义重复",
+    "repeatEvery": "每隔",
+    "unit": "单位",
+    "units": {
+      "day": "天",
+      "dayPlural": "天",
+      "week": "周",
+      "weekPlural": "周",
+      "month": "个月",
+      "monthPlural": "个月",
+      "month_weekday": "个月（相同星期及月内顺序）",
+      "month_weekdayPlural": "个月（相同星期及月内顺序）",
+      "year": "年",
+      "yearPlural": "年"
+    },
+    "on": "重复日期",
+    "weekdaysRequired": "请至少选择一个星期几",
+    "ends": "结束时间",
+    "never": "永不",
+    "endsOnDate": "于日期",
+    "endsAfter": "按次数结束",
+    "endDate": "结束日期",
+    "count": "重复次数",
+    "untilBeforeDueDate": "结束日期不能早于截止日期",
+    "weekdaysDistinct": "每个星期只能选择一次",
+    "weekdays": {
+      "sun": "日",
+      "mon": "一",
+      "tue": "二",
+      "wed": "三",
+      "thu": "四",
+      "fri": "五",
+      "sat": "六"
+    }
+  },
+  "inlineAdd": {
+    "placeholder": "添加任务",
+    "send": "添加任务"
+  },
+  "quickAdd": {
+    "cancel": "取消"
+  },
+  "taskList": {
+    "loading": "正在加载任务...",
+    "emptyTitle": "暂无任务",
+    "completedSection": "已完成（{count}）",
+    "openSection": "待办（{count}）",
+    "subtasks": "个子任务",
+    "subtask": "子任务",
+    "overdue": "已逾期",
+    "today": "今天",
+    "tomorrow": "明天",
+    "noResultsTitle": "没有匹配的任务"
+  },
+  "taskDetail": {
+    "title": "任务详情",
+    "titlePlaceholder": "输入任务标题...",
+    "notes": "详情",
+    "notesPlaceholder": "添加详情或备注...",
+    "dueDate": "截止日期",
+    "dueDatePlaceholder": "选择日期",
+    "list": "列表",
+    "status": "状态",
+    "starred": "已加星标",
+    "subtasks": "子任务",
+    "addSubtask": "添加子任务",
+    "subtaskPlaceholder": "输入子任务标题...",
+    "delete": "删除任务",
+    "deleteConfirm": "确定要删除此任务吗？",
+    "autoSaveHint": "离开文本框或选择列表、日期后，修改会自动保存。"
+  },
+  "filters": {
+    "search": "搜索任务",
+    "searchPlaceholder": "搜索标题或备注...",
+    "status": "状态",
+    "all": "全部",
+    "open": "未完成",
+    "completed": "已完成",
+    "clearSearch": "清除搜索",
+    "today": "今天",
+    "starred": "星标"
+  },
+  "taskStatus": {
+    "needsAction": "未完成",
+    "completed": "已完成"
+  },
+  "extensions": {
+    "starred": "已加星标"
+  },
+  "actions": {
+    "create": "添加任务",
+    "refresh": "刷新",
+    "close": "关闭",
+    "star": "为任务加星标",
+    "removeStar": "取消任务星标",
+    "markOpen": "将“{title}”标记为未完成",
+    "markCompleted": "将“{title}”标记为已完成",
+    "openDetail": "打开“{title}”的详情",
+    "delete": "删除",
+    "deleteNamed": "删除“{title}”",
+    "addSubtaskNamed": "为“{title}”添加子任务",
+    "add": "添加",
+    "save": "保存"
+  }
+}

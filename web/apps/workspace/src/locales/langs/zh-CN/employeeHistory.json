@@ -1,0 +1,85 @@
+{
+  "messages": {
+    "avatarUpdated": "头像已更新",
+    "unexpectedError": "发生未知错误"
+  },
+  "actions": {
+    "changeAvatar": "更换照片",
+    "back": "返回",
+    "backToList": "返回列表",
+    "detail": "详情"
+  },
+  "columns": {
+    "actions": "操作",
+    "award": "奖项",
+    "content": "内容",
+    "date": "日期",
+    "employeeCode": "员工编号",
+    "fullName": "姓名",
+    "gender": "性别",
+    "joinedAt": "入职日期",
+    "level": "等级",
+    "note": "备注",
+    "position": "职务",
+    "positionDepartment": "职位 / 部门",
+    "sequence": "#",
+    "startingDate": "转正日期",
+    "organization": "组织"
+  },
+  "fields": {
+    "address": "地址",
+    "age": "年龄",
+    "citizenId": "身份证号",
+    "contactInfo": "联系信息",
+    "currentPosition": "现任职务",
+    "dateOfBirth": "出生日期",
+    "dependentTaxId": "家属税号",
+    "educationLevel": "学历",
+    "email": "邮箱",
+    "employeeCode": "员工编号",
+    "fullName": "姓名",
+    "gender": "性别",
+    "healthInsurance": "医保卡号",
+    "joinedAt": "入职日期",
+    "personalTaxId": "个人税号",
+    "phone": "电话",
+    "seniority": "工龄",
+    "socialInsurance": "社保号",
+    "workUnit": "工作单位"
+  },
+  "emptyHistory": {
+    "achievements": "暂无成就或荣誉记录",
+    "achievementsDesc": "表彰、荣誉或突出成就记录将在登记后在此显示。",
+    "educationHistory": "暂无教育或培训经历",
+    "educationHistoryDesc": "学历、学位和专业证书信息将在更新后在此显示。",
+    "hrNotes": "暂无人事记录或备注",
+    "hrNotesDesc": "来自人力资源部门的内部评语与记录将保存在此处。",
+    "noEmployeeFound": "未找到员工档案",
+    "noEmployeeFoundDesc": "该员工档案不存在或已被系统移除。",
+    "workHistory": "暂无工作经历记录",
+    "workHistoryDesc": "职务任命、部门调动及晋升历史将在人事决定下达后在此显示。"
+  },
+  "filters": {
+    "search": "搜索",
+    "searchPlaceholder": "员工编号、姓名..."
+  },
+  "listDescription": "员工档案与工作履历列表。",
+  "listTitle": "履历列表",
+  "noEmployeeSelected": "请选择员工以查看档案",
+  "pageDescription": "查看员工档案信息和历史记录。",
+  "pageTitle": "员工历史",
+  "placeholder": "暂无数据",
+  "sections": {
+    "achievements": "成就",
+    "educationHistory": "教育经历",
+    "hrNotes": "人事记录",
+    "personalInfo": "个人信息",
+    "workHistory": "工作经历"
+  },
+  "selectEmployee": "选择员工",
+  "selectEmployeePlaceholder": "按姓名或员工编号搜索...",
+  "status": {
+    "active": "在职",
+    "inactive": "停用"
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "routeTitle": "职务",
+  "listTitle": "职务列表",
+  "listDescription": "管理员工档案使用的职务目录。",
+  "columns": {
+    "name": "职务名称",
+    "description": "说明",
+    "actions": "操作"
+  },
+  "filters": {
+    "search": "搜索",
+    "searchPlaceholder": "职务名称..."
+  },
+  "fields": {
+    "name": "职务名称",
+    "description": "说明"
+  },
+  "actions": {
+    "create": "创建职务",
+    "view": "查看详情",
+    "edit": "编辑",
+    "delete": "删除",
+    "save": "保存",
+    "cancel": "取消"
+  },
+  "values": {
+    "notProvided": "未提供"
+  },
+  "create": {
+    "title": "创建职务"
+  },
+  "edit": {
+    "title": "编辑职务"
+  },
+  "detail": {
+    "title": "职务详情"
+  },
+  "delete": {
+    "title": "删除职务",
+    "description": "确定要删除职务 {name} 吗？此操作无法撤销。"
+  },
+  "validation": {
+    "nameRequired": "请输入职务名称"
+  },
+  "messages": {
+    "created": "职务已创建",
+    "updated": "职务已更新",
+    "deleted": "职务已删除",
+    "unexpectedError": "发生意外错误"
+  }
+}

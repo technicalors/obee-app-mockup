@@ -2,9 +2,9 @@ import type { VbenFormSchema } from '#/adapter/form';
 import type {
   AttendanceLocation,
   CreateAttendanceLocationPayload,
-  Department,
+  Organization,
   UpdateAttendanceLocationPayload,
-  User,
+  UserTreeSelectionUser,
 } from '#/api';
 
 import { computed, markRaw, ref } from 'vue';
@@ -14,9 +14,14 @@ import { formatDateTime } from '@vben/utils';
 import _ from 'lodash';
 
 import { z } from '#/adapter/form';
-import { companyUsersResource, departmentOptionsResource } from '#/api';
+import {
+  filterOrganizationsByRoot,
+  organizationsResource,
+  userTreeResource,
+} from '#/api';
 import {
   createAttendanceLocationPayloadSchema,
+  MAX_ATTENDANCE_RADIUS_METERS,
   updateAttendanceLocationPayloadSchema,
 } from '#/api/contracts';
 import { $t } from '#/locales';
@@ -24,21 +29,59 @@ import { buildSectionedFormSchema } from '#/shared/resource-form';
 import { useAuthStore } from '#/store';
 
 export interface AttendanceLocationFormFieldContext {
-  departments: readonly Department[];
-  users: readonly User[];
+  organizations: readonly Organization[];
+  users: readonly UserTreeSelectionUser[];
 }
 
 export interface AttendanceLocationFormValues {
-  department_ids: string[];
+  organization_ids: string[];
   excluded_user_ids: string[];
   ip_addresses: string[];
-  is_active: boolean;
   latitude: string;
   longitude: string;
   name: string;
   radius_meters: string;
   user_ids: string[];
   validation_mode: string;
+}
+
+export function createAttendanceLocationRadiusInputSchema() {
+  return z
+    .string()
+    .min(1, $t('attendanceLocations.validation.radiusRequired'))
+    .refine(
+      (value) =>
+        value === '' ||
+        createAttendanceLocationPayloadSchema.shape.radius_meters.safeParse(
+          Number(value),
+        ).success,
+      $t('attendanceLocations.validation.radiusRange', {
+        max: MAX_ATTENDANCE_RADIUS_METERS,
+      }),
+    );
+}
+
+export function updateAttendanceLocationUserAssignments(
+  values: AttendanceLocationFormValues,
+  field: 'excluded_user_ids' | 'user_ids',
+  selectedIds: string[],
+): void {
+  const userIds = [...new Set(selectedIds)];
+
+  if (field === 'user_ids') {
+    values.user_ids = userIds;
+    const includedUserIds = new Set(userIds);
+    values.excluded_user_ids = values.excluded_user_ids.filter(
+      (userId) => !includedUserIds.has(userId),
+    );
+    return;
+  }
+
+  values.excluded_user_ids = userIds;
+  const excludedUserIds = new Set(userIds);
+  values.user_ids = values.user_ids.filter(
+    (userId) => !excludedUserIds.has(userId),
+  );
 }
 
 type AttendanceLocationFormMode = 'create' | 'edit';
@@ -96,163 +139,134 @@ const attendanceLocationFormGroups: readonly AttendanceLocationFormGroup[] = [
     children: [
       {
         key: 'name',
-        label: $t('page.attendanceLocations.fields.name'),
+        label: $t('attendanceLocations.fields.name'),
         modes: ['create', 'edit'],
         schema: {
           component: 'Input',
           componentProps: {
-            placeholder: $t('page.attendanceLocations.placeholders.name'),
+            placeholder: $t('attendanceLocations.placeholders.name'),
           },
           fieldName: 'name',
-          label: $t('page.attendanceLocations.fields.name'),
+          label: $t('attendanceLocations.fields.name'),
           rules: markRaw(
             z
               .string()
-              .min(1, $t('page.attendanceLocations.validation.nameRequired'))
+              .min(1, $t('attendanceLocations.validation.nameRequired'))
               .max(255),
           ),
         },
       },
       {
         key: 'validation_mode',
-        label: $t('page.attendanceLocations.fields.validationMode'),
+        label: $t('attendanceLocations.fields.validationMode'),
         modes: ['create', 'edit'],
         schema: {
           component: 'Select',
           componentProps: {
             options: [
               {
-                label: $t('page.attendanceLocations.validationMode.location'),
+                label: $t('attendanceLocations.validationMode.location'),
                 value: 'location',
               },
               {
-                label: $t('page.attendanceLocations.validationMode.ip'),
+                label: $t('attendanceLocations.validationMode.ip'),
                 value: 'ip',
               },
               {
-                label: $t('page.attendanceLocations.validationMode.both'),
+                label: $t('attendanceLocations.validationMode.both'),
                 value: 'both',
               },
               {
-                label: $t('page.attendanceLocations.validationMode.either'),
+                label: $t('attendanceLocations.validationMode.either'),
                 value: 'either',
               },
             ],
-            placeholder: $t(
-              'page.attendanceLocations.placeholders.validationMode',
-            ),
+            placeholder: $t('attendanceLocations.placeholders.validationMode'),
           },
           fieldName: 'validation_mode',
-          label: $t('page.attendanceLocations.fields.validationMode'),
+          label: $t('attendanceLocations.fields.validationMode'),
           rules: markRaw(
             z
               .string()
               .min(
                 1,
-                $t(
-                  'page.attendanceLocations.validation.validationModeRequired',
-                ),
+                $t('attendanceLocations.validation.validationModeRequired'),
               ),
           ),
-        },
-      },
-      {
-        key: 'is_active',
-        label: $t('page.attendanceLocations.fields.status'),
-        modes: ['create', 'edit'],
-        schema: {
-          component: 'Switch',
-          componentProps: {
-            class: 'w-auto',
-          },
-          defaultValue: true,
-          fieldName: 'is_active',
-          label: $t('page.attendanceLocations.fields.status'),
-          rules: markRaw(z.boolean()),
         },
       },
     ],
     icon: 'lucide:info',
     key: 'basic',
-    title: $t('page.attendanceLocations.sections.basic'),
+    title: $t('attendanceLocations.sections.basic'),
   },
   {
     children: [
       {
         key: 'latitude',
-        label: $t('page.attendanceLocations.fields.latitude'),
+        label: $t('attendanceLocations.fields.latitude'),
         modes: ['create', 'edit'],
         schema: {
           component: 'Input',
           componentProps: {
             inputmode: 'decimal',
-            placeholder: $t('page.attendanceLocations.placeholders.latitude'),
+            placeholder: $t('attendanceLocations.placeholders.latitude'),
             type: 'text',
           },
           fieldName: 'latitude',
-          label: $t('page.attendanceLocations.fields.latitude'),
+          label: $t('attendanceLocations.fields.latitude'),
           rules: markRaw(
             z
               .string()
-              .min(
-                1,
-                $t('page.attendanceLocations.validation.latitudeRequired'),
-              ),
+              .min(1, $t('attendanceLocations.validation.latitudeRequired')),
           ),
         },
       },
       {
         key: 'longitude',
-        label: $t('page.attendanceLocations.fields.longitude'),
+        label: $t('attendanceLocations.fields.longitude'),
         modes: ['create', 'edit'],
         schema: {
           component: 'Input',
           componentProps: {
             inputmode: 'decimal',
-            placeholder: $t('page.attendanceLocations.placeholders.longitude'),
+            placeholder: $t('attendanceLocations.placeholders.longitude'),
             type: 'text',
           },
           fieldName: 'longitude',
-          label: $t('page.attendanceLocations.fields.longitude'),
+          label: $t('attendanceLocations.fields.longitude'),
           rules: markRaw(
             z
               .string()
-              .min(
-                1,
-                $t('page.attendanceLocations.validation.longitudeRequired'),
-              ),
+              .min(1, $t('attendanceLocations.validation.longitudeRequired')),
           ),
         },
       },
       {
         key: 'radius_meters',
-        label: $t('page.attendanceLocations.fields.radius'),
+        label: $t('attendanceLocations.fields.radius'),
         modes: ['create', 'edit'],
         schema: {
           component: 'Input',
           componentProps: {
             inputmode: 'numeric',
-            placeholder: $t('page.attendanceLocations.placeholders.radius'),
+            placeholder: $t('attendanceLocations.placeholders.radius'),
             type: 'text',
           },
           fieldName: 'radius_meters',
-          label: $t('page.attendanceLocations.fields.radius'),
-          rules: markRaw(
-            z
-              .string()
-              .min(1, $t('page.attendanceLocations.validation.radiusRequired')),
-          ),
+          label: $t('attendanceLocations.fields.radius'),
+          rules: markRaw(createAttendanceLocationRadiusInputSchema()),
         },
       },
       {
         key: 'map_picker',
-        label: $t('page.attendanceLocations.fields.mapLocation'),
+        label: $t('attendanceLocations.fields.mapLocation'),
         modes: ['create', 'edit'],
         schema: {
           component: 'FormSlot',
           fieldName: '__map_picker',
           formItemClass: 'md:col-span-2',
-          label: $t('page.attendanceLocations.fields.mapLocation'),
+          label: $t('attendanceLocations.fields.mapLocation'),
           rules: markRaw(z.undefined().optional()),
           valueFormat: () => undefined,
         },
@@ -261,23 +275,23 @@ const attendanceLocationFormGroups: readonly AttendanceLocationFormGroup[] = [
     ],
     icon: 'lucide:map-pin',
     key: 'location',
-    title: $t('page.attendanceLocations.sections.location'),
+    title: $t('attendanceLocations.sections.location'),
   },
   {
     children: [
       {
         key: 'ip_addresses',
-        label: $t('page.attendanceLocations.fields.ips'),
+        label: $t('attendanceLocations.fields.ips'),
         modes: ['edit'],
         schema: {
           component: 'Select',
           componentProps: {
             mode: 'tags',
-            placeholder: $t('page.attendanceLocations.placeholders.ips'),
+            placeholder: $t('attendanceLocations.placeholders.ips'),
           },
           fieldName: 'ip_addresses',
           formItemClass: 'md:col-span-2',
-          label: $t('page.attendanceLocations.fields.ips'),
+          label: $t('attendanceLocations.fields.ips'),
           rules: markRaw(z.array(z.string()).optional()),
         },
         span: 'full',
@@ -285,37 +299,35 @@ const attendanceLocationFormGroups: readonly AttendanceLocationFormGroup[] = [
     ],
     icon: 'lucide:network',
     key: 'ips',
-    title: $t('page.attendanceLocations.sections.ips'),
+    title: $t('attendanceLocations.sections.ips'),
   },
   {
     children: [
       {
-        key: 'department_ids',
-        label: $t('page.attendanceLocations.fields.departments'),
+        key: 'organization_ids',
+        label: $t('attendanceLocations.fields.organizations'),
         modes: ['edit'],
-        schema: ({ departments }) => ({
+        schema: ({ organizations }) => ({
           component: 'Select',
           componentProps: {
             allowClear: true,
             mode: 'multiple',
-            options: departments.map((dept) => ({
-              label: dept.name,
-              value: String(dept.id),
+            options: organizations.map((organization) => ({
+              label: organization.name,
+              value: organization.id,
             })),
-            placeholder: $t(
-              'page.attendanceLocations.placeholders.departments',
-            ),
+            placeholder: $t('attendanceLocations.placeholders.organizations'),
           },
-          fieldName: 'department_ids',
+          fieldName: 'organization_ids',
           formItemClass: 'md:col-span-2',
-          label: $t('page.attendanceLocations.fields.departments'),
+          label: $t('attendanceLocations.fields.organizations'),
           rules: markRaw(z.array(z.string()).optional()),
         }),
         span: 'full',
       },
       {
         key: 'user_ids',
-        label: $t('page.attendanceLocations.fields.users'),
+        label: $t('attendanceLocations.fields.users'),
         modes: ['edit'],
         schema: ({ users }) => ({
           component: 'Select',
@@ -326,18 +338,18 @@ const attendanceLocationFormGroups: readonly AttendanceLocationFormGroup[] = [
               label: user.name,
               value: String(user.id),
             })),
-            placeholder: $t('page.attendanceLocations.placeholders.users'),
+            placeholder: $t('attendanceLocations.placeholders.users'),
           },
           fieldName: 'user_ids',
           formItemClass: 'md:col-span-2',
-          label: $t('page.attendanceLocations.fields.users'),
+          label: $t('attendanceLocations.fields.users'),
           rules: markRaw(z.array(z.string()).optional()),
         }),
         span: 'full',
       },
       {
         key: 'excluded_user_ids',
-        label: $t('page.attendanceLocations.fields.excludedUsers'),
+        label: $t('attendanceLocations.fields.excludedUsers'),
         modes: ['edit'],
         schema: ({ users }) => ({
           component: 'Select',
@@ -348,13 +360,11 @@ const attendanceLocationFormGroups: readonly AttendanceLocationFormGroup[] = [
               label: user.name,
               value: String(user.id),
             })),
-            placeholder: $t(
-              'page.attendanceLocations.placeholders.excludedUsers',
-            ),
+            placeholder: $t('attendanceLocations.placeholders.excludedUsers'),
           },
           fieldName: 'excluded_user_ids',
           formItemClass: 'md:col-span-2',
-          label: $t('page.attendanceLocations.fields.excludedUsers'),
+          label: $t('attendanceLocations.fields.excludedUsers'),
           rules: markRaw(z.array(z.string()).optional()),
         }),
         span: 'full',
@@ -362,7 +372,7 @@ const attendanceLocationFormGroups: readonly AttendanceLocationFormGroup[] = [
     ],
     icon: 'lucide:users',
     key: 'assignments',
-    title: $t('page.attendanceLocations.sections.assignments'),
+    title: $t('attendanceLocations.sections.assignments'),
   },
 ];
 
@@ -370,10 +380,11 @@ export function toAttendanceLocationFormValues(
   entity: AttendanceLocation,
 ): AttendanceLocationFormValues {
   return {
-    department_ids: entity.departments.map((d) => String(d.id)),
+    organization_ids: entity.organizations.map(
+      (organization) => organization.id,
+    ),
     excluded_user_ids: entity.excluded_users.map((u) => String(u.id)),
     ip_addresses: entity.ips.map((ip) => ip.ip_address),
-    is_active: entity.is_active,
     latitude: String(entity.latitude),
     longitude: String(entity.longitude),
     name: entity.name,
@@ -392,9 +403,8 @@ export function buildAttendanceLocationCreatePayload(
     'longitude',
     'radius_meters',
     'validation_mode',
-    'is_active',
     'user_ids',
-    'department_ids',
+    'organization_ids',
     'excluded_user_ids',
     'ip_addresses',
   ]);
@@ -421,9 +431,8 @@ export function buildAttendanceLocationUpdatePayload(
     'longitude',
     'radius_meters',
     'validation_mode',
-    'is_active',
     'user_ids',
-    'department_ids',
+    'organization_ids',
     'excluded_user_ids',
     'ip_addresses',
   ]);
@@ -453,14 +462,14 @@ export function buildAttendanceLocationDetail(
         rows: [
           {
             key: 'validation_mode',
-            label: $t('page.attendanceLocations.fields.validationMode'),
+            label: $t('attendanceLocations.fields.validationMode'),
             span: 'half',
             value: $t(
-              `page.attendanceLocations.validationMode.${entity.validation_mode}`,
+              `attendanceLocations.validationMode.${entity.validation_mode}`,
             ),
           },
         ],
-        title: $t('page.attendanceLocations.sections.basic'),
+        title: $t('attendanceLocations.sections.basic'),
       },
       {
         icon: 'lucide:map-pin',
@@ -468,24 +477,24 @@ export function buildAttendanceLocationDetail(
         rows: [
           {
             key: 'latitude',
-            label: $t('page.attendanceLocations.fields.latitude'),
+            label: $t('attendanceLocations.fields.latitude'),
             span: 'half',
             value: String(entity.latitude),
           },
           {
             key: 'longitude',
-            label: $t('page.attendanceLocations.fields.longitude'),
+            label: $t('attendanceLocations.fields.longitude'),
             span: 'half',
             value: String(entity.longitude),
           },
           {
             key: 'radius_meters',
-            label: $t('page.attendanceLocations.fields.radius'),
+            label: $t('attendanceLocations.fields.radius'),
             span: 'half',
             value: `${entity.radius_meters}m`,
           },
         ],
-        title: $t('page.attendanceLocations.sections.location'),
+        title: $t('attendanceLocations.sections.location'),
       },
       {
         icon: 'lucide:network',
@@ -493,43 +502,45 @@ export function buildAttendanceLocationDetail(
         rows: [
           {
             key: 'ip_addresses',
-            label: $t('page.attendanceLocations.fields.ips'),
+            label: $t('attendanceLocations.fields.ips'),
             span: 'full',
             value:
               entity.ips.length > 0
                 ? entity.ips.map((ip) => ip.ip_address).join(', ')
-                : $t('page.attendanceLocations.values.anyIp'),
+                : $t('attendanceLocations.values.anyIp'),
           },
         ],
-        title: $t('page.attendanceLocations.sections.ips'),
+        title: $t('attendanceLocations.sections.ips'),
       },
       {
         icon: 'lucide:users',
         key: 'assignments',
         rows: [
           {
-            key: 'departments',
-            label: $t('page.attendanceLocations.fields.departments'),
+            key: 'organizations',
+            label: $t('attendanceLocations.fields.organizations'),
             span: 'full',
-            tags: entity.departments.map((d) => d.name),
+            tags: entity.organizations.map((organization) => organization.name),
             value:
-              entity.departments.length > 0
-                ? entity.departments.map((d) => d.name).join(', ')
+              entity.organizations.length > 0
+                ? entity.organizations
+                    .map((organization) => organization.name)
+                    .join(', ')
                 : $t('common.notProvided'),
           },
           {
             key: 'users',
-            label: $t('page.attendanceLocations.fields.users'),
+            label: $t('attendanceLocations.fields.users'),
             span: 'full',
             tags: entity.users.map((u) => u.name),
             value:
               entity.users.length > 0
                 ? entity.users.map((u) => u.name).join(', ')
-                : $t('page.attendanceLocations.values.allUsers'),
+                : $t('attendanceLocations.values.allUsers'),
           },
           {
             key: 'excluded_users',
-            label: $t('page.attendanceLocations.fields.excludedUsers'),
+            label: $t('attendanceLocations.fields.excludedUsers'),
             span: 'full',
             tags: entity.excluded_users.map((u) => u.name),
             value:
@@ -538,7 +549,7 @@ export function buildAttendanceLocationDetail(
                 : $t('common.notProvided'),
           },
         ],
-        title: $t('page.attendanceLocations.sections.assignments'),
+        title: $t('attendanceLocations.sections.assignments'),
       },
       {
         icon: 'lucide:clock-3',
@@ -546,37 +557,38 @@ export function buildAttendanceLocationDetail(
         rows: [
           {
             key: 'created_at',
-            label: $t('page.attendanceLocations.fields.createdAt'),
+            label: $t('attendanceLocations.fields.createdAt'),
             span: 'half',
             value: formatDateTime(entity.created_at),
           },
           {
             key: 'updated_at',
-            label: $t('page.attendanceLocations.fields.updatedAt'),
+            label: $t('attendanceLocations.fields.updatedAt'),
             span: 'half',
             value: formatDateTime(entity.updated_at),
           },
         ],
-        title: $t('page.attendanceLocations.sections.information'),
+        title: $t('attendanceLocations.sections.information'),
       },
     ],
     status: {
-      active: entity.is_active,
-      label: entity.is_active
-        ? $t('page.attendanceLocations.status.active')
-        : $t('page.attendanceLocations.status.inactive'),
+      active: entity.deleted_at === null,
+      label:
+        entity.deleted_at === null
+          ? $t('attendanceLocations.status.active')
+          : $t('attendanceLocations.status.deleted'),
     },
   };
 }
 
 export function useAttendanceLocationFormSchema() {
-  const departments = ref<Department[]>([]);
-  const users = ref<User[]>([]);
+  const organizations = ref<Organization[]>([]);
+  const users = ref<UserTreeSelectionUser[]>([]);
   const loading = ref(false);
   const authStore = useAuthStore();
 
   const fieldContext = computed<AttendanceLocationFormFieldContext>(() => ({
-    departments: departments.value,
+    organizations: organizations.value,
     users: users.value,
   }));
 
@@ -599,17 +611,20 @@ export function useAttendanceLocationFormSchema() {
   async function loadOptions(): Promise<void> {
     loading.value = true;
     try {
-      const companyId = authStore.user?.company_id;
-      if (!companyId) {
+      const rootOrganizationId = authStore.user?.root_organization_id;
+      if (rootOrganizationId === null || rootOrganizationId === undefined) {
+        organizations.value = [];
+        users.value = [];
         return;
       }
-      const [departmentsList, allUsers] = await Promise.all([
-        departmentOptionsResource.getAll(),
-        companyUsersResource.getAll({
-          department_company_id: companyId,
-        }),
+      const [allOrganizations, allUsers] = await Promise.all([
+        organizationsResource.getAllRows(),
+        userTreeResource.getAll({ root_organization_id: rootOrganizationId }),
       ]);
-      departments.value = departmentsList;
+      organizations.value = filterOrganizationsByRoot(
+        allOrganizations,
+        rootOrganizationId,
+      );
       users.value = allUsers;
     } finally {
       loading.value = false;

@@ -1,0 +1,62 @@
+{
+  "routeTitle": "变更日志",
+  "listTitle": "HTTP 变更日志",
+  "listDescription": "查询已记录的 HTTP 请求。",
+  "columns": {
+    "loggedAt": "记录时间",
+    "code": "追踪码",
+    "uri": "URI",
+    "action": "操作",
+    "requestedBy": "请求用户",
+    "status": "HTTP 状态",
+    "actions": "操作"
+  },
+  "filters": {
+    "search": "搜索",
+    "action": "操作",
+    "instanceId": "实例 ID",
+    "requestedBy": "请求用户",
+    "status": "HTTP 状态",
+    "error": "结果",
+    "range": "最近时间",
+    "from": "开始",
+    "to": "结束",
+    "all": "全部",
+    "errors": "错误",
+    "successes": "无错误",
+    "twoMinutes": "2 分钟",
+    "fiveMinutes": "5 分钟",
+    "fifteenMinutes": "15 分钟",
+    "oneHour": "1 小时",
+    "oneDay": "1 天",
+    "searchPlaceholder": "输入追踪码或实例 ID",
+    "actionPlaceholder": "操作",
+    "requestedByPlaceholder": "请求用户",
+    "statusPlaceholder": "HTTP 状态",
+    "datePlaceholder": "日期和时间"
+  },
+  "actions": {
+    "view": "查看",
+    "clear": "清除筛选",
+    "toggleFilters": "显示或隐藏筛选条件",
+    "search": "查询",
+    "copyMarkdown": "复制 Markdown"
+  },
+  "detail": {
+    "title": "变更日志详情",
+    "appUrl": "应用 URL",
+    "gitSha": "Git SHA-1",
+    "payload": "请求内容",
+    "response": "响应",
+    "codeSnippet": "代码片段",
+    "trace": "堆栈信息"
+  },
+  "messages": {
+    "loadFailed": "无法加载变更日志。",
+    "invalidFilters": "筛选条件无效。",
+    "suggestFailed": "无法加载建议。",
+    "detailFailed": "无法加载日志详情。",
+    "copyFailed": "无法复制 Markdown。",
+    "copied": "已复制 Markdown。"
+  }
+}

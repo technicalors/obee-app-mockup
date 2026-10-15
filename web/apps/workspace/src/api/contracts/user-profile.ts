@@ -30,7 +30,7 @@ export const userProfileSchema = z.object({
     .string()
     .regex(/^\+?\d{8,15}$/)
     .nullable(),
-  position: positionSchema.nullable(),
+  position: positionSchema.nullable().default(null),
   position_id: z.string().nullable(),
   seniority: z.number().nullable(),
   sex: z.enum(['female', 'male']).nullable(),

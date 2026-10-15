@@ -1,0 +1,104 @@
+{
+  "routeTitle": "Organizations",
+  "listTitle": "Organization list",
+  "listDescription": "Manage organization names, types, tax identifiers, and hierarchy.",
+  "columns": {
+    "name": "Name",
+    "type": "Type",
+    "parent": "Parent organization",
+    "taxIdentificationNumber": "Tax identification number",
+    "createdAt": "Created at",
+    "actions": "Actions"
+  },
+  "filters": {
+    "search": "Search",
+    "searchPlaceholder": "Search organizations...",
+    "type": "Type"
+  },
+  "fields": {
+    "name": "Name",
+    "type": "Type",
+    "parent": "Parent organization",
+    "taxIdentificationNumber": "Tax identification number"
+  },
+  "sections": {
+    "organization": "Organization information"
+  },
+  "types": {
+    "company": "Company",
+    "department": "Department",
+    "division": "Division",
+    "team": "Team",
+    "unit": "Unit"
+  },
+  "actions": {
+    "viewTree": "View tree",
+    "createRoot": "Add organization",
+    "createChild": "Create child organization",
+    "view": "View details",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "backToList": "Back to list",
+    "create": "Create"
+  },
+  "values": {
+    "root": "Root organization",
+    "parentLoading": "Loading parent organization...",
+    "parentUnavailable": "Parent organization unavailable"
+  },
+  "create": {
+    "title": "Create organization"
+  },
+  "edit": {
+    "title": "Edit organization"
+  },
+  "detail": {
+    "title": "Organization details"
+  },
+  "tree": {
+    "title": "Organization tree",
+    "description": "Browse organizations by parent-child relationship.",
+    "empty": "No organizations found.",
+    "root": "Root organization",
+    "parent": "Reports to",
+    "memberCount": "Member count",
+    "members": {
+      "name": "Name",
+      "username": "Username",
+      "avatar": "Avatar",
+      "roles": "Roles",
+      "empty": "No direct users found."
+    },
+    "chart": {
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "fit": "Fit to view",
+      "expandAll": "Expand all",
+      "collapseAll": "Collapse all",
+      "expand": "Expand",
+      "collapse": "Collapse"
+    }
+  },
+  "delete": {
+    "title": "Delete organization",
+    "description": "Are you sure you want to delete {name}? This action cannot be undone."
+  },
+  "validation": {
+    "nameRequired": "Enter the organization name",
+    "typeParentMismatch": "Root organizations must use Company; child organizations must use a non-company type.",
+    "taxRootOnly": "A tax identification number can only be set on a root organization."
+  },
+  "users": {
+    "title": "Members",
+    "name": "Name",
+    "username": "Username"
+  },
+  "messages": {
+    "created": "Organization created",
+    "updated": "Organization updated",
+    "deleted": "Organization deleted",
+    "unexpectedError": "An unexpected error occurred"
+  }
+}

@@ -1,0 +1,244 @@
+{
+  "routeTitle": "Requests",
+  "title": "Requests",
+  "balance": "Annual leave remaining: {remaining} days",
+  "empty": "No requests.",
+  "tabs": {
+    "all": "All Requests",
+    "pending": "Requests",
+    "approved": "Accepted",
+    "rejected": "Rejected",
+    "my": "My Requests",
+    "review": "In Review Requests"
+  },
+  "states": {
+    "loadFailed": "Unable to load requests right now.",
+    "noRequests": "No requests found.",
+    "noReviewRequests": "No requests are waiting for review.",
+    "listLoadingTitle": "Loading requests",
+    "listLoadingDescription": "The current request list will appear here when loading finishes.",
+    "listErrorTitle": "Unable to load requests",
+    "listErrorDescription": "The request list could not be loaded right now. Try again in a moment.",
+    "emptyPendingTitle": "No pending requests",
+    "emptyPendingDescription": "There are currently no requests waiting to be processed.",
+    "emptyApprovedTitle": "No accepted requests",
+    "emptyApprovedDescription": "There are currently no accepted requests.",
+    "emptyRejectedTitle": "No rejected requests",
+    "emptyRejectedDescription": "There are currently no rejected requests or requests needing adjustment.",
+    "emptyAllTitle": "No requests yet",
+    "emptyAllDescription": "There are no requests to show in this tab yet.",
+    "emptyMyTitle": "You have not created any requests yet",
+    "emptyMyDescription": "Your requests will appear here after you create them.",
+    "emptyReviewTitle": "Nothing needs review",
+    "emptyReviewDescription": "There are no pending requests waiting for review right now.",
+    "emptyFilteredTitle": "No requests match these filters",
+    "emptyFilteredDescription": "Try clearing or adjusting the current filters to see more requests."
+  },
+  "filters": {
+    "title": "Filter Requests",
+    "description": "Narrow the current request list.",
+    "fields": {
+      "requestType": "Request type",
+      "status": "Status",
+      "reviewer": "Reviewer",
+      "requester": "Requester",
+      "dateRange": "Created date",
+      "from": "From",
+      "to": "To"
+    },
+    "actions": {
+      "open": "Filters",
+      "openWithCount": "Filters ({count})",
+      "apply": "Apply filters",
+      "reset": "Reset",
+      "clear": "Clear filters",
+      "clearAll": "Clear all"
+    },
+    "all": "All"
+  },
+  "types": {
+    "ANNUAL": "Annual Timeoff Request",
+    "UNPAID": "Unpaid Timeoff Request",
+    "BUSINESS_TRIP": "Business Trip Request"
+  },
+  "statuses": {
+    "pending": "Pending",
+    "returned": "Returned",
+    "approved": "Approved",
+    "rejected": "Rejected"
+  },
+  "labels": {
+    "requester": "Requester",
+    "reviewer": "Reviewer"
+  },
+  "create": {
+    "title": "Create Request",
+    "editTitle": "Edit Request",
+    "description": "Start a new request.",
+    "fields": {
+      "timeoffType": "Timeoff type",
+      "reviewer": "Reviewer",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "timeoffDate": "Leave date",
+      "timeoffShift": "Work shift",
+      "reason": "Reason",
+      "address": "Address",
+      "company": "Company"
+    },
+    "placeholders": {
+      "timeoffType": "Select timeoff type",
+      "reviewer": "Select reviewer",
+      "startDate": "Select start date",
+      "endDate": "Select end date",
+      "timeoffDate": "Select leave date",
+      "reason": "Add the request reason",
+      "address": "Add the trip location"
+    },
+    "options": {
+      "timeoffType": {
+        "ANNUAL": "Annual",
+        "UNPAID": "Unpaid"
+      }
+    },
+    "hints": {
+      "timeoff": "Choose the timeoff type that matches this request.",
+      "businessTrip": "Business trip requests will include trip location details."
+    },
+    "balance": {
+      "title": "Annual balance",
+      "loadingTitle": "Loading annual balance",
+      "loadingDescription": "Annual balance information will appear here when loading finishes.",
+      "sufficientDescription": "Your annual balance can cover this request.",
+      "insufficientDescription": "Annual balance is not enough for this request.",
+      "crossCycleDescription": "This request spans leave cycles; each cycle is checked when submitted.",
+      "referenceDescription": "Balance at the start date. Assigned shifts and each leave cycle are checked when submitted.",
+      "unavailableTitle": "Annual balance unavailable",
+      "unavailableDescription": "Annual balance could not be loaded right now. Try again in a moment.",
+      "remaining": "Remaining",
+      "used": "Used",
+      "entitlement": "Entitlement",
+      "cycle": "Cycle",
+      "cycleUnavailable": "Unavailable",
+      "daysValue": "{count} days"
+    },
+    "actions": {
+      "open": "Create Request",
+      "openTimeoff": "Create Leave Request",
+      "openBusinessTrip": "Create Business Trip",
+      "submit": "Send for review",
+      "cancel": "Cancel"
+    },
+    "validation": {
+      "reviewerRequired": "Please select a reviewer for this request.",
+      "addressRequired": "Please enter the business trip address.",
+      "startDateRequired": "Please select a start date and time.",
+      "endDateRequired": "Please select an end date and time.",
+      "dateRangeInvalid": "Start date and time must be earlier than the end date and time.",
+      "timeoffSingleDay": "Leave requests must start and end on the same day.",
+      "reasonRequired": "Please enter a reason for this request."
+    },
+    "shiftSelection": {
+      "selectDateFirst": "Select a leave date first",
+      "custom": "Custom time range",
+      "placeholder": "Select a shift or custom range",
+      "loading": "Loading assigned shifts...",
+      "loadFailed": "Could not load the assigned shift for this day.",
+      "empty": "No shift is assigned for this day. Select 'Custom time range' to choose your leave hours.",
+      "wholeShift": "{name} ({start} → {end})",
+      "wholeShiftOvernight": "{name} ({start} → {end} next day)",
+      "period": "Period {index}: {start} → {end}",
+      "periodOvernight": "Period {index}: {start} → {end} next day",
+      "retry": "Retry"
+    }
+  },
+  "detail": {
+    "durationDays": "{days} days",
+    "title": "Request Detail",
+    "description": "Review the full request context.",
+    "fields": {
+      "duration": "Requested duration",
+      "createdAt": "Requested At",
+      "submittedAt": "Submitted At",
+      "approvedAt": "Approved At",
+      "rejectedAt": "Rejected At",
+      "requester": "Requester",
+      "reviewer": "Reviewer",
+      "requestId": "Request ID",
+      "startAt": "Start At",
+      "endAt": "End At",
+      "reason": "Reason",
+      "rejectReason": "Rejection reason",
+      "returnNote": "Adjustment details",
+      "address": "Address",
+      "approvalNote": "Approval Note"
+    },
+    "review": {
+      "title": "Review Actions",
+      "description": "Choose how you want to review this pending request.",
+      "rejectNoteLabel": "Rejection Note",
+      "rejectNotePlaceholder": "Explain why this request is being rejected",
+      "rejectNoteRequired": "Please enter a rejection note before rejecting this request.",
+      "returnNoteLabel": "Changes requested",
+      "returnNoteRequired": "Please describe the changes needed.",
+      "confirmApproveTitle": "Approve this request?",
+      "confirmApproveDescription": "This request will be marked as approved.",
+      "confirmApprove": "Confirm approve",
+      "confirmRejectTitle": "Reject this request?",
+      "confirmRejectDescription": "This request will be marked as rejected with your note.",
+      "confirmReject": "Confirm reject",
+      "confirmCancel": "Cancel"
+    },
+    "requester": {
+      "title": "Requester Actions",
+      "description": "Cancel this pending request if it should no longer be submitted for review.",
+      "confirmDeleteTitle": "Cancel this request?",
+      "confirmDeleteDescription": "This request will be permanently cancelled.",
+      "confirmDelete": "Confirm cancel",
+      "confirmCancel": "Cancel"
+    },
+    "actions": {
+      "edit": "Edit",
+      "return": "Needs adjustment",
+      "delete": "Cancel request",
+      "deleting": "Cancelling...",
+      "approve": "Accept",
+      "approving": "Accepting...",
+      "reject": "Reject",
+      "rejecting": "Rejecting...",
+      "close": "Close"
+    }
+  },
+  "actions": {
+    "create": "Create request",
+    "detail": "Details",
+    "refresh": "Refresh",
+    "cancel": "Cancel",
+    "approve": "Accept",
+    "reject": "Reject",
+    "return": "Needs adjustment",
+    "delete": "Cancel request",
+    "close": "Close"
+  },
+  "deleteConfirm": "Cancel this pending request?",
+  "messages": {
+    "loadFailed": "Could not load the request list.",
+    "balanceFailed": "Could not load annual leave balance.",
+    "invalidForm": "Check required fields, dates and business trip address.",
+    "saveFailed": "Could not save the request.",
+    "created": "Request created.",
+    "returned": "Request returned for changes.",
+    "approved": "Request approved.",
+    "rejected": "Request rejected.",
+    "deleted": "Request cancelled."
+  },
+  "paginationSummary": "Showing {start}–{end} of {total} requests",
+  "coverage": {
+    "loading": "Calculating request duration…",
+    "error": "Unable to calculate request duration. Please try again.",
+    "retry": "Retry",
+    "total": "Request duration:",
+    "assignedDays": "{days} days with assigned shifts",
+    "unassignedDays": ", {days} days without assigned shifts"
+  }
+}

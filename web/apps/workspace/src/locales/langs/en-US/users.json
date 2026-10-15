@@ -1,0 +1,150 @@
+{
+  "routeTitle": "Users",
+  "title": "Users",
+  "description": "Manage internal accounts, profiles, organizations, and roles.",
+  "listTitle": "User list",
+  "listDescription": "Review accounts, roles, status, and creation time.",
+  "columns": {
+    "sequence": "No.",
+    "name": "Full name",
+    "username": "Username",
+    "employeeId": "Employee ID",
+    "email": "Email",
+    "roles": "Roles",
+    "status": "Status",
+    "actions": "Actions",
+    "organization": "Organization"
+  },
+  "filters": {
+    "search": "Search",
+    "searchPlaceholder": "Employee code, username, email, name...",
+    "name": "Name",
+    "namePlaceholder": "Filter by name",
+    "email": "Email",
+    "emailPlaceholder": "Filter by email",
+    "roleGroup": "Roles",
+    "status": "Status"
+  },
+  "fields": {
+    "name": "Full name",
+    "username": "Username",
+    "email": "Email",
+    "avatar": "Avatar",
+    "password": "Password",
+    "roles": "Roles",
+    "status": "Status",
+    "phone": "Phone",
+    "employeeCode": "Employee code",
+    "position": "Position",
+    "gender": "Gender",
+    "birthday": "Birthday",
+    "joinedAt": "Joined at",
+    "startingDate": "Official start date",
+    "educationLevel": "Education level",
+    "employeeType": "Employee type",
+    "citizenIdentificationCard": "Citizen ID",
+    "socialInsuranceNumber": "Social insurance number",
+    "healthInsuranceCardNumber": "Health insurance card number",
+    "personalTaxIdentificationNumber": "Personal tax identification number",
+    "dependentTaxIdentificationNumber": "Dependent tax identification number",
+    "bankAccountNumber": "Bank account number",
+    "address": "Address",
+    "createdAt": "Created at",
+    "updatedAt": "Updated at",
+    "organization": "Organization"
+  },
+  "sections": {
+    "account": "Account",
+    "contact": "Contact information",
+    "personal": "Personal information",
+    "access": "Access",
+    "roles": "Roles",
+    "accountInformation": "Account information"
+  },
+  "tabs": {
+    "basic": "Basic information",
+    "additional": "Additional information"
+  },
+  "placeholders": {
+    "position": "Select position",
+    "educationLevel": "Select education level",
+    "password": "Enter password",
+    "passwordConfirmation": "Confirm password",
+    "roles": "Select roles",
+    "organization": "Organization"
+  },
+  "actions": {
+    "create": "Create user",
+    "view": "View details",
+    "edit": "Edit",
+    "roles": "Manage roles",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "retry": "Retry",
+    "restore": "Restore"
+  },
+  "verification": {
+    "verified": "Verified",
+    "unverified": "Unverified"
+  },
+  "gender": {
+    "male": "Male",
+    "female": "Female"
+  },
+  "educationLevels": {
+    "unskilled_labor": "Unskilled labor",
+    "intermediate": "Intermediate",
+    "college": "College",
+    "university": "University",
+    "master": "Master's degree",
+    "doctorate": "Doctorate",
+    "professor": "Professor"
+  },
+  "values": {
+    "noRoles": "No roles"
+  },
+  "status": {
+    "active": "Active",
+    "deleted": "Deleted",
+    "all": "All"
+  },
+  "create": {
+    "title": "Create user"
+  },
+  "edit": {
+    "title": "Edit user"
+  },
+  "detail": {
+    "title": "User details"
+  },
+  "roles": {
+    "title": "Manage roles"
+  },
+  "delete": {
+    "title": "Delete user",
+    "description": "Are you sure you want to delete {name}? The user will no longer be able to sign in; existing data is kept and the user can be restored."
+  },
+  "validation": {
+    "nameRequired": "Enter the full name",
+    "usernameMin": "Username must contain at least 3 characters",
+    "usernameRequired": "Enter the username",
+    "usernameMax": "Username must contain at most 50 characters",
+    "emailInvalid": "Enter a valid email address",
+    "passwordMin": "Password must contain at least 6 characters",
+    "passwordConfirmationMismatch": "Password confirmation does not match",
+    "employeeCodeRequired": "Enter the employee code",
+    "birthdayInvalid": "Enter a valid date in YYYY-MM-DD format",
+    "phoneInvalid": "Enter a valid phone number"
+  },
+  "messages": {
+    "created": "User created",
+    "updated": "User updated",
+    "rolesUpdated": "Roles updated",
+    "deleted": "User deleted",
+    "unexpectedError": "An unexpected error occurred",
+    "loadFailed": "Could not load user information. Please try again.",
+    "restored": "User restored"
+  }
+}

@@ -1,9 +1,13 @@
 import { z } from '@vben/common-ui';
 
-import { companySchema } from './company';
-import { departmentSchema } from './department';
+import {
+  organizationHierarchySchema,
+  organizationSchema,
+} from './organization';
 import { paginationQuerySchema } from './pagination';
+import { permissionSchema } from './permission';
 import { roleSchema } from './role';
+import { trashedFilterSchema } from './trashed';
 import {
   userProfileEducationLevelSchema,
   userProfileSchema,
@@ -15,17 +19,27 @@ export const userSchema = z.object({
   name: z.string().min(1).max(255),
   email: z.string().email().max(255).nullable(),
   avatar: z.string().nullable(),
-  is_active: z.boolean(),
   profile: userProfileSchema.nullable().default(null),
   roles: z.array(roleSchema).default([]),
   email_verified_at: z.string().datetime({ offset: true }).nullable(),
-  company: companySchema.nullable(),
-  company_id: z.string().nullable(),
-  departments: z.array(departmentSchema),
+  organization: organizationSchema.nullable(),
+  organization_id: z.string().nullable(),
   supabase_id: z.string().nullable(),
+  matrix_user_id: z.string().nullable().optional(),
   created_at: z.string().datetime({ offset: true }),
   updated_at: z.string().datetime({ offset: true }),
+  deleted_at: z.string().datetime({ offset: true }).nullable(),
 });
+
+export const userTreeSelectionUserSchema = userSchema
+  .pick({ id: true, name: true, username: true, deleted_at: true })
+  .extend({
+    organization: organizationHierarchySchema,
+    organization_id: z.string(),
+    profile: userProfileSchema.pick({ code: true }).nullable(),
+  });
+
+export type UserTreeSelectionUser = z.infer<typeof userTreeSelectionUserSchema>;
 
 export const updateUserProfilePayloadSchema = z
   .object({
@@ -67,7 +81,9 @@ export const createUserProfilePayloadSchema = updateUserProfilePayloadSchema
   .strict();
 
 export const userIndexQuerySchema = paginationQuerySchema.extend({
-  with_inactive: z.literal(1).optional(),
+  trashed: trashedFilterSchema.optional(),
+  organization_id: z.string().optional(),
+  root_organization_id: z.string().optional(),
   role_names: z.array(z.string()).optional(),
   search: z.string().optional(),
 });
@@ -79,7 +95,7 @@ export const createUserPayloadSchema = userSchema
     username: true,
   })
   .extend({
-    department_id: z.string().nullable().optional(),
+    organization_id: z.string().nullable().optional(),
     password: z.string().min(6).max(255),
     profile: createUserProfilePayloadSchema.optional(),
     role_names: z.array(z.string()).optional(),
@@ -91,10 +107,9 @@ export const updateUserPayloadSchema = userSchema
     email: true,
     name: true,
     username: true,
-    is_active: true,
   })
   .extend({
-    department_id: z.string().nullable().optional(),
+    organization_id: z.string().nullable().optional(),
     profile: updateUserProfilePayloadSchema.optional(),
     role_names: z.array(z.string()).optional(),
   })
@@ -111,7 +126,8 @@ export const resetUserPasswordPayloadSchema = z
   });
 
 export const authUserSchema = userSchema.extend({
-  permissions: z.array(z.string()),
+  permissions: z.array(permissionSchema),
+  root_organization_id: z.string().nullable(),
 });
 
 export type User = z.infer<typeof userSchema>;

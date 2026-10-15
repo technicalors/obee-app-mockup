@@ -1,0 +1,38 @@
+.ant-btn > .iconify,
+.ant-btn > svg {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+}
+
+.workspace-action-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.workspace-action-group {
+  display: inline-flex;
+}
+
+.workspace-action-group > .ant-btn {
+  min-width: 0;
+}
+
+@media (width <= 640px) {
+  .workspace-action-bar > .workspace-action-group {
+    display: flex;
+    width: 100%;
+  }
+
+  .workspace-action-bar > .workspace-action-group > .ant-btn {
+    flex: 1 1 0;
+  }
+
+  .workspace-action-bar > .ant-btn-primary {
+    width: 100%;
+  }
+}

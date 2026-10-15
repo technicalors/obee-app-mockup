@@ -1,0 +1,57 @@
+{
+  "routeTitle": "角色",
+  "listTitle": "角色管理",
+  "listDescription": "为角色和账户配置系统权限。",
+  "columns": {
+    "resource": "资源"
+  },
+  "filters": {
+    "resource": "搜索资源"
+  },
+  "fields": {
+    "name": "角色名称",
+    "description": "描述"
+  },
+  "actions": {
+    "create": "创建角色",
+    "edit": "编辑角色",
+    "save": "保存",
+    "undo": "撤销",
+    "cancel": "取消",
+    "retry": "重试",
+    "viewAny": "查看全部",
+    "view": "查看",
+    "createAction": "创建",
+    "update": "更新",
+    "deleteAction": "删除"
+  },
+  "matrixActions": {
+    "review": "审批申请",
+    "viewAny": "查看全部",
+    "view": "查看",
+    "create": "创建",
+    "update": "更新",
+    "delete": "删除"
+  },
+  "create": {
+    "title": "创建角色"
+  },
+  "edit": {
+    "title": "编辑角色"
+  },
+  "permissionAccessDenied": "您可以查看角色，但没有权限目录的访问权限。此页面为只读。",
+  "leave": {
+    "title": "未保存的角色更改",
+    "confirm": "要放弃未保存的角色权限更改吗？",
+    "discard": "放弃"
+  },
+  "aria": {
+    "permission": "切换 {resource} 的 {action} 权限"
+  },
+  "messages": {
+    "created": "角色已创建",
+    "updated": "角色已更新",
+    "loadFailed": "无法加载角色。",
+    "unexpectedError": "发生了意外错误"
+  }
+}

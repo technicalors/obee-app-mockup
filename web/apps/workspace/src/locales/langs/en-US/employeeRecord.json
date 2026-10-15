@@ -1,0 +1,13 @@
+{
+  "developmentNotice": "This feature is currently in development.",
+  "evaluation": {
+    "routeTitle": "Evaluations"
+  },
+  "history": {
+    "routeTitle": "Employee history"
+  },
+  "routeTitle": "Employee records",
+  "skills": {
+    "routeTitle": "Skills & competencies"
+  }
+}

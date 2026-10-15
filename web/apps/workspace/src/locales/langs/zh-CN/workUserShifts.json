@@ -1,0 +1,68 @@
+{
+  "routeTitle": "排班",
+  "title": "排班",
+  "form": {
+    "users": "人员列表",
+    "usersPlaceholder": "选择人员",
+    "searchUsers": "搜索人员",
+    "noUsers": "无人员",
+    "noAssignableUsers": "没有属于公司的人员",
+    "dateFrom": "开始时间",
+    "dateTo": "结束时间",
+    "shiftType": "班次类型",
+    "selectWeekdays": "选择日期",
+    "overwrite": "已有班次的日期将被新班次覆盖。",
+    "nextDay": "次日",
+    "repeatEvery": "每隔",
+    "weeks": "周重复",
+    "presetWeekdays": "周一至周五",
+    "presetAllDays": "每天",
+    "changeShift": "更换为其他班次"
+  },
+  "weekdays": {
+    "2": "周一",
+    "3": "周二",
+    "4": "周三",
+    "5": "周四",
+    "6": "周五",
+    "7": "周六",
+    "8": "周日"
+  },
+  "shiftTypes": {
+    "SHIFT_FULL_DAY": "全天",
+    "SHIFT_MORNING": "上午班",
+    "SHIFT_AFTERNOON": "下午班"
+  },
+  "summary": {
+    "users": "{count} 人",
+    "days": "{count} 工作日",
+    "assignments": "{count} 个班次"
+  },
+  "calendar": {
+    "selectMonth": "选择月份",
+    "selectUser": "选择人员",
+    "noAssignableUsers": "没有属于公司的人员",
+    "moreEvents": "还有 +{count} 个班次"
+  },
+  "dialog": {
+    "createTitle": "创建排班",
+    "createDescription": "为所选人员和日期范围创建排班。",
+    "detailTitle": "工作班次",
+    "detailDescription": "已安排在 {date}。"
+  },
+  "actions": {
+    "apply": "创建排班",
+    "refresh": "刷新",
+    "cancel": "取消",
+    "deleteOne": "删除班次",
+    "close": "关闭"
+  },
+  "messages": {
+    "created": "排班创建成功。",
+    "updated": "班次更新成功。",
+    "deleted": "班次删除成功。",
+    "userRequired": "创建排班前请先选择人员。",
+    "loadFailed": "无法加载排班数据。",
+    "saveFailed": "无法保存工作班次。"
+  }
+}

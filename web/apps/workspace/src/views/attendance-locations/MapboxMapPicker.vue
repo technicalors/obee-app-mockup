@@ -7,6 +7,8 @@ import mapboxgl from 'mapbox-gl';
 
 import { $t } from '#/locales';
 
+import { createCircleGeoJSON, MAX_MAP_RADIUS_METERS } from './map-radius';
+
 import '@mapbox/search-js-web';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -61,11 +63,11 @@ class MoveMarkerToCenterControl implements mapboxgl.IControl {
     button.className = 'obee-map-control-button';
     button.setAttribute(
       'aria-label',
-      $t('page.attendanceLocations.actions.locateCurrent'),
+      $t('attendanceLocations.actions.locateCurrent'),
     );
     button.setAttribute(
       'title',
-      $t('page.attendanceLocations.actions.locateCurrent'),
+      $t('attendanceLocations.actions.locateCurrent'),
     );
     button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="obee-map-control-icon"><circle cx="12" cy="12" r="10"/><line x1="22" x2="18" y1="12" y2="12"/><line x1="6" x2="2" y1="12" y2="12"/><line x1="12" x2="12" y1="6" y2="2"/><line x1="12" x2="12" y1="22" y2="18"/></svg>`;
     button.addEventListener('click', this.onMoveMarkerToCenter);
@@ -127,46 +129,6 @@ class StyleToggleControl implements mapboxgl.IControl {
       this.button.setAttribute('title', label);
     }
   }
-}
-
-function createCircleGeoJSON(
-  center: [number, number],
-  radiusInMeters: number,
-  points = 64,
-): GeoJSON.FeatureCollection<GeoJSON.Polygon> {
-  const longitude = center[0];
-  const latitude = center[1];
-  const km = radiusInMeters / 1000;
-  const coordinates: GeoJSON.Position[] = [];
-  const distanceX = km / (111.32 * Math.cos((latitude * Math.PI) / 180));
-  const distanceY = km / 110.574;
-
-  for (let i = 0; i < points; i++) {
-    const theta = (i / points) * (2 * Math.PI);
-    const x = distanceX * Math.cos(theta);
-    const y = distanceY * Math.sin(theta);
-    coordinates.push([longitude + x, latitude + y]);
-  }
-
-  const firstCoordinate = coordinates[0];
-  if (firstCoordinate === undefined) {
-    throw new Error('Circle GeoJSON requires at least one coordinate.');
-  }
-  coordinates.push(firstCoordinate);
-
-  return {
-    type: 'FeatureCollection',
-    features: [
-      {
-        type: 'Feature',
-        geometry: {
-          type: 'Polygon',
-          coordinates: [coordinates],
-        },
-        properties: {},
-      },
-    ],
-  };
 }
 
 const CURRENT_LOCATION_OPTIONS: PositionOptions = {
@@ -255,7 +217,7 @@ function configureSearchBox(): void {
   };
   searchBoxElement.value.marker = false;
   searchBoxElement.value.placeholder = $t(
-    'page.attendanceLocations.placeholders.mapSearch',
+    'attendanceLocations.placeholders.mapSearch',
   );
 }
 
@@ -332,8 +294,8 @@ onMounted(() => {
     const styleToggle = new StyleToggleControl(
       () =>
         currentStyle.value === STANDARD_STYLE
-          ? $t('page.attendanceLocations.actions.switchToSatellite')
-          : $t('page.attendanceLocations.actions.switchToStandard'),
+          ? $t('attendanceLocations.actions.switchToSatellite')
+          : $t('attendanceLocations.actions.switchToStandard'),
       () => {
         const nextStyle =
           currentStyle.value === STANDARD_STYLE
@@ -477,17 +439,24 @@ watch(
     v-if="!mapboxAccessToken"
     class="flex min-h-56 items-center justify-center rounded-md border border-dashed bg-muted/30 p-6 text-center text-sm text-muted-foreground"
   >
-    {{ $t('page.attendanceLocations.messages.mapboxKeyMissing') }}
+    {{ $t('attendanceLocations.messages.mapboxKeyMissing') }}
   </div>
   <div
     v-else-if="mapUnavailable"
     class="flex min-h-56 items-center justify-center rounded-md border border-dashed bg-muted/30 p-6 text-center text-sm text-muted-foreground"
   >
-    {{ $t('page.attendanceLocations.messages.mapboxUnavailable') }}
+    {{ $t('attendanceLocations.messages.mapboxUnavailable') }}
   </div>
   <div v-else class="relative overflow-hidden rounded-md border border-border">
     <!-- Map Container -->
     <div ref="mapContainer" class="h-[420px] w-full"></div>
+
+    <div
+      v-if="radius > MAX_MAP_RADIUS_METERS"
+      class="absolute bottom-3 left-3 right-3 rounded-md bg-background/95 p-3 text-sm text-muted-foreground"
+    >
+      {{ $t('attendanceLocations.help.largeRadiusMap') }}
+    </div>
 
     <!-- Floating Address Search (not disabled) -->
     <div

@@ -29,13 +29,13 @@ describe('employee history layout', () => {
     expect(historyListSource).toContain('ResourceListPage');
     expect(historyListSource).toContain('Grid');
     expect(historyListSource).toContain('UserDetailModal');
-    expect(historyListSource).toContain('page.employeeHistory.listTitle');
-    expect(historyListSource).toContain('page.employeeHistory.listDescription');
+    expect(historyListSource).toContain('employeeHistory.listTitle');
+    expect(historyListSource).toContain('employeeHistory.listDescription');
   });
 
   it('renders without page header and keeps the empty state separate from the record layout in detail view', () => {
     expect(historyDetailSource).not.toContain(
-      ':description="$t(\'page.employeeHistory.pageDescription\')"',
+      ':description="$t(\'employeeHistory.pageDescription\')"',
     );
     expect(historyDetailSource).not.toContain('<template #title>');
     expect(historyDetailSource).not.toContain('header-class=');
@@ -47,8 +47,8 @@ describe('employee history layout', () => {
   it('keeps the selected employee summary as the desktop-side identity card', () => {
     expect(summaryCardSource).toContain('position: sticky');
     expect(summaryCardSource).toContain('employee-summary-name');
-    expect(summaryCardSource).toContain('page.employeeHistory.status.active');
-    expect(summaryCardSource).toContain('page.employeeHistory.fields.workUnit');
+    expect(summaryCardSource).toContain('employeeHistory.status.active');
+    expect(summaryCardSource).toContain('employeeHistory.fields.workUnit');
     expect(summaryCardSource).toContain('getUserAvatarSource(user)');
     expect(summaryCardSource).toContain('usersResource.updateAvatar');
     expect(summaryCardSource).toContain('data-testid="change-avatar-button"');

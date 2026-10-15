@@ -12,7 +12,11 @@ interface AttendanceLocationTableActions {
   ) => void;
 }
 
-export type AttendanceLocationTableAction = 'delete' | 'edit' | 'view';
+export type AttendanceLocationTableAction =
+  | 'delete'
+  | 'edit'
+  | 'restore'
+  | 'view';
 
 export function createAttendanceLocationTableFilterSchema(): VbenFormSchema[] {
   return [
@@ -20,25 +24,27 @@ export function createAttendanceLocationTableFilterSchema(): VbenFormSchema[] {
       component: 'Input',
       componentProps: {
         allowClear: true,
-        placeholder: $t('page.attendanceLocations.filters.searchPlaceholder'),
+        placeholder: $t('attendanceLocations.filters.searchPlaceholder'),
       },
       fieldName: 'search',
-      label: $t('page.attendanceLocations.filters.search'),
+      label: $t('attendanceLocations.filters.search'),
     },
     {
       component: 'Select',
       componentProps: {
         allowClear: true,
         options: [
-          { label: $t('page.attendanceLocations.status.active'), value: true },
+          { label: $t('attendanceLocations.status.active'), value: 'active' },
+          { label: $t('attendanceLocations.status.all'), value: 'all' },
           {
-            label: $t('page.attendanceLocations.status.inactive'),
-            value: false,
+            label: $t('attendanceLocations.status.deleted'),
+            value: 'deleted',
           },
         ],
       },
-      fieldName: 'is_active',
-      label: $t('page.attendanceLocations.filters.status'),
+      defaultValue: 'active',
+      fieldName: 'status',
+      label: $t('attendanceLocations.filters.status'),
     },
     {
       component: 'Select',
@@ -46,25 +52,25 @@ export function createAttendanceLocationTableFilterSchema(): VbenFormSchema[] {
         allowClear: true,
         options: [
           {
-            label: $t('page.attendanceLocations.validationMode.location'),
+            label: $t('attendanceLocations.validationMode.location'),
             value: 'location',
           },
           {
-            label: $t('page.attendanceLocations.validationMode.ip'),
+            label: $t('attendanceLocations.validationMode.ip'),
             value: 'ip',
           },
           {
-            label: $t('page.attendanceLocations.validationMode.both'),
+            label: $t('attendanceLocations.validationMode.both'),
             value: 'both',
           },
           {
-            label: $t('page.attendanceLocations.validationMode.either'),
+            label: $t('attendanceLocations.validationMode.either'),
             value: 'either',
           },
         ],
       },
       fieldName: 'validation_mode',
-      label: $t('page.attendanceLocations.filters.validationMode'),
+      label: $t('attendanceLocations.filters.validationMode'),
     },
   ];
 }
@@ -81,19 +87,19 @@ export function createAttendanceLocationTableColumns(
     {
       field: 'name',
       minWidth: 180,
-      title: $t('page.attendanceLocations.columns.name'),
+      title: $t('attendanceLocations.columns.name'),
     },
     {
       field: 'coordinates',
       formatter: ({ row }) => `${row.latitude}, ${row.longitude}`,
       minWidth: 180,
-      title: $t('page.attendanceLocations.columns.coordinates'),
+      title: $t('attendanceLocations.columns.coordinates'),
     },
     {
       field: 'radius_meters',
       formatter: ({ cellValue }) => `${cellValue}m`,
       minWidth: 120,
-      title: $t('page.attendanceLocations.columns.radius'),
+      title: $t('attendanceLocations.columns.radius'),
     },
     {
       field: 'validation_mode',
@@ -102,61 +108,63 @@ export function createAttendanceLocationTableColumns(
         options: [
           {
             color: 'blue',
-            label: $t('page.attendanceLocations.validationMode.location'),
+            label: $t('attendanceLocations.validationMode.location'),
             value: 'location',
           },
           {
             color: 'purple',
-            label: $t('page.attendanceLocations.validationMode.ip'),
+            label: $t('attendanceLocations.validationMode.ip'),
             value: 'ip',
           },
           {
             color: 'green',
-            label: $t('page.attendanceLocations.validationMode.both'),
+            label: $t('attendanceLocations.validationMode.both'),
             value: 'both',
           },
           {
             color: 'orange',
-            label: $t('page.attendanceLocations.validationMode.either'),
+            label: $t('attendanceLocations.validationMode.either'),
             value: 'either',
           },
         ],
       },
       minWidth: 140,
-      title: $t('page.attendanceLocations.columns.validationMode'),
+      title: $t('attendanceLocations.columns.validationMode'),
     },
     {
       cellRender: {
-        name: 'CellTag',
-        options: [
-          {
-            color: 'green',
-            label: $t('page.attendanceLocations.status.active'),
-            value: true,
-          },
-          {
-            color: 'red',
-            label: $t('page.attendanceLocations.status.inactive'),
-            value: false,
-          },
-        ],
+        attrs: {
+          getColor: (deleted: unknown) => (deleted === true ? 'red' : 'green'),
+          getItems: (row: AttendanceLocation) => [row.deleted_at !== null],
+          getKey: (_deleted: unknown, index: number) => index,
+          getLabel: (deleted: unknown) =>
+            deleted === true
+              ? $t('attendanceLocations.status.deleted')
+              : $t('attendanceLocations.status.active'),
+        },
+        name: 'CellTags',
       },
-      field: 'is_active',
+      field: 'deleted_at',
       minWidth: 120,
-      title: $t('page.attendanceLocations.columns.status'),
+      title: $t('attendanceLocations.columns.status'),
     },
     {
       field: 'created_at',
       formatter: 'formatDateTime',
       minWidth: 170,
-      title: $t('page.attendanceLocations.columns.createdAt'),
+      title: $t('attendanceLocations.columns.createdAt'),
     },
     {
       align: 'center',
       cellRender: {
         attrs: {
           onClick: (code: string, row: AttendanceLocation) => {
-            if (code === 'view' || code === 'edit' || code === 'delete') {
+            if (
+              code === 'view' ||
+              code === 'edit' ||
+              code === 'delete' ||
+              code === 'restore'
+            ) {
               actions.onAction(code, row);
               return;
             }
@@ -171,7 +179,7 @@ export function createAttendanceLocationTableColumns(
           {
             code: 'view',
             icon: 'lucide:eye',
-            label: $t('page.attendanceLocations.actions.view'),
+            label: $t('attendanceLocations.actions.view'),
             type: 'text',
             visible: () =>
               actions.hasAccessByCodes(['attendance-locations.viewAny']),
@@ -179,18 +187,29 @@ export function createAttendanceLocationTableColumns(
           {
             code: 'edit',
             icon: 'lucide:pencil',
-            label: $t('page.attendanceLocations.actions.edit'),
+            label: $t('attendanceLocations.actions.edit'),
             type: 'text',
-            visible: () =>
+            visible: (row: AttendanceLocation) =>
+              row.deleted_at === null &&
               actions.hasAccessByCodes(['attendance-locations.update']),
           },
           {
             code: 'delete',
             danger: true,
             icon: 'lucide:trash-2',
-            label: $t('page.attendanceLocations.actions.delete'),
+            label: $t('attendanceLocations.actions.delete'),
             type: 'text',
-            visible: () =>
+            visible: (row: AttendanceLocation) =>
+              row.deleted_at === null &&
+              actions.hasAccessByCodes(['attendance-locations.delete']),
+          },
+          {
+            code: 'restore',
+            icon: 'lucide:archive-restore',
+            label: $t('attendanceLocations.actions.restore'),
+            type: 'text',
+            visible: (row: AttendanceLocation) =>
+              row.deleted_at !== null &&
               actions.hasAccessByCodes(['attendance-locations.delete']),
           },
         ],
@@ -198,7 +217,7 @@ export function createAttendanceLocationTableColumns(
       field: 'actions',
       fixed: 'right',
       showOverflow: false,
-      title: $t('page.attendanceLocations.columns.actions'),
+      title: $t('attendanceLocations.columns.actions'),
       width: 160,
     },
   ];

@@ -40,15 +40,19 @@
     "ant-design-vue": "catalog:",
     "d3-org-chart": "catalog:",
     "dayjs": "catalog:",
+    "docx-preview": "catalog:",
     "laravel-echo": "catalog:",
     "lodash": "catalog:",
     "mapbox-gl": "catalog:",
+    "matrix-encrypt-attachment": "catalog:",
+    "matrix-js-sdk": "catalog:",
     "pinia": "catalog:",
     "pusher-js": "catalog:",
     "vue": "catalog:",
     "vue-router": "catalog:"
   },
   "devDependencies": {
-    "@types/lodash": "catalog:"
+    "@types/lodash": "catalog:",
+    "vite-plugin-vue-devtools": "catalog:"
   }
 }

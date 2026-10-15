@@ -1,0 +1,62 @@
+{
+  "routeTitle": "Mutation logs",
+  "listTitle": "HTTP Mutation logs",
+  "listDescription": "Tra cứu các request HTTP đã được ghi lại.",
+  "columns": {
+    "loggedAt": "Thời gian",
+    "code": "Mã đối chiếu",
+    "uri": "URI",
+    "action": "Action",
+    "requestedBy": "Người gọi",
+    "status": "HTTP status",
+    "actions": "Thao tác"
+  },
+  "filters": {
+    "search": "Tìm kiếm",
+    "action": "Action",
+    "instanceId": "Instance ID",
+    "requestedBy": "Người gọi",
+    "status": "HTTP status",
+    "error": "Kết quả",
+    "range": "Thời gian gần đây",
+    "from": "Từ",
+    "to": "Đến",
+    "all": "Tất cả",
+    "errors": "Lỗi",
+    "successes": "Không lỗi",
+    "twoMinutes": "2 phút",
+    "fiveMinutes": "5 phút",
+    "fifteenMinutes": "15 phút",
+    "oneHour": "1 giờ",
+    "oneDay": "1 ngày",
+    "searchPlaceholder": "Nhập mã đối chiếu, Instance ID",
+    "actionPlaceholder": "Hành động",
+    "requestedByPlaceholder": "Người gọi",
+    "statusPlaceholder": "HTTP status",
+    "datePlaceholder": "Ngày và giờ"
+  },
+  "actions": {
+    "view": "Xem",
+    "clear": "Xóa lọc",
+    "toggleFilters": "Hiện hoặc ẩn bộ lọc",
+    "search": "Tra cứu",
+    "copyMarkdown": "Sao chép Markdown"
+  },
+  "detail": {
+    "title": "Chi tiết Mutation log",
+    "appUrl": "App URL",
+    "gitSha": "Git SHA-1",
+    "payload": "Request payload",
+    "response": "Response",
+    "codeSnippet": "Code snippet",
+    "trace": "Trace"
+  },
+  "messages": {
+    "loadFailed": "Không thể tải Mutation logs.",
+    "invalidFilters": "Bộ lọc không hợp lệ.",
+    "suggestFailed": "Không thể tải gợi ý.",
+    "detailFailed": "Không thể tải chi tiết log.",
+    "copyFailed": "Không thể sao chép Markdown.",
+    "copied": "Đã sao chép Markdown."
+  }
+}

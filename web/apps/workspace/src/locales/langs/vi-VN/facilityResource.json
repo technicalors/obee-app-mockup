@@ -1,0 +1,67 @@
+{
+  "routeTitle": "Cơ sở vật chất",
+  "listTitle": "Danh sách cơ sở vật chất",
+  "listDescription": "Quản lý danh sách phòng và thiết bị.",
+  "columns": {
+    "sequence": "STT",
+    "code": "Mã cơ sở vật chất",
+    "name": "Tên cơ sở vật chất",
+    "type": "Loại",
+    "quantity": "Số lượng",
+    "note": "Ghi chú",
+    "createdAt": "Ngày tạo",
+    "updatedAt": "Ngày cập nhật",
+    "actions": "Thao tác"
+  },
+  "filters": {
+    "search": "Tìm kiếm",
+    "searchPlaceholder": "Tìm cơ sở vật chất...",
+    "type": "Loại"
+  },
+  "fields": {
+    "code": "Mã cơ sở vật chất",
+    "name": "Tên cơ sở vật chất",
+    "type": "Loại",
+    "quantity": "Số lượng",
+    "note": "Ghi chú",
+    "createdAt": "Ngày tạo",
+    "updatedAt": "Ngày cập nhật"
+  },
+  "types": {
+    "room": "Phòng",
+    "equipment": "Thiết bị"
+  },
+  "actions": {
+    "create": "Thêm cơ sở vật chất",
+    "view": "Xem chi tiết",
+    "edit": "Chỉnh sửa",
+    "delete": "Xóa",
+    "save": "Lưu",
+    "cancel": "Hủy"
+  },
+  "create": {
+    "title": "Thêm cơ sở vật chất"
+  },
+  "edit": {
+    "title": "Chỉnh sửa cơ sở vật chất"
+  },
+  "detail": {
+    "title": "Chi tiết cơ sở vật chất"
+  },
+  "delete": {
+    "title": "Xóa cơ sở vật chất",
+    "description": "Bạn có chắc muốn xóa {name}? Hành động này không thể hoàn tác."
+  },
+  "validation": {
+    "codeRequired": "Vui lòng nhập mã cơ sở vật chất",
+    "nameRequired": "Vui lòng nhập tên cơ sở vật chất",
+    "quantityPositive": "Số lượng phải là số nguyên dương",
+    "quantityMax": "Số lượng không được vượt quá 2.147.483.647"
+  },
+  "messages": {
+    "created": "Đã thêm cơ sở vật chất",
+    "updated": "Đã cập nhật cơ sở vật chất",
+    "deleted": "Đã xóa cơ sở vật chất",
+    "unexpectedError": "Đã xảy ra lỗi không xác định"
+  }
+}

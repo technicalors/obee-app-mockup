@@ -12,28 +12,23 @@ import { Modal, notification } from 'ant-design-vue';
 
 import { usersResource } from '#/api';
 import { $t } from '#/locales';
+import { showRequestError } from '#/shared/request-feedback';
 import { useResourceTable } from '#/shared/resource-table';
 import { useAuthStore } from '#/store';
 
 import { createUserIndexQuery } from './query';
 import { createUserTableColumns, createUserTableFilterSchema } from './schema';
 
-const CreateUserModalComponent = defineAsyncComponent(
-  () => import('./create-user-modal.vue'),
-);
-const UserDetailModalComponent = defineAsyncComponent(
-  () => import('./user-detail-modal.vue'),
+const UserModalComponent = defineAsyncComponent(
+  () => import('./user-modal.vue'),
 );
 
 export function useUsersPage() {
   const authStore = useAuthStore();
   const { hasAccessByCodes } = useAccess();
 
-  const [CreateUserModal, createUserModalApi] = useVbenModal({
-    connectedComponent: CreateUserModalComponent,
-  });
-  const [UserDetailModal, userDetailModalApi] = useVbenModal({
-    connectedComponent: UserDetailModalComponent,
+  const [UserModal, userModalApi] = useVbenModal({
+    connectedComponent: UserModalComponent,
   });
 
   const [Grid, table] = useResourceTable<
@@ -43,7 +38,7 @@ export function useUsersPage() {
   >({
     buildQuery: createUserIndexQuery,
     enabled: () => authStore.hasSession,
-    errorMessage: $t('page.users.messages.unexpectedError'),
+    errorMessage: $t('users.messages.unexpectedError'),
     formOptions: {
       schema: createUserTableFilterSchema(),
       showCollapseButton: false,
@@ -60,25 +55,26 @@ export function useUsersPage() {
       },
     },
     resource: usersResource,
-    tableTitle: $t('page.users.listTitle'),
+    tableTitle: $t('users.listTitle'),
   });
 
   const canCreateUsers = computed(() => hasAccessByCodes(['users.create']));
 
   function openCreate(): void {
-    createUserModalApi.setData({
+    userModalApi.setData({
+      mode: 'create',
       onSaved: table.reload,
     });
-    createUserModalApi.open();
+    userModalApi.open();
   }
 
   function openDetail(user: User, mode: 'edit' | 'view'): void {
-    userDetailModalApi.setData({
+    userModalApi.setData({
       mode,
       onSaved: table.reload,
-      user,
+      userId: user.id,
     });
-    userDetailModalApi.open();
+    userModalApi.open();
   }
 
   function handleTableAction(action: UserTableAction, user: User): void {
@@ -92,31 +88,49 @@ export function useUsersPage() {
       return;
     }
 
+    if (action === 'restore') {
+      void restore(user);
+      return;
+    }
+
     confirmDelete(user);
+  }
+
+  async function restore(user: User): Promise<void> {
+    try {
+      await usersResource.restore(user.id);
+      notification.success({ message: $t('users.messages.restored') });
+      await table.reload();
+    } catch (error) {
+      showRequestError(
+        error,
+        $t('users.messages.unexpectedError'),
+        'Failed to restore user:',
+      );
+    }
   }
 
   function confirmDelete(user: User): void {
     Modal.confirm({
-      cancelText: $t('page.users.actions.cancel'),
-      content: $t('page.users.delete.description', { name: user.name }),
+      cancelText: $t('users.actions.cancel'),
+      content: $t('users.delete.description', { name: user.name }),
       okButtonProps: { danger: true },
-      okText: $t('page.users.actions.delete'),
+      okText: $t('users.actions.delete'),
       onOk: async () => {
         if (await table.remove(user.id)) {
           notification.success({
-            message: $t('page.users.messages.deleted'),
+            message: $t('users.messages.deleted'),
           });
         }
       },
-      title: $t('page.users.delete.title'),
+      title: $t('users.delete.title'),
     });
   }
 
   return {
     canCreateUsers,
-    CreateUserModal,
     Grid,
     openCreate,
-    UserDetailModal,
+    UserModal,
   };
 }

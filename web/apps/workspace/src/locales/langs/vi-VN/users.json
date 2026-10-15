@@ -1,0 +1,150 @@
+{
+  "routeTitle": "Người dùng",
+  "title": "Người dùng",
+  "description": "Quản lý tài khoản nội bộ, hồ sơ, tổ chức và vai trò.",
+  "listTitle": "Danh sách người dùng",
+  "listDescription": "Theo dõi tài khoản, vai trò, trạng thái và thời điểm tạo.",
+  "columns": {
+    "sequence": "STT",
+    "name": "Họ tên",
+    "username": "Tên đăng nhập",
+    "employeeId": "Mã nhân viên",
+    "email": "Email",
+    "roles": "Vai trò",
+    "status": "Trạng thái",
+    "actions": "Thao tác",
+    "organization": "Tổ chức"
+  },
+  "filters": {
+    "search": "Tìm kiếm",
+    "searchPlaceholder": "Mã nhân viên, tên đăng nhập, email, họ tên...",
+    "name": "Tên",
+    "namePlaceholder": "Lọc theo tên",
+    "email": "Email",
+    "emailPlaceholder": "Lọc theo email",
+    "roleGroup": "Vai trò",
+    "status": "Trạng thái"
+  },
+  "fields": {
+    "name": "Họ và tên",
+    "username": "Tên đăng nhập",
+    "email": "Email",
+    "avatar": "Avatar",
+    "password": "Mật khẩu",
+    "roles": "Vai trò",
+    "status": "Trạng thái",
+    "phone": "Điện thoại",
+    "employeeCode": "Mã nhân viên",
+    "position": "Chức vụ",
+    "gender": "Giới tính",
+    "birthday": "Ngày sinh",
+    "joinedAt": "Ngày tham gia",
+    "startingDate": "Ngày làm chính thức",
+    "educationLevel": "Trình độ",
+    "employeeType": "Loại nhân sự",
+    "citizenIdentificationCard": "Căn cước công dân",
+    "socialInsuranceNumber": "Số bảo hiểm xã hội",
+    "healthInsuranceCardNumber": "Số thẻ bảo hiểm y tế",
+    "personalTaxIdentificationNumber": "Mã số thuế cá nhân",
+    "dependentTaxIdentificationNumber": "Mã số thuế người phụ thuộc",
+    "bankAccountNumber": "Số tài khoản",
+    "address": "Địa chỉ",
+    "createdAt": "Ngày tạo",
+    "updatedAt": "Ngày cập nhật",
+    "organization": "Tổ chức"
+  },
+  "sections": {
+    "account": "Tài khoản",
+    "contact": "Thông tin liên hệ",
+    "personal": "Thông tin cá nhân",
+    "access": "Quyền truy cập",
+    "roles": "Vai trò",
+    "accountInformation": "Thông tin tài khoản"
+  },
+  "tabs": {
+    "basic": "Thông tin cơ bản",
+    "additional": "Thông tin bổ sung"
+  },
+  "placeholders": {
+    "position": "Chọn chức vụ",
+    "educationLevel": "Chọn trình độ",
+    "password": "Nhập mật khẩu",
+    "passwordConfirmation": "Nhập lại mật khẩu",
+    "roles": "Chọn phân quyền",
+    "organization": "Tổ chức"
+  },
+  "actions": {
+    "create": "Tạo người dùng",
+    "view": "Xem chi tiết",
+    "edit": "Chỉnh sửa",
+    "roles": "Quản lý vai trò",
+    "delete": "Xóa",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "close": "Đóng",
+    "retry": "Thử lại",
+    "restore": "Khôi phục"
+  },
+  "verification": {
+    "verified": "Đã xác minh",
+    "unverified": "Chưa xác minh"
+  },
+  "gender": {
+    "male": "Nam",
+    "female": "Nữ"
+  },
+  "educationLevels": {
+    "unskilled_labor": "Lao động phổ thông",
+    "intermediate": "Trung cấp",
+    "college": "Cao đẳng",
+    "university": "Đại học",
+    "master": "Thạc sĩ",
+    "doctorate": "Tiến sĩ",
+    "professor": "Giáo sư"
+  },
+  "values": {
+    "noRoles": "Chưa có vai trò"
+  },
+  "status": {
+    "active": "Hoạt động",
+    "deleted": "Đã xóa",
+    "all": "Tất cả"
+  },
+  "create": {
+    "title": "Tạo người dùng"
+  },
+  "edit": {
+    "title": "Chỉnh sửa người dùng"
+  },
+  "detail": {
+    "title": "Chi tiết người dùng"
+  },
+  "roles": {
+    "title": "Quản lý vai trò"
+  },
+  "delete": {
+    "title": "Xóa người dùng",
+    "description": "Bạn có chắc muốn xóa người dùng {name}? Người dùng sẽ không thể đăng nhập, dữ liệu cũ vẫn được giữ và có thể khôi phục."
+  },
+  "validation": {
+    "nameRequired": "Vui lòng nhập họ và tên",
+    "usernameMin": "Tên đăng nhập phải có ít nhất 3 ký tự",
+    "usernameRequired": "Vui lòng nhập tên đăng nhập",
+    "usernameMax": "Tên đăng nhập không được vượt quá 50 ký tự",
+    "emailInvalid": "Vui lòng nhập email hợp lệ",
+    "passwordMin": "Mật khẩu phải có ít nhất 6 ký tự",
+    "passwordConfirmationMismatch": "Mật khẩu xác nhận không khớp",
+    "employeeCodeRequired": "Vui lòng nhập mã nhân viên",
+    "birthdayInvalid": "Vui lòng nhập ngày hợp lệ theo định dạng YYYY-MM-DD",
+    "phoneInvalid": "Vui lòng nhập số điện thoại hợp lệ"
+  },
+  "messages": {
+    "created": "Đã tạo người dùng",
+    "updated": "Đã cập nhật người dùng",
+    "rolesUpdated": "Đã cập nhật vai trò",
+    "deleted": "Đã xóa người dùng",
+    "unexpectedError": "Đã xảy ra lỗi không xác định",
+    "loadFailed": "Không thể tải thông tin người dùng. Vui lòng thử lại.",
+    "restored": "Đã khôi phục người dùng"
+  }
+}

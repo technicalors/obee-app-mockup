@@ -1,12 +1,16 @@
-import type { AttendanceLocation, Department, User } from '#/api';
+import type { AttendanceLocation, Organization, User } from '#/api';
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { $t } from '#/locales';
 
 import {
   buildAttendanceLocationCreatePayload,
   buildAttendanceLocationDetail,
   buildAttendanceLocationUpdatePayload,
+  createAttendanceLocationRadiusInputSchema,
   toAttendanceLocationFormValues,
+  updateAttendanceLocationUserAssignments,
   useAttendanceLocationFormSchema,
 } from './form';
 
@@ -16,32 +20,29 @@ const accessMocks = vi.hoisted(() => ({
 
 const authStoreMocks = vi.hoisted(() => ({
   user: {
-    company_id: 'company-1',
+    root_organization_id: 'root-1',
   },
 }));
 
 const apiMocks = vi.hoisted(() => {
-  const departmentFixture: Department = {
-    children: [],
-    company: null,
-    company_id: 'company-1',
-    created_at: null,
-    id: 'dept-1',
+  const organizationFixture: Organization = {
+    created_at: '2026-06-24T00:00:00.000000Z',
+    id: 'org-1',
     name: 'Operations',
-    parent: null,
     parent_id: null,
-    updated_at: null,
+    tax_identification_number: null,
+    type: 'Công ty',
+    updated_at: '2026-06-24T00:00:00.000000Z',
   };
   const userFixture: User = {
     avatar: null,
-    company: null,
-    company_id: 'company-1',
+    organization: null,
+    organization_id: 'root-1',
     created_at: '2026-06-24T00:00:00.000000Z',
-    departments: [],
     email: 'alice@example.com',
     email_verified_at: null,
     id: 'user-1',
-    is_active: true,
+    deleted_at: null,
     name: 'Alice',
     profile: null,
     roles: [],
@@ -51,12 +52,12 @@ const apiMocks = vi.hoisted(() => {
   };
 
   return {
-    companyUsersResource: {
+    userTreeResource: {
       getAll: vi.fn().mockResolvedValue([userFixture]),
     },
-    departmentFixture,
-    departmentOptionsResource: {
-      getAll: vi.fn().mockResolvedValue([departmentFixture]),
+    organizationFixture,
+    organizationsResource: {
+      getAllRows: vi.fn().mockResolvedValue([organizationFixture]),
     },
   };
 });
@@ -72,8 +73,9 @@ vi.mock('#/store', () => ({
 }));
 
 vi.mock('#/api', () => ({
-  companyUsersResource: apiMocks.companyUsersResource,
-  departmentOptionsResource: apiMocks.departmentOptionsResource,
+  userTreeResource: apiMocks.userTreeResource,
+  organizationsResource: apiMocks.organizationsResource,
+  filterOrganizationsByRoot: (organizations: Organization[]) => organizations,
 }));
 
 function createAttendanceLocation(
@@ -81,7 +83,7 @@ function createAttendanceLocation(
 ): AttendanceLocation {
   return {
     created_at: '2026-06-24T00:00:00.000000Z',
-    departments: [apiMocks.departmentFixture],
+    organizations: [apiMocks.organizationFixture],
     excluded_users: [],
     id: 'location-1',
     ips: [
@@ -93,7 +95,7 @@ function createAttendanceLocation(
         updated_at: '2026-06-24T00:00:00.000000Z',
       },
     ],
-    is_active: true,
+    deleted_at: null,
     latitude: 10.762622,
     longitude: 106.660172,
     name: 'Main Office',
@@ -114,15 +116,46 @@ beforeEach(() => {
   accessMocks.hasAccessByCodes.mockReturnValue(false);
 });
 
+describe('attendance radius input validation', () => {
+  it.each(['1', '10001', '2000000000'])('accepts valid input %s', (value) => {
+    expect(createAttendanceLocationRadiusInputSchema().parse(value)).toBe(
+      value,
+    );
+  });
+
+  it.each(['2000000001', '0', '-1', '1.5', 'abc'])(
+    'shows the allowed range for invalid input %s',
+    (value) => {
+      const result =
+        createAttendanceLocationRadiusInputSchema().safeParse(value);
+      expect(result.success).toBe(false);
+      if (result.success) throw new Error('Invalid radius was accepted.');
+      expect(result.error.issues.map((issue) => issue.message)).toEqual([
+        $t('attendanceLocations.validation.radiusRange', {
+          max: 2_000_000_000,
+        }),
+      ]);
+    },
+  );
+
+  it('shows the required message for empty input', () => {
+    const result = createAttendanceLocationRadiusInputSchema().safeParse('');
+    expect(result.success).toBe(false);
+    if (result.success) throw new Error('Empty radius was accepted.');
+    expect(result.error.issues.map((issue) => issue.message)).toEqual([
+      $t('attendanceLocations.validation.radiusRequired'),
+    ]);
+  });
+});
+
 describe('toAttendanceLocationFormValues', () => {
   it('maps editable fields directly from attendance location object', () => {
     const values = toAttendanceLocationFormValues(createAttendanceLocation());
 
     expect(values).toEqual({
-      department_ids: ['dept-1'],
+      organization_ids: ['org-1'],
       excluded_user_ids: [],
       ip_addresses: ['192.168.1.1'],
-      is_active: true,
       latitude: '10.762622',
       longitude: '106.660172',
       name: 'Main Office',
@@ -133,14 +166,47 @@ describe('toAttendanceLocationFormValues', () => {
   });
 });
 
+describe('updateAttendanceLocationUserAssignments', () => {
+  it('deduplicates selections and removes users from the opposite assignment', () => {
+    const values = {
+      organization_ids: [],
+      excluded_user_ids: ['user-3'],
+      ip_addresses: [],
+      latitude: '10',
+      longitude: '106',
+      name: 'Main Office',
+      radius_meters: '100',
+      user_ids: ['user-1', 'user-2'],
+      validation_mode: 'both',
+    };
+
+    updateAttendanceLocationUserAssignments(values, 'user_ids', [
+      'user-2',
+      'user-3',
+      'user-3',
+    ]);
+
+    expect(values.user_ids).toEqual(['user-2', 'user-3']);
+    expect(values.excluded_user_ids).toEqual([]);
+
+    updateAttendanceLocationUserAssignments(values, 'excluded_user_ids', [
+      'user-1',
+      'user-2',
+      'user-1',
+    ]);
+
+    expect(values.user_ids).toEqual(['user-3']);
+    expect(values.excluded_user_ids).toEqual(['user-1', 'user-2']);
+  });
+});
+
 describe('payload builders', () => {
   it('builds create payload successfully converting strings to numbers', () => {
     expect(
       buildAttendanceLocationCreatePayload({
-        department_ids: ['dept-1'],
+        organization_ids: ['org-1'],
         excluded_user_ids: [],
         ip_addresses: ['192.168.1.1', '10.0.0.1'],
-        is_active: true,
         latitude: '10.762622',
         longitude: '106.660172',
         name: 'Main Office',
@@ -149,10 +215,9 @@ describe('payload builders', () => {
         validation_mode: 'both',
       }),
     ).toEqual({
-      department_ids: ['dept-1'],
+      organization_ids: ['org-1'],
       excluded_user_ids: [],
       ip_addresses: ['192.168.1.1', '10.0.0.1'],
-      is_active: true,
       latitude: 10.762622,
       longitude: 106.660172,
       name: 'Main Office',
@@ -165,10 +230,9 @@ describe('payload builders', () => {
   it('builds update payload successfully converting strings to numbers', () => {
     expect(
       buildAttendanceLocationUpdatePayload({
-        department_ids: ['dept-1'],
+        organization_ids: ['org-1'],
         excluded_user_ids: [],
         ip_addresses: ['192.168.1.1', '10.0.0.1'],
-        is_active: true,
         latitude: '10.762622',
         longitude: '106.660172',
         name: 'Main Office',
@@ -177,10 +241,9 @@ describe('payload builders', () => {
         validation_mode: 'both',
       }),
     ).toEqual({
-      department_ids: ['dept-1'],
+      organization_ids: ['org-1'],
       excluded_user_ids: [],
       ip_addresses: ['192.168.1.1', '10.0.0.1'],
-      is_active: true,
       latitude: 10.762622,
       longitude: 106.660172,
       name: 'Main Office',
@@ -207,14 +270,14 @@ describe('useAttendanceLocationFormSchema', () => {
     expect(
       schema.find((field) => field.fieldName === 'name')?.componentProps,
     ).toMatchObject({
-      placeholder: 'page.attendanceLocations.placeholders.name',
+      placeholder: 'attendanceLocations.placeholders.name',
     });
 
     expect(
       schema.find((field) => field.fieldName === 'validation_mode')
         ?.componentProps,
     ).toMatchObject({
-      placeholder: 'page.attendanceLocations.placeholders.validationMode',
+      placeholder: 'attendanceLocations.placeholders.validationMode',
     });
 
     expect(

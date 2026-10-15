@@ -1,0 +1,68 @@
+{
+  "routeTitle": "Phân ca",
+  "title": "Phân ca",
+  "form": {
+    "users": "Danh sách người",
+    "usersPlaceholder": "Chọn người",
+    "searchUsers": "Tìm người",
+    "noUsers": "Không có người",
+    "noAssignableUsers": "Không có người thuộc công ty",
+    "dateFrom": "Thời gian bắt đầu",
+    "dateTo": "Thời gian kết thúc",
+    "shiftType": "Loại ca",
+    "selectWeekdays": "Chọn ngày",
+    "overwrite": "Những ngày đã có ca sẽ được ghi đè bằng ca mới.",
+    "nextDay": "hôm sau",
+    "repeatEvery": "Lặp lại mỗi",
+    "weeks": "tuần",
+    "presetWeekdays": "Thứ 2 – Thứ 6",
+    "presetAllDays": "Cả tuần",
+    "changeShift": "Đổi sang ca khác"
+  },
+  "weekdays": {
+    "2": "Thứ 2",
+    "3": "Thứ 3",
+    "4": "Thứ 4",
+    "5": "Thứ 5",
+    "6": "Thứ 6",
+    "7": "Thứ 7",
+    "8": "CN"
+  },
+  "shiftTypes": {
+    "SHIFT_FULL_DAY": "Cả ngày",
+    "SHIFT_MORNING": "Ca sáng",
+    "SHIFT_AFTERNOON": "Ca chiều"
+  },
+  "summary": {
+    "users": "{count} người",
+    "days": "{count} ngày làm",
+    "assignments": "{count} ca"
+  },
+  "calendar": {
+    "selectMonth": "Chọn tháng",
+    "selectUser": "Chọn người",
+    "noAssignableUsers": "Không có người thuộc công ty",
+    "moreEvents": "+{count} ca nữa"
+  },
+  "dialog": {
+    "createTitle": "Tạo phân ca",
+    "createDescription": "Tạo ca cho danh sách người và khoảng ngày đã chọn.",
+    "detailTitle": "Ca làm việc",
+    "detailDescription": "Đã phân vào ngày {date}."
+  },
+  "actions": {
+    "apply": "Tạo phân ca",
+    "refresh": "Tải lại",
+    "cancel": "Hủy",
+    "deleteOne": "Xóa ca",
+    "close": "Đóng"
+  },
+  "messages": {
+    "created": "Tạo phân ca thành công.",
+    "updated": "Cập nhật ca thành công.",
+    "deleted": "Xóa ca thành công.",
+    "userRequired": "Chọn người trước khi tạo phân ca.",
+    "loadFailed": "Không thể tải dữ liệu phân ca.",
+    "saveFailed": "Không thể lưu ca làm việc."
+  }
+}

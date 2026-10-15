@@ -68,6 +68,12 @@ onUnmounted(() => {
   }
 });
 
+function handleSlotClick(date: string, _hour: number) {
+  if (props.allowCreate) {
+    props.onOpenCreateDrawer(date);
+  }
+}
+
 const isCurrentTimeVisible = computed(() => {
   const offset = currentTimeOffset.value;
   return (
@@ -109,7 +115,7 @@ const columnEvents = computed(() => {
 
     daySchedules.sort((a, b) => a.startMinute - b.startMinute || a.endMinute - b.endMinute);
 
-    const columns: Array<{ endMinute: number }[]> = [];
+    const columns: (typeof daySchedules[number])[][] = [];
     const positioned: PositionedEvent[] = [];
 
     for (const event of daySchedules) {

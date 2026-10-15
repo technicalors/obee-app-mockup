@@ -1,0 +1,211 @@
+{
+  "routeTitle": "Schedules",
+  "title": "Schedules",
+  "description": "Browse the new schedule workspace from the existing Obee shell.",
+  "currentMonth": "Current month",
+  "loading": "Loading month data",
+  "loadedCount": "Loaded {count} schedules",
+  "empty": "No schedules match this filter.",
+  "calendar": {
+    "showMore": "+{count} more",
+    "showLess": "Show less"
+  },
+  "messages": {
+    "createSuccess": "Created schedule",
+    "deleteSuccess": "Deleted schedule",
+    "eventUnavailable": "This schedule no longer exists or you cannot view it",
+    "joinSuccess": "Joined schedule",
+    "leaveSuccess": "Left schedule",
+    "updateSuccess": "Updated schedule",
+    "unexpectedError": "An unexpected error occurred"
+  },
+  "delete": {
+    "title": "Delete schedule",
+    "description": "Delete this schedule event? This action cannot be undone.",
+    "confirm": "Delete schedule",
+    "cancel": "Cancel"
+  },
+  "form": {
+    "editTitle": "Edit schedule",
+    "reuseTitle": "Reuse schedule",
+    "createTitle": "Create schedule",
+    "createDescription": "Create a schedule from the selected date context.",
+    "cancel": "Cancel",
+    "create": "Create",
+    "save": "Save",
+    "sections": {
+      "event": "Event details",
+      "schedule": "Schedule and time",
+      "people": "People and visibility",
+      "details": "Location and notes",
+      "reminders": "Reminders"
+    },
+    "placeholders": {
+      "title": "Enter a schedule title",
+      "eventType": "Select an event type",
+      "scheduleType": "Select a schedule type",
+      "repeatType": "Select a repeat frequency",
+      "startDate": "Select a start date",
+      "endDate": "Select an end date",
+      "startTime": "Select a start time",
+      "endTime": "Select an end time",
+      "participants": "Select participants",
+      "observers": "Select observers",
+      "privacy": "Select a privacy setting",
+      "location": "Enter a location",
+      "note": "Enter a note",
+      "reminderValue": "Enter a reminder value",
+      "reminderRange": "Select a reminder unit"
+    },
+    "title": "Title",
+    "eventType": "Event type",
+    "scheduleType": "Schedule type",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "startTime": "Start time",
+    "endTime": "End time",
+    "participants": "Participants",
+    "observers": "Observers",
+    "privacy": "Privacy",
+    "isGeneral": "General schedule",
+    "hasReminder": "Enable reminder",
+    "reminderRange": "Reminder range",
+    "reminderValue": "Reminder value",
+    "repeatTitle": "Repeat settings",
+    "repeat": {
+      "type": "Repeat type",
+      "startTime": "Repeat start time",
+      "endTime": "Repeat end time",
+      "timeRange": "Repeat time range",
+      "dayPattern": "Repeat days",
+      "monthPattern": "Repeat dates",
+      "selectAll": "Select all"
+    },
+    "note": "Note",
+    "location": "Physical address",
+    "userOptionsLoading": "Loading employees",
+    "modes": {
+      "create": "Create mode",
+      "edit": "Edit mode",
+      "reuse": "Reuse mode"
+    },
+    "validation": {
+      "companyNameInvalid": "Company name cannot be empty.",
+      "companyNameTooLong": "Company name must be 255 characters or fewer.",
+      "companyPhoneNumberInvalid": "Phone number cannot be empty.",
+      "companyPhoneNumberTooLong": "Phone number must be 32 characters or fewer.",
+      "dateInvalid": "Enter a valid date and time.",
+      "endBeforeStart": "End date and time must be on or after the start.",
+      "observersDuplicate": "The same observer cannot be selected more than once.",
+      "noteTooLong": "Note must be 65,535 characters or fewer.",
+      "physicalAddressInvalid": "Physical address cannot be empty.",
+      "physicalAddressTooLong": "Physical address must be 255 characters or fewer.",
+      "participantsDuplicate": "The same participant cannot be selected more than once.",
+      "participantsRequired": "Select at least one participant.",
+      "reminderFieldsUnexpected": "Clear reminder values when reminders are disabled.",
+      "reminderRangeRequired": "Select a reminder range.",
+      "reminderValueInvalid": "Reminder value must be a whole number from 1 to 100.",
+      "reminderValueRequired": "Enter a reminder value from 1 to 100.",
+      "repeatEndBeforeStart": "Repeat end time must be on or after the start time.",
+      "repeatEndTimeRequired": "Select a repeat end time.",
+      "repeatFieldsUnexpected": "Clear repeat settings when the schedule is not repeating.",
+      "repeatPatternInvalid": "Select at least one valid repeat day or date.",
+      "repeatPatternUnexpected": "Clear the repeat pattern for a daily schedule.",
+      "repeatStartTimeRequired": "Select a repeat start time.",
+      "repeatTypeRequired": "Select a repeat type.",
+      "timeInvalid": "Enter a valid time.",
+      "titleRequired": "Enter a title.",
+      "titleTooLong": "Title must be 255 characters or fewer.",
+      "userIdInvalid": "A selected user ID is invalid. Refresh the employee list."
+    },
+    "typeOptions": {
+      "training": "Training",
+      "seminar": "Seminar",
+      "interview": "Interview",
+      "meetup": "Meetup",
+      "meeting": "Meeting",
+      "holiday": "Holiday",
+      "business_trip": "Business trip"
+    },
+    "scheduleTypeOptions": {
+      "ordinary": "Ordinary",
+      "multiple_days": "Multiple days",
+      "repeat": "Repeat"
+    },
+    "repeatOptions": {
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly"
+    },
+    "privacyOptions": {
+      "public": "Public",
+      "private": "Private"
+    },
+    "reminderRangeOptions": {
+      "minute": "Minute",
+      "hour": "Hour",
+      "day": "Day"
+    },
+    "rootOrganizationRequiredTitle": "Root organization required",
+    "rootOrganizationRequiredDescription": "You need to belong to a root organization before you can create a schedule."
+  },
+  "detail": {
+    "title": "Schedule detail",
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "reuse": "Reuse",
+      "join": "Join",
+      "leave": "Leave"
+    },
+    "reuse": {
+      "mode": "Reuse draft",
+      "description": "Review the reused event draft before Epic 3 form editing arrives."
+    },
+    "type": "Type",
+    "time": "Time",
+    "participants": "Participants",
+    "observers": "Observers",
+    "showMoreUsers": "+{count} more users",
+    "collapseUsers": "Collapse",
+    "reminder": "Reminder",
+    "reminderOff": "Reminder off",
+    "reminderOn": "Reminder {value} {range} before",
+    "reminderRange": {
+      "minute": "minute",
+      "hour": "hour",
+      "day": "day"
+    },
+    "location": "Location",
+    "note": "Note",
+    "isGeneral": "Company schedule",
+    "multiDay": "Multi-day schedule",
+    "repeat": {
+      "daily": "Repeats daily",
+      "weekly": "Repeats weekly",
+      "monthly": "Repeats monthly"
+    },
+    "typeLabels": {
+      "training": "Training",
+      "seminar": "Seminar",
+      "interview": "Interview",
+      "meetup": "Meetup",
+      "meeting": "Meeting",
+      "holiday": "Holiday",
+      "business_trip": "Business trip"
+    }
+  },
+  "actions": {
+    "all": "All schedules",
+    "create": "Create",
+    "created": "Created",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "today": "Today",
+    "selectMonth": "Select month",
+    "selectCalendars": "Calendars",
+    "selectVisibility": "Visibility",
+    "participated": "Participated",
+    "observed": "Observed"
+  }
+}

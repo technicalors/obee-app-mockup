@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { VbenButton } from '@vben/common-ui';
+import { IconifyIcon } from '@vben/icons';
+
+import { Button } from 'ant-design-vue';
 
 import { $t } from '#/locales';
 import { ResourceListPage } from '#/shared/resource-table';
@@ -16,25 +18,24 @@ const { canCreateAttendanceLocations, Grid, openCreate } =
       <template #table-title>
         <div class="flex min-w-0 flex-col gap-1">
           <h2 class="m-0 text-base font-semibold leading-6 text-foreground">
-            {{ $t('page.attendanceLocations.listTitle') }}
+            {{ $t('attendanceLocations.listTitle') }}
           </h2>
           <p class="m-0 text-xs text-muted-foreground">
-            {{ $t('page.attendanceLocations.listDescription') }}
+            {{ $t('attendanceLocations.listDescription') }}
           </p>
         </div>
       </template>
 
       <template #toolbar-tools>
-        <VbenButton
+        <Button
           v-if="canCreateAttendanceLocations"
-          @click="openCreate"
           class="mr-2"
+          type="primary"
+          @click="openCreate"
         >
-          <span class="flex items-center gap-1.5">
-            <span aria-hidden="true" class="text-lg leading-none">+</span>
-            {{ $t('page.attendanceLocations.actions.create') }}
-          </span>
-        </VbenButton>
+          <IconifyIcon aria-hidden="true" icon="lucide:plus" />
+          {{ $t('attendanceLocations.actions.create') }}
+        </Button>
       </template>
     </Grid>
   </ResourceListPage>

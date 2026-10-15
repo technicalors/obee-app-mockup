@@ -3,7 +3,7 @@ import type { UserProfileFormValues } from './form';
 import type { User } from '#/api';
 
 import dayjs from 'dayjs';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   buildUserCreatePayload,
@@ -11,8 +11,9 @@ import {
   buildUserPasswordResetPayload,
   buildUserUpdatePayload,
   mergeUserFormValues,
-  toUserFormValues,
+  userEditFormValuesSchema,
   useUserFormSchema,
+  waitForMinimumUserModalLoading,
 } from './form';
 
 const accessMocks = vi.hoisted(() => ({
@@ -39,7 +40,7 @@ const roleOptionsMocks = vi.hoisted(() => ({
 }));
 
 const resourceMocks = vi.hoisted(() => ({
-  getDepartments: vi.fn().mockResolvedValue([]),
+  getOrganizations: vi.fn().mockResolvedValue([]),
   getPositions: vi.fn().mockResolvedValue([]),
 }));
 
@@ -60,8 +61,8 @@ vi.mock('#/store/role-options', () => ({
 }));
 
 vi.mock('#/api', () => ({
-  departmentOptionsResource: {
-    getAll: resourceMocks.getDepartments,
+  organizationsResource: {
+    getAllRows: resourceMocks.getOrganizations,
   },
   positionOptionsResource: {
     getAll: resourceMocks.getPositions,
@@ -71,32 +72,21 @@ vi.mock('#/api', () => ({
 function createUser(overrides: Partial<User> = {}): User {
   return {
     avatar: null,
-    company: {
+    organization: {
       created_at: '2026-06-10T00:00:00.000000Z',
-      id: 'company-1',
-      name: 'Obee',
-      tax_identification_number: 'TAX-001',
+      id: 'organization-1',
+      name: 'Operations',
+      parent_id: null,
+      tax_identification_number: null,
+      type: 'Công ty',
       updated_at: '2026-06-10T00:00:00.000000Z',
     },
-    company_id: 'company-1',
+    organization_id: 'organization-1',
     created_at: '2026-06-11T00:00:00.000000Z',
-    departments: [
-      {
-        children: [],
-        company: null,
-        company_id: 'company-1',
-        created_at: '2026-06-10T00:00:00.000000Z',
-        id: 'department-1',
-        name: 'Operations',
-        parent: null,
-        parent_id: null,
-        updated_at: '2026-06-10T00:00:00.000000Z',
-      },
-    ],
     email: 'admin@example.com',
     email_verified_at: null,
     id: 'user-1',
-    is_active: true,
+    deleted_at: null,
     name: 'Admin User',
     profile: {
       address: '123 Main St',
@@ -146,53 +136,82 @@ function createUser(overrides: Partial<User> = {}): User {
 beforeEach(() => {
   accessMocks.hasAccessByCodes.mockReturnValue(false);
   preferenceMocks.locale.value = 'vi-VN';
-  resourceMocks.getDepartments.mockReset().mockResolvedValue([]);
+  resourceMocks.getOrganizations.mockReset().mockResolvedValue([]);
   resourceMocks.getPositions.mockReset().mockResolvedValue([]);
 });
 
-describe('toUserFormValues', () => {
-  it('maps profile, department, and position fields from the user contract', () => {
-    const values = toUserFormValues(createUser());
+afterEach(() => {
+  vi.useRealTimers();
+});
 
-    expect(values).toMatchObject({
-      department_id: 'department-1',
-      email: 'admin@example.com',
-      is_active: true,
+describe('waitForMinimumUserModalLoading', () => {
+  it('keeps loading visible for at least 500 milliseconds', async () => {
+    vi.useFakeTimers();
+
+    const waiting = waitForMinimumUserModalLoading(Date.now());
+
+    await vi.advanceTimersByTimeAsync(499);
+    expect(vi.getTimerCount()).toBe(1);
+
+    await vi.advanceTimersByTimeAsync(1);
+    await expect(waiting).resolves.toBeUndefined();
+  });
+});
+
+describe('userEditFormValuesSchema', () => {
+  it('transforms the user contract into separately owned form values', () => {
+    const values = userEditFormValuesSchema.parse(createUser());
+
+    expect(values.basic).toMatchObject({
+      organization_id: 'organization-1',
       name: 'Admin User',
+      new_password: '',
       profile: {
         code: 'EMP-001',
         position_id: 'position-1',
       },
       role_names: ['admin'],
+      username: 'admin',
     });
-    const birthday = values.profile?.birthday;
-    expect(dayjs.isDayjs(birthday)).toBe(true);
-    if (!dayjs.isDayjs(birthday)) {
-      throw new TypeError('Birthday must be a Dayjs value.');
-    }
+    expect(values.additional).toMatchObject({
+      email: 'admin@example.com',
+      profile: {
+        address: '123 Main St',
+        sex: 'male',
+      },
+    });
 
-    expect(birthday.format('YYYY-MM-DD')).toBe('1995-05-20');
+    expect(values.additional.profile.birthday?.format('YYYY-MM-DD')).toBe(
+      '1995-05-20',
+    );
+    expect(values.additional.profile.joined_at?.format('YYYY-MM-DD')).toBe(
+      '2020-01-01',
+    );
+    expect(values.additional.profile.starting_date?.format('YYYY-MM-DD')).toBe(
+      '2021-01-01',
+    );
+    expect(dayjs.isDayjs(values.additional.profile.birthday)).toBe(true);
+  });
+
+  it('maps a null email to an empty string for the text field', () => {
+    expect(
+      userEditFormValuesSchema.parse(createUser({ email: null })).additional
+        .email,
+    ).toBe('');
   });
 
   it('initializes a missing profile for an edit payload', () => {
-    const values = toUserFormValues(createUser({ profile: null }));
+    const values = userEditFormValuesSchema.parse(
+      createUser({ email: null, profile: null }),
+    );
 
-    expect(values.profile).toEqual({
-      address: null,
-      bank_account_number: null,
-      birthday: null,
-      citizen_identification_card: null,
+    expect(values.basic.profile).toEqual({
       code: '',
-      dependent_tax_identification_number: null,
-      education_level: null,
-      health_insurance_card_number: null,
-      joined_at: null,
-      phone_number: null,
-      personal_tax_identification_number: null,
       position_id: null,
-      sex: null,
-      social_insurance_number: null,
-      starting_date: null,
+    });
+    expect(values.additional).toEqual({
+      email: '',
+      profile: {},
     });
   });
 });
@@ -213,11 +232,11 @@ describe('payload builders', () => {
     starting_date: '2021-01-01',
   };
 
-  it('builds a create payload with the selected department, position, and roles', () => {
+  it('builds a create payload with the selected organization, position, and roles', () => {
     expect(
       buildUserCreatePayload(
         {
-          department_id: 'department-1',
+          organization_id: 'organization-1',
           email: 'admin@example.com',
           name: 'Admin User',
           password: 'secret123',
@@ -228,7 +247,7 @@ describe('payload builders', () => {
         true,
       ),
     ).toMatchObject({
-      department_id: 'department-1',
+      organization_id: 'organization-1',
       profile: {
         code: 'EMP-001',
         position_id: 'position-1',
@@ -260,7 +279,6 @@ describe('payload builders', () => {
     const payload = buildUserUpdatePayload(
       {
         email: 'admin@example.com',
-        is_active: true,
         name: 'Admin User',
         profile,
         role_names: ['admin'],
@@ -270,7 +288,7 @@ describe('payload builders', () => {
     );
 
     expect(payload).toMatchObject({
-      is_active: true,
+      username: 'admin',
     });
     expect(payload).not.toHaveProperty('role_names');
   });
@@ -322,7 +340,8 @@ describe('payload builders', () => {
 });
 
 describe('useUserFormSchema', () => {
-  it('splits create fields into basic and additional tabs without a company input', () => {
+  it('includes a direct organization selector in the basic form', () => {
+    accessMocks.hasAccessByCodes.mockReturnValue(true);
     const { createAdditionalFormSchema, createBasicFormSchema } =
       useUserFormSchema();
 
@@ -340,10 +359,16 @@ describe('useUserFormSchema', () => {
         'username',
       ]),
     );
-    expect(basicFields).not.toContain('__company');
+    expect(basicFields).not.toContain('is_active');
+    expect(basicFields.at(-1)).toBe('role_names');
+    expect(
+      createBasicFormSchema.value.find(
+        (field) => field.fieldName === 'role_names',
+      ),
+    ).not.toHaveProperty('formItemClass');
+    expect(basicFields).toContain('organization_id');
     expect(additionalFields).toContain('profile.starting_date');
     expect(additionalFields.at(-1)).toBe('profile.address');
-    expect(additionalFields).not.toContain('is_active');
     expect(additionalFields).not.toContain('username');
     expect(additionalFields).toEqual(
       expect.arrayContaining([
@@ -377,23 +402,16 @@ describe('useUserFormSchema', () => {
     });
   });
 
-  it('keeps the active status in the edit basic form and accepts an empty phone number', () => {
+  it('has no status field in the edit forms and accepts an empty phone number', () => {
     const { editAdditionalFormSchema, editBasicFormSchema } =
       useUserFormSchema();
-    const statusField = editBasicFormSchema.value.find(
-      (field) => field.fieldName === 'is_active',
-    );
     const phoneField = editAdditionalFormSchema.value.find(
       (field) => field.fieldName === 'profile.phone_number',
     );
     const phoneRule = phoneField?.rules;
 
-    expect(statusField).toMatchObject({
-      component: 'Switch',
-      defaultValue: true,
-    });
     expect(
-      editAdditionalFormSchema.value.map((field) => field.fieldName),
+      editBasicFormSchema.value.map((field) => field.fieldName),
     ).not.toContain('is_active');
     expect(
       editBasicFormSchema.value.map((field) => field.fieldName),
@@ -506,29 +524,25 @@ describe('useUserFormSchema', () => {
     });
   });
 
-  it('renders departments as a parent-child tree', async () => {
-    resourceMocks.getDepartments.mockResolvedValue([
+  it('renders organizations as a parent-child tree', async () => {
+    resourceMocks.getOrganizations.mockResolvedValue([
       {
-        children: [],
-        company: null,
-        company_id: 'company-1',
-        created_at: null,
-        id: 'child-department',
-        name: 'Child Department',
-        parent: null,
-        parent_id: 'root-department',
-        updated_at: null,
+        created_at: '2026-06-10T00:00:00.000000Z',
+        id: 'child-organization',
+        name: 'Child Organization',
+        parent_id: 'root-organization',
+        tax_identification_number: null,
+        type: 'Nhóm',
+        updated_at: '2026-06-10T00:00:00.000000Z',
       },
       {
-        children: [],
-        company: null,
-        company_id: 'company-1',
-        created_at: null,
-        id: 'root-department',
-        name: 'Root Department',
-        parent: null,
+        created_at: '2026-06-10T00:00:00.000000Z',
+        id: 'root-organization',
+        name: 'Root Organization',
         parent_id: null,
-        updated_at: null,
+        tax_identification_number: null,
+        type: 'Công ty',
+        updated_at: '2026-06-10T00:00:00.000000Z',
       },
     ]);
 
@@ -537,7 +551,7 @@ describe('useUserFormSchema', () => {
 
     expect(
       createBasicFormSchema.value.find(
-        (field) => field.fieldName === 'department_id',
+        (field) => field.fieldName === 'organization_id',
       ),
     ).toMatchObject({
       component: 'TreeSelect',
@@ -547,12 +561,12 @@ describe('useUserFormSchema', () => {
             children: [
               {
                 children: [],
-                label: 'Child Department',
-                value: 'child-department',
+                label: 'Child Organization',
+                value: 'child-organization',
               },
             ],
-            label: 'Root Department',
-            value: 'root-department',
+            label: 'Root Organization',
+            value: 'root-organization',
           },
         ],
         treeDefaultExpandAll: true,
@@ -563,6 +577,73 @@ describe('useUserFormSchema', () => {
 });
 
 describe('buildUserDetail', () => {
+  it('keeps status in basic information and shows missing profile values consistently', () => {
+    const detail = buildUserDetail(createUser({ email: null, profile: null }));
+    const basic = detail.sections.find((section) => section.key === 'basic');
+    const additional = detail.sections.find(
+      (section) => section.key === 'additional',
+    );
+
+    expect(basic?.rows).toContainEqual(
+      expect.objectContaining({
+        key: 'status',
+        value: 'users.status.active',
+      }),
+    );
+    expect(additional?.rows).not.toContainEqual(
+      expect.objectContaining({ key: 'status' }),
+    );
+    expect(
+      buildUserDetail(createUser({ deleted_at: '2026-01-01T00:00:00.000000Z' }))
+        .sections[0]?.rows,
+    ).toContainEqual(
+      expect.objectContaining({
+        key: 'status',
+        value: 'users.status.deleted',
+      }),
+    );
+    expect(basic?.rows).toContainEqual(
+      expect.objectContaining({
+        key: 'code',
+        value: null,
+      }),
+    );
+    expect(additional?.rows).toContainEqual(
+      expect.objectContaining({
+        key: 'email',
+        value: null,
+      }),
+    );
+  });
+
+  it('shows the direct organization and roles as readable text', () => {
+    const user = createUser();
+    const organization = user.organization;
+    const role = user.roles[0];
+    if (organization === null || role === undefined) {
+      throw new TypeError('User fixture requires an organization and a role.');
+    }
+    const detail = buildUserDetail({
+      ...user,
+      organization: { ...organization, name: 'Finance' },
+      roles: [role, { ...role, id: 'role-2', name: 'editor' }],
+    });
+    const basic = detail.sections.find((section) => section.key === 'basic');
+
+    expect(basic?.rows).toContainEqual(
+      expect.objectContaining({
+        key: 'organization',
+        value: 'Finance',
+      }),
+    );
+    expect(basic?.rows).toContainEqual(
+      expect.objectContaining({
+        key: 'role_names',
+        value: 'admin, editor',
+      }),
+    );
+  });
+
   it('localizes the education level stored in the profile', () => {
     const user = createUser();
 
@@ -584,7 +665,7 @@ describe('buildUserDetail', () => {
     expect(additional?.rows).toContainEqual(
       expect.objectContaining({
         key: 'education_level',
-        value: 'page.users.educationLevels.university',
+        value: 'users.educationLevels.university',
       }),
     );
   });

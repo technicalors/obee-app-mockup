@@ -1,0 +1,57 @@
+{
+  "routeTitle": "Vai trò",
+  "listTitle": "Quản trị vai trò",
+  "listDescription": "Cấu hình phân quyền hệ thống cho các vai trò và tài khoản.",
+  "columns": {
+    "resource": "Tài nguyên"
+  },
+  "filters": {
+    "resource": "Tìm tài nguyên"
+  },
+  "fields": {
+    "name": "Tên vai trò",
+    "description": "Mô tả"
+  },
+  "actions": {
+    "create": "Tạo vai trò",
+    "edit": "Sửa vai trò",
+    "save": "Lưu",
+    "undo": "Hoàn tác",
+    "cancel": "Hủy",
+    "retry": "Thử lại",
+    "viewAny": "Xem tất cả",
+    "view": "Xem",
+    "createAction": "Tạo",
+    "update": "Cập nhật",
+    "deleteAction": "Xóa"
+  },
+  "matrixActions": {
+    "review": "Duyệt yêu cầu",
+    "viewAny": "Xem tất cả",
+    "view": "Xem",
+    "create": "Tạo",
+    "update": "Cập nhật",
+    "delete": "Xóa"
+  },
+  "create": {
+    "title": "Tạo vai trò"
+  },
+  "edit": {
+    "title": "Sửa vai trò"
+  },
+  "permissionAccessDenied": "Bạn có thể xem vai trò nhưng không có quyền xem danh mục permission. Trang đang ở chế độ chỉ đọc.",
+  "leave": {
+    "title": "Thay đổi vai trò chưa lưu",
+    "confirm": "Bỏ các thay đổi permission vai trò chưa lưu?",
+    "discard": "Bỏ thay đổi"
+  },
+  "aria": {
+    "permission": "Bật hoặc tắt quyền {action} cho {resource}"
+  },
+  "messages": {
+    "created": "Đã tạo vai trò",
+    "updated": "Đã cập nhật vai trò",
+    "loadFailed": "Không thể tải vai trò.",
+    "unexpectedError": "Đã xảy ra lỗi không mong muốn"
+  }
+}

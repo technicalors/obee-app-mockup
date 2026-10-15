@@ -1,0 +1,68 @@
+{
+  "routeTitle": "Shift assignments",
+  "title": "Shift assignments",
+  "form": {
+    "users": "Employees",
+    "usersPlaceholder": "Select employees",
+    "searchUsers": "Search employees",
+    "noUsers": "No employees",
+    "noAssignableUsers": "No employees belong to a company",
+    "dateFrom": "Start date",
+    "dateTo": "End date",
+    "shiftType": "Shift type",
+    "selectWeekdays": "Select days",
+    "overwrite": "Days that already have a shift will be overwritten.",
+    "nextDay": "next day",
+    "repeatEvery": "Repeat every",
+    "weeks": "week(s)",
+    "presetWeekdays": "Mon – Fri",
+    "presetAllDays": "Every day",
+    "changeShift": "Change to another shift"
+  },
+  "weekdays": {
+    "2": "Mon",
+    "3": "Tue",
+    "4": "Wed",
+    "5": "Thu",
+    "6": "Fri",
+    "7": "Sat",
+    "8": "Sun"
+  },
+  "shiftTypes": {
+    "SHIFT_FULL_DAY": "Full day",
+    "SHIFT_MORNING": "Morning",
+    "SHIFT_AFTERNOON": "Afternoon"
+  },
+  "summary": {
+    "users": "{count} employees",
+    "days": "{count} work days",
+    "assignments": "{count} shifts"
+  },
+  "calendar": {
+    "selectMonth": "Select month",
+    "selectUser": "Select employee",
+    "noAssignableUsers": "No employees belong to a company",
+    "moreEvents": "+{count} more shifts"
+  },
+  "dialog": {
+    "createTitle": "Create shift assignment",
+    "createDescription": "Assign shifts to selected employees across the date range.",
+    "detailTitle": "Work shift",
+    "detailDescription": "Assigned on {date}."
+  },
+  "actions": {
+    "apply": "Create shift assignment",
+    "refresh": "Refresh",
+    "cancel": "Cancel",
+    "deleteOne": "Delete shift",
+    "close": "Close"
+  },
+  "messages": {
+    "created": "Shift assignments created successfully.",
+    "updated": "Shift updated successfully.",
+    "deleted": "Shift deleted successfully.",
+    "userRequired": "Please select an employee before creating shift assignments.",
+    "loadFailed": "Could not load shift assignments.",
+    "saveFailed": "Could not save shift assignments."
+  }
+}

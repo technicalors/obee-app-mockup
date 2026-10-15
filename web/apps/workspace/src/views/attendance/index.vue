@@ -45,6 +45,7 @@ const {
   monthlyDeficientDays,
   monthlyTotalHours,
   monthlyWorkingDays,
+  noShiftToday,
   openDayDetail,
   selectedDate,
   selectedDayHoursText,
@@ -76,7 +77,7 @@ const {
             class="bg-background border border-border rounded-2xl p-6 shadow-sm flex flex-col justify-between col-span-2 xl:col-span-1"
           >
             <h2 class="text-base font-bold text-foreground mb-4">
-              {{ $t('page.attendance.todayPunch') }}
+              {{ $t('attendance.todayPunch') }}
             </h2>
             <div
               class="flex items-center justify-center gap-8 xl:justify-start xl:gap-6"
@@ -101,12 +102,18 @@ const {
 
                   <FingerprintIcon class="w-10 h-10 mb-1" />
                   <span class="text-sm font-bold tracking-wide">{{
-                    $t('page.attendance.punchButton')
+                    $t('attendance.punchButton')
                   }}</span>
                   <span class="text-[10px] opacity-90 mt-0.5 font-mono">{{
                     getTickingTimeString(currentTime)
                   }}</span>
                 </button>
+                <p
+                  v-if="noShiftToday"
+                  class="mt-2 max-w-40 text-center text-xs text-amber-700 dark:text-amber-300"
+                >
+                  {{ $t('attendance.noShiftToday') }}
+                </p>
               </div>
 
               <!-- GPS & IP Validation Stack -->
@@ -134,13 +141,13 @@ const {
                       class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1"
                     >
                       <MapPinIcon class="w-3.5 h-3.5" />
-                      {{ $t('page.attendance.gpsLocation') }}
+                      {{ $t('attendance.gpsLocation') }}
                     </div>
                     <div class="text-[13px] font-bold mt-0.5 leading-none">
                       {{
                         gpsValid
-                          ? $t('page.attendance.gpsValid')
-                          : $t('page.attendance.gpsInvalid')
+                          ? $t('attendance.gpsValid')
+                          : $t('attendance.gpsInvalid')
                       }}
                     </div>
                     <div class="text-[11px] opacity-80 mt-1 truncate">
@@ -180,13 +187,13 @@ const {
                       class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1"
                     >
                       <WifiIcon class="w-3.5 h-3.5" />
-                      {{ $t('page.attendance.ipNetwork') }}
+                      {{ $t('attendance.ipNetwork') }}
                     </div>
                     <div class="text-[13px] font-bold mt-0.5 leading-none">
                       {{
                         ipValid
-                          ? $t('page.attendance.ipValid')
-                          : $t('page.attendance.ipInvalid')
+                          ? $t('attendance.ipValid')
+                          : $t('attendance.ipInvalid')
                       }}
                     </div>
                     <div class="text-[11px] opacity-80 mt-1 truncate">
@@ -213,7 +220,7 @@ const {
             class="bg-background border border-border rounded-2xl p-6 shadow-sm flex flex-col"
           >
             <h2 class="text-base font-bold text-foreground mb-4">
-              {{ $t('page.attendance.punchInfo') }}
+              {{ $t('attendance.punchInfo') }}
             </h2>
             <div class="flex-1 flex flex-col justify-around">
               <!-- Row 1: Đúng giờ / Muộn -->
@@ -227,24 +234,24 @@ const {
                 </div>
                 <div>
                   <div class="text-xs text-muted-foreground font-semibold">
-                    {{ $t('page.attendance.onTimeStatus') }}
+                    {{ $t('attendance.onTimeStatus') }}
                   </div>
                   <div
                     class="text-sm font-bold mt-0.5"
                     :class="
                       todayPunches.length === 0
                         ? 'text-muted-foreground'
-                        : todayOnTimeStatus === $t('page.attendance.onTime')
+                        : todayOnTimeStatus === $t('attendance.onTime')
                           ? 'text-emerald-600 dark:text-emerald-400'
                           : 'text-rose-600 dark:text-rose-400'
                     "
                   >
                     {{
                       todayPunches.length > 0
-                        ? todayOnTimeStatus === $t('page.attendance.onTime')
-                          ? $t('page.attendance.onTime')
-                          : $t('page.attendance.late')
-                        : $t('page.attendance.noData')
+                        ? todayOnTimeStatus === $t('attendance.onTime')
+                          ? $t('attendance.onTime')
+                          : $t('attendance.late')
+                        : $t('attendance.noData')
                     }}
                   </div>
                 </div>
@@ -261,7 +268,7 @@ const {
                 </div>
                 <div>
                   <div class="text-xs text-muted-foreground font-semibold">
-                    {{ $t('page.attendance.totalWorkHours') }}
+                    {{ $t('attendance.totalWorkHours') }}
                   </div>
                   <div class="text-sm font-bold text-foreground mt-0.5">
                     {{ todayWorkHoursDecimalStr }}
@@ -277,7 +284,7 @@ const {
           >
             <h2 class="text-base font-bold text-foreground mb-4">
               {{
-                $t('page.attendance.monthlyStats', {
+                $t('attendance.monthlyStats', {
                   month: `${currentMonth.substring(5, 7)}/${currentMonth.substring(0, 4)}`,
                 })
               }}
@@ -287,10 +294,10 @@ const {
                 class="flex justify-between items-center py-1.5 border-b border-border/50"
               >
                 <span class="text-muted-foreground font-semibold">{{
-                  $t('page.attendance.totalWorkHours')
+                  $t('attendance.totalWorkHours')
                 }}</span>
                 <span class="font-bold text-foreground">{{
-                  $t('page.attendance.totalWorkHoursValue', {
+                  $t('attendance.totalWorkHoursValue', {
                     hours: monthlyTotalHours,
                   })
                 }}</span>
@@ -299,20 +306,20 @@ const {
                 class="flex justify-between items-center py-1.5 border-b border-border/50"
               >
                 <span class="text-muted-foreground font-semibold">{{
-                  $t('page.attendance.workingDays')
+                  $t('attendance.workingDays')
                 }}</span>
                 <span class="font-bold text-foreground">{{
-                  $t('page.attendance.daysValue', {
+                  $t('attendance.daysValue', {
                     days: monthlyWorkingDays,
                   })
                 }}</span>
               </div>
               <div class="flex justify-between items-center py-1.5">
                 <span class="text-muted-foreground font-semibold">{{
-                  $t('page.attendance.deficientDays')
+                  $t('attendance.deficientDays')
                 }}</span>
                 <span class="font-bold text-amber-500">{{
-                  $t('page.attendance.daysValue', {
+                  $t('attendance.daysValue', {
                     days: monthlyDeficientDays,
                   })
                 }}</span>
@@ -331,7 +338,7 @@ const {
               class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
             >
               <h2 class="text-base font-bold text-foreground">
-                {{ $t('page.attendance.history') }}
+                {{ $t('attendance.history') }}
               </h2>
 
               <!-- Month selection controls -->
@@ -344,7 +351,7 @@ const {
                 </button>
                 <DatePicker
                   :allow-clear="false"
-                  :aria-label="$t('page.attendance.selectMonth')"
+                  :aria-label="$t('attendance.selectMonth')"
                   class="min-w-[9rem]"
                   :disabled-date="isFutureMonth"
                   :value="currentMonth"
@@ -365,7 +372,7 @@ const {
                   @click="selectCurrentMonth"
                   class="ml-2 text-xs font-bold py-2 px-3 border border-border rounded-lg hover:bg-muted text-foreground transition-colors"
                 >
-                  {{ $t('page.attendance.today') }}
+                  {{ $t('attendance.today') }}
                 </button>
               </div>
             </div>
@@ -378,13 +385,13 @@ const {
               <div class="grid grid-cols-7 bg-muted/30 border-b border-border">
                 <div
                   v-for="d in [
-                    $t('page.attendance.weekdays.mon'),
-                    $t('page.attendance.weekdays.tue'),
-                    $t('page.attendance.weekdays.wed'),
-                    $t('page.attendance.weekdays.thu'),
-                    $t('page.attendance.weekdays.fri'),
-                    $t('page.attendance.weekdays.sat'),
-                    $t('page.attendance.weekdays.sun'),
+                    $t('attendance.weekdays.mon'),
+                    $t('attendance.weekdays.tue'),
+                    $t('attendance.weekdays.wed'),
+                    $t('attendance.weekdays.thu'),
+                    $t('attendance.weekdays.fri'),
+                    $t('attendance.weekdays.sat'),
+                    $t('attendance.weekdays.sun'),
                   ]"
                   :key="d"
                   class="py-2.5 text-center text-xs font-bold text-muted-foreground"
@@ -444,7 +451,7 @@ const {
                         <AlertTriangleIcon
                           class="w-2.5 h-2.5 text-amber-500 dark:text-amber-400"
                         />
-                        {{ $t('page.attendance.statusDeficient') }}
+                        {{ $t('attendance.statusDeficient') }}
                       </div>
                       <div
                         class="text-[9px] text-amber-600 dark:text-amber-400 font-semibold font-mono"
@@ -461,7 +468,7 @@ const {
                       <CalendarIcon
                         class="w-2.5 h-2.5 text-blue-500 dark:text-blue-400"
                       />
-                      {{ $t('page.attendance.statusLeave') }}
+                      {{ $t('attendance.statusLeave') }}
                     </div>
                   </div>
                 </div>
@@ -474,22 +481,22 @@ const {
             >
               <div class="flex items-center gap-2">
                 <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
-                <span>{{ $t('page.attendance.statusPunched') }}</span>
+                <span>{{ $t('attendance.statusPunched') }}</span>
               </div>
               <div class="flex items-center gap-2">
                 <span
                   class="w-3 h-3 rounded-full bg-amber-500 flex items-center justify-center text-white text-[8px] font-bold"
                   >!</span
                 >
-                <span>{{ $t('page.attendance.statusDeficient') }}</span>
+                <span>{{ $t('attendance.statusDeficient') }}</span>
               </div>
               <div class="flex items-center gap-2">
                 <span class="w-3 h-3 rounded-full bg-blue-500"></span>
-                <span>{{ $t('page.attendance.statusLeave') }}</span>
+                <span>{{ $t('attendance.statusLeave') }}</span>
               </div>
               <div class="flex items-center gap-2">
                 <span class="w-3 h-3 rounded-full bg-rose-500"></span>
-                <span>{{ $t('page.attendance.statusOff') }}</span>
+                <span>{{ $t('attendance.statusOff') }}</span>
               </div>
             </div>
           </div>
@@ -500,7 +507,7 @@ const {
           >
             <div>
               <h2 class="text-base font-bold text-foreground mb-2">
-                {{ $t('page.attendance.dayDetail') }}
+                {{ $t('attendance.dayDetail') }}
               </h2>
               <div class="text-xs text-muted-foreground font-semibold mb-6">
                 {{ formatSelectedDateLabel(selectedDate) }}
@@ -535,7 +542,7 @@ const {
                       {{ punch.time }}
                       <span
                         class="text-[10px] font-normal px-1.5 py-0.5 rounded bg-muted text-muted-foreground"
-                        >{{ $t('page.attendance.punchButton') }}</span
+                        >{{ $t('attendance.punchButton') }}</span
                       >
                     </div>
                     <div
@@ -564,7 +571,7 @@ const {
                   selectedDayStatusText
                 }}</span>
                 <span class="text-xs text-muted-foreground/60 mt-1">{{
-                  $t('page.attendance.noData')
+                  $t('attendance.noData')
                 }}</span>
               </div>
             </div>
@@ -574,12 +581,12 @@ const {
               class="pt-4 border-t border-border mt-6 flex flex-col gap-3 text-xs font-bold text-muted-foreground sm:flex-row sm:justify-between"
             >
               <span
-                >{{ $t('page.attendance.statusLabel') }}:
+                >{{ $t('attendance.statusLabel') }}:
                 <span
                   :class="
-                    selectedDayStatusText === $t('page.attendance.onTime')
+                    selectedDayStatusText === $t('attendance.onTime')
                       ? 'text-emerald-600 dark:text-emerald-400'
-                      : selectedDayStatusText === $t('page.attendance.late')
+                      : selectedDayStatusText === $t('attendance.late')
                         ? 'text-rose-600 dark:text-rose-400'
                         : 'text-muted-foreground'
                   "
@@ -587,7 +594,7 @@ const {
                 ></span
               >
               <span
-                >{{ $t('page.attendance.workHoursLabel') }}:
+                >{{ $t('attendance.workHoursLabel') }}:
                 <span class="text-foreground">{{
                   selectedDayHoursText
                 }}</span></span
@@ -613,7 +620,7 @@ const {
             "
           >
             <ClockIcon class="w-4 h-4" />
-            {{ $t('page.attendance.punchButton') }}
+            {{ $t('attendance.punchButton') }}
           </button>
           <button
             @click="activeTab = 'history'"
@@ -625,7 +632,7 @@ const {
             "
           >
             <CalendarIcon class="w-4 h-4" />
-            {{ $t('page.attendance.history') }}
+            {{ $t('attendance.history') }}
           </button>
         </div>
 
@@ -666,13 +673,20 @@ const {
 
               <FingerprintIcon class="w-12 h-12 mb-1" />
               <span class="text-sm font-bold tracking-wide">{{
-                $t('page.attendance.punchButton')
+                $t('attendance.punchButton')
               }}</span>
               <span class="text-[10px] opacity-80 mt-0.5">{{
-                $t('page.attendance.fingerprint')
+                $t('attendance.fingerprint')
               }}</span>
             </button>
           </div>
+
+          <p
+            v-if="noShiftToday"
+            class="-mt-3 text-center text-xs text-amber-700 dark:text-amber-300"
+          >
+            {{ $t('attendance.noShiftToday') }}
+          </p>
 
           <!-- GPS and IP condition cards -->
           <div class="grid grid-cols-2 gap-3">
@@ -706,13 +720,13 @@ const {
                 <div
                   class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider"
                 >
-                  {{ $t('page.attendance.gpsLocation') }}
+                  {{ $t('attendance.gpsLocation') }}
                 </div>
                 <div class="text-[13px] font-bold mt-0.5">
                   {{
                     gpsValid
-                      ? $t('page.attendance.gpsValid')
-                      : $t('page.attendance.gpsInvalid')
+                      ? $t('attendance.gpsValid')
+                      : $t('attendance.gpsInvalid')
                   }}
                 </div>
                 <div class="text-[10px] opacity-80 mt-0.5 truncate">
@@ -751,13 +765,13 @@ const {
                 <div
                   class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider"
                 >
-                  {{ $t('page.attendance.ipNetwork') }}
+                  {{ $t('attendance.ipNetwork') }}
                 </div>
                 <div class="text-[13px] font-bold mt-0.5">
                   {{
                     ipValid
-                      ? $t('page.attendance.ipValid')
-                      : $t('page.attendance.ipInvalid')
+                      ? $t('attendance.ipValid')
+                      : $t('attendance.ipInvalid')
                   }}
                 </div>
                 <div class="text-[10px] opacity-80 mt-0.5 truncate">
@@ -781,24 +795,24 @@ const {
                 <div
                   class="text-[10px] text-muted-foreground font-bold uppercase tracking-wider"
                 >
-                  {{ $t('page.attendance.onTimeStatus') }}
+                  {{ $t('attendance.onTimeStatus') }}
                 </div>
                 <div
                   class="text-xs font-extrabold truncate"
                   :class="
                     todayPunches.length === 0
                       ? 'text-muted-foreground'
-                      : todayOnTimeStatus === $t('page.attendance.onTime')
+                      : todayOnTimeStatus === $t('attendance.onTime')
                         ? 'text-emerald-600 dark:text-emerald-400'
                         : 'text-rose-600 dark:text-rose-400'
                   "
                 >
                   {{
                     todayPunches.length > 0
-                      ? todayOnTimeStatus === $t('page.attendance.onTime')
-                        ? $t('page.attendance.onTime')
-                        : $t('page.attendance.late')
-                      : $t('page.attendance.noData')
+                      ? todayOnTimeStatus === $t('attendance.onTime')
+                        ? $t('attendance.onTime')
+                        : $t('attendance.late')
+                      : $t('attendance.noData')
                   }}
                 </div>
               </div>
@@ -814,7 +828,7 @@ const {
                 <div
                   class="text-[10px] text-muted-foreground font-bold uppercase tracking-wider"
                 >
-                  {{ $t('page.attendance.totalWorkHours') }}
+                  {{ $t('attendance.totalWorkHours') }}
                 </div>
                 <div class="text-xs font-extrabold text-foreground truncate">
                   {{ todayWorkHoursMobileStr }}
@@ -828,7 +842,7 @@ const {
             class="bg-background border border-border rounded-2xl p-5 shadow-sm"
           >
             <h3 class="text-sm font-bold text-foreground mb-4">
-              {{ $t('page.attendance.punchesToday') }}
+              {{ $t('attendance.punchesToday') }}
             </h3>
 
             <div
@@ -872,7 +886,7 @@ const {
               v-else
               class="text-center py-8 text-muted-foreground text-xs font-semibold"
             >
-              {{ $t('page.attendance.noData') }}
+              {{ $t('attendance.noData') }}
             </div>
           </div>
         </div>
@@ -893,7 +907,7 @@ const {
             </button>
             <DatePicker
               :allow-clear="false"
-              :aria-label="$t('page.attendance.selectMonth')"
+              :aria-label="$t('attendance.selectMonth')"
               :disabled-date="isFutureMonth"
               :value="currentMonth"
               class="min-w-32"
@@ -920,12 +934,12 @@ const {
               <ClockIcon class="w-4 h-4 text-emerald-500 mb-1" />
               <span
                 class="text-[9px] text-muted-foreground font-bold uppercase"
-                >{{ $t('page.attendance.workHoursLabel') }}</span
+                >{{ $t('attendance.workHoursLabel') }}</span
               >
               <span
                 class="text-xs font-black text-emerald-600 dark:text-emerald-400 mt-0.5"
                 >{{
-                  $t('page.attendance.totalWorkHoursValue', {
+                  $t('attendance.totalWorkHoursValue', {
                     hours: monthlyTotalHours,
                   })
                 }}</span
@@ -937,12 +951,12 @@ const {
               <BriefcaseIcon class="w-4 h-4 text-blue-500 mb-1" />
               <span
                 class="text-[9px] text-muted-foreground font-bold uppercase"
-                >{{ $t('page.attendance.workingDays') }}</span
+                >{{ $t('attendance.workingDays') }}</span
               >
               <span
                 class="text-xs font-black text-blue-600 dark:text-blue-400 mt-0.5"
                 >{{
-                  $t('page.attendance.daysValue', {
+                  $t('attendance.daysValue', {
                     days: monthlyWorkingDays,
                   })
                 }}</span
@@ -954,12 +968,12 @@ const {
               <CalendarIcon class="w-4 h-4 text-amber-500 mb-1" />
               <span
                 class="text-[9px] text-muted-foreground font-bold uppercase"
-                >{{ $t('page.attendance.deficientDays') }}</span
+                >{{ $t('attendance.deficientDays') }}</span
               >
               <span
                 class="text-xs font-black text-amber-600 dark:text-amber-400 mt-0.5"
                 >{{
-                  $t('page.attendance.daysValue', {
+                  $t('attendance.daysValue', {
                     days: monthlyDeficientDays,
                   })
                 }}</span
@@ -974,13 +988,13 @@ const {
             <div class="grid grid-cols-7 border-b border-border pb-2">
               <div
                 v-for="d in [
-                  $t('page.attendance.weekdaysShort.mon'),
-                  $t('page.attendance.weekdaysShort.tue'),
-                  $t('page.attendance.weekdaysShort.wed'),
-                  $t('page.attendance.weekdaysShort.thu'),
-                  $t('page.attendance.weekdaysShort.fri'),
-                  $t('page.attendance.weekdaysShort.sat'),
-                  $t('page.attendance.weekdaysShort.sun'),
+                  $t('attendance.weekdaysShort.mon'),
+                  $t('attendance.weekdaysShort.tue'),
+                  $t('attendance.weekdaysShort.wed'),
+                  $t('attendance.weekdaysShort.thu'),
+                  $t('attendance.weekdaysShort.fri'),
+                  $t('attendance.weekdaysShort.sat'),
+                  $t('attendance.weekdaysShort.sun'),
                 ]"
                 :key="d"
                 class="text-center text-[10px] font-bold text-muted-foreground"
@@ -1039,19 +1053,19 @@ const {
             >
               <div class="flex items-center gap-1">
                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                <span>{{ $t('page.attendance.statusPunched') }}</span>
+                <span>{{ $t('attendance.statusPunched') }}</span>
               </div>
               <div class="flex items-center gap-1">
                 <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                <span>{{ $t('page.attendance.statusDeficient') }}</span>
+                <span>{{ $t('attendance.statusDeficient') }}</span>
               </div>
               <div class="flex items-center gap-1">
                 <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-                <span>{{ $t('page.attendance.statusLeave') }}</span>
+                <span>{{ $t('attendance.statusLeave') }}</span>
               </div>
               <div class="flex items-center gap-1">
                 <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
-                <span>{{ $t('page.attendance.statusOff') }}</span>
+                <span>{{ $t('attendance.statusOff') }}</span>
               </div>
             </div>
           </div>
@@ -1063,7 +1077,7 @@ const {
             <h3
               class="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2"
             >
-              {{ $t('page.attendance.dayDetail') }}
+              {{ $t('attendance.dayDetail') }}
             </h3>
             <div class="text-sm font-black text-foreground mb-4">
               {{ formatSelectedDateLabel(selectedDate) }}
@@ -1112,7 +1126,7 @@ const {
               v-else
               class="text-center py-8 text-muted-foreground text-xs font-semibold"
             >
-              {{ $t('page.attendance.noData') }}
+              {{ $t('attendance.noData') }}
             </div>
 
             <!-- Summary metrics -->
@@ -1120,12 +1134,12 @@ const {
               class="flex justify-between text-xs font-bold text-muted-foreground mt-5 pt-3 border-t border-border"
             >
               <span
-                >{{ $t('page.attendance.statusLabel') }}:
+                >{{ $t('attendance.statusLabel') }}:
                 <span
                   :class="
-                    selectedDayStatusText === $t('page.attendance.onTime')
+                    selectedDayStatusText === $t('attendance.onTime')
                       ? 'text-emerald-600 dark:text-emerald-400'
-                      : selectedDayStatusText === $t('page.attendance.late')
+                      : selectedDayStatusText === $t('attendance.late')
                         ? 'text-rose-600 dark:text-rose-400'
                         : 'text-muted-foreground'
                   "
@@ -1133,7 +1147,7 @@ const {
                 ></span
               >
               <span
-                >{{ $t('page.attendance.totalHoursLabel') }}:
+                >{{ $t('attendance.totalHoursLabel') }}:
                 <span class="text-foreground">{{
                   selectedDayHoursText
                 }}</span></span

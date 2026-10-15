@@ -1,0 +1,244 @@
+{
+  "routeTitle": "Yêu cầu",
+  "title": "Yêu cầu",
+  "balance": "Phép năm còn lại: {remaining} ngày",
+  "empty": "Chưa có yêu cầu.",
+  "tabs": {
+    "all": "Tất cả yêu cầu",
+    "pending": "Yêu cầu",
+    "approved": "Chấp thuận",
+    "rejected": "Từ chối",
+    "my": "Yêu cầu của tôi",
+    "review": "Yêu cầu cần duyệt"
+  },
+  "states": {
+    "loadFailed": "Không thể tải yêu cầu lúc này.",
+    "noRequests": "Không có yêu cầu nào.",
+    "noReviewRequests": "Không có yêu cầu nào đang chờ duyệt.",
+    "listLoadingTitle": "Đang tải yêu cầu",
+    "listLoadingDescription": "Danh sách yêu cầu hiện tại sẽ hiển thị tại đây khi tải xong.",
+    "listErrorTitle": "Không thể tải danh sách yêu cầu",
+    "listErrorDescription": "Không thể tải danh sách yêu cầu lúc này. Vui lòng thử lại sau ít phút.",
+    "emptyPendingTitle": "Không có yêu cầu chờ xử lý",
+    "emptyPendingDescription": "Hiện không có yêu cầu nào đang chờ xử lý.",
+    "emptyApprovedTitle": "Không có yêu cầu đã chấp nhận",
+    "emptyApprovedDescription": "Hiện không có yêu cầu nào đã được chấp nhận.",
+    "emptyRejectedTitle": "Không có yêu cầu từ chối / cần điều chỉnh",
+    "emptyRejectedDescription": "Hiện không có yêu cầu nào bị từ chối hoặc cần điều chỉnh.",
+    "emptyAllTitle": "Chưa có yêu cầu nào",
+    "emptyAllDescription": "Hiện chưa có yêu cầu nào để hiển thị trong tab này.",
+    "emptyMyTitle": "Bạn chưa tạo yêu cầu nào",
+    "emptyMyDescription": "Các yêu cầu do bạn tạo sẽ hiển thị tại đây sau khi gửi.",
+    "emptyReviewTitle": "Không có gì cần duyệt",
+    "emptyReviewDescription": "Hiện không có yêu cầu chờ duyệt nào đang đợi xử lý.",
+    "emptyFilteredTitle": "Không có yêu cầu nào khớp với bộ lọc này",
+    "emptyFilteredDescription": "Hãy xóa hoặc điều chỉnh bộ lọc hiện tại để xem thêm yêu cầu."
+  },
+  "filters": {
+    "title": "Lọc yêu cầu",
+    "description": "Thu hẹp danh sách yêu cầu hiện tại.",
+    "fields": {
+      "requestType": "Loại yêu cầu",
+      "status": "Trạng thái",
+      "reviewer": "Người duyệt",
+      "requester": "Người yêu cầu",
+      "dateRange": "Ngày tạo",
+      "from": "Từ ngày",
+      "to": "Đến ngày"
+    },
+    "actions": {
+      "open": "Bộ lọc",
+      "openWithCount": "Bộ lọc ({count})",
+      "apply": "Áp dụng bộ lọc",
+      "reset": "Đặt lại",
+      "clear": "Xóa bộ lọc",
+      "clearAll": "Xóa tất cả"
+    },
+    "all": "Tất cả"
+  },
+  "types": {
+    "ANNUAL": "Nghỉ phép tiêu chuẩn",
+    "UNPAID": "Nghỉ phép không lương",
+    "BUSINESS_TRIP": "Công tác"
+  },
+  "statuses": {
+    "pending": "Chờ duyệt",
+    "returned": "Cần chỉnh sửa",
+    "approved": "Đã duyệt",
+    "rejected": "Đã từ chối"
+  },
+  "labels": {
+    "requester": "Người yêu cầu",
+    "reviewer": "Người duyệt"
+  },
+  "create": {
+    "title": "Tạo yêu cầu",
+    "editTitle": "Chỉnh sửa yêu cầu",
+    "description": "Bắt đầu một yêu cầu mới.",
+    "fields": {
+      "timeoffType": "Loại nghỉ",
+      "reviewer": "Người duyệt",
+      "startDate": "Thời điểm bắt đầu",
+      "endDate": "Thời điểm kết thúc",
+      "timeoffDate": "Ngày nghỉ",
+      "timeoffShift": "Ca làm việc",
+      "reason": "Lý do",
+      "address": "Địa điểm công tác",
+      "company": "Công ty"
+    },
+    "placeholders": {
+      "timeoffType": "Chọn loại nghỉ",
+      "reviewer": "Chọn người duyệt",
+      "startDate": "Chọn thời điểm bắt đầu",
+      "endDate": "Chọn thời điểm kết thúc",
+      "timeoffDate": "Chọn ngày nghỉ",
+      "reason": "Thêm lý do yêu cầu",
+      "address": "Thêm địa điểm công tác"
+    },
+    "options": {
+      "timeoffType": {
+        "ANNUAL": "Nghỉ phép tiêu chuẩn",
+        "UNPAID": "Nghỉ không lương"
+      }
+    },
+    "hints": {
+      "timeoff": "Chọn loại nghỉ phù hợp với yêu cầu này.",
+      "businessTrip": "Yêu cầu công tác sẽ bao gồm thông tin địa điểm chuyến đi."
+    },
+    "balance": {
+      "title": "Số dư phép năm",
+      "loadingTitle": "Đang tải số dư phép năm",
+      "loadingDescription": "Thông tin số dư phép năm sẽ hiển thị tại đây khi tải xong.",
+      "sufficientDescription": "Số dư phép năm của bạn đủ cho yêu cầu này.",
+      "insufficientDescription": "Số dư phép năm không đủ cho yêu cầu này.",
+      "crossCycleDescription": "Yêu cầu kéo dài qua nhiều chu kỳ phép; số dư từng chu kỳ sẽ được kiểm tra khi gửi.",
+      "referenceDescription": "Số dư tại ngày bắt đầu. Khi gửi, hệ thống kiểm tra các ngày có ca và số phép từng chu kỳ.",
+      "unavailableTitle": "Không có số dư phép năm",
+      "unavailableDescription": "Không thể tải số dư phép năm lúc này. Vui lòng thử lại sau ít phút.",
+      "remaining": "Còn lại",
+      "used": "Đã dùng",
+      "entitlement": "Định mức",
+      "cycle": "Chu kỳ",
+      "cycleUnavailable": "Không có",
+      "daysValue": "{count} ngày"
+    },
+    "actions": {
+      "open": "Tạo yêu cầu",
+      "openTimeoff": "Tạo yêu cầu nghỉ phép",
+      "openBusinessTrip": "Tạo yêu cầu công tác",
+      "submit": "Gửi duyệt",
+      "cancel": "Hủy"
+    },
+    "validation": {
+      "reviewerRequired": "Vui lòng chọn người duyệt cho yêu cầu này.",
+      "addressRequired": "Vui lòng nhập địa chỉ công tác.",
+      "startDateRequired": "Vui lòng chọn ngày giờ bắt đầu.",
+      "endDateRequired": "Vui lòng chọn ngày giờ kết thúc.",
+      "dateRangeInvalid": "Ngày giờ bắt đầu phải sớm hơn ngày giờ kết thúc.",
+      "timeoffSingleDay": "Mỗi yêu cầu nghỉ chỉ được trong một ngày.",
+      "reasonRequired": "Vui lòng nhập lý do cho yêu cầu này."
+    },
+    "shiftSelection": {
+      "selectDateFirst": "Chọn ngày nghỉ trước",
+      "custom": "Tùy chỉnh khoảng thời gian",
+      "placeholder": "Chọn ca hoặc tùy chỉnh",
+      "loading": "Đang tải ca đã phân...",
+      "loadFailed": "Không thể tải ca làm việc đã phân cho ngày này.",
+      "empty": "Ngày này chưa có ca phân công. Bạn có thể chọn 'Tùy chỉnh khoảng thời gian' để tự chọn giờ nghỉ.",
+      "wholeShift": "{name} ({start} → {end})",
+      "wholeShiftOvernight": "{name} ({start} → {end} hôm sau)",
+      "period": "Khoảng {index}: {start} → {end}",
+      "periodOvernight": "Khoảng {index}: {start} → {end} hôm sau",
+      "retry": "Thử lại"
+    }
+  },
+  "detail": {
+    "durationDays": "{days} ngày",
+    "title": "Chi tiết yêu cầu",
+    "description": "Xem đầy đủ thông tin yêu cầu.",
+    "fields": {
+      "duration": "Thời lượng yêu cầu",
+      "createdAt": "Ngày tạo",
+      "submittedAt": "Gửi duyệt lúc",
+      "approvedAt": "Phê duyệt lúc",
+      "rejectedAt": "Từ chối lúc",
+      "requester": "Người yêu cầu",
+      "reviewer": "Người duyệt",
+      "requestId": "Mã yêu cầu",
+      "startAt": "Thời điểm bắt đầu",
+      "endAt": "Thời điểm kết thúc",
+      "reason": "Lý do",
+      "rejectReason": "Lý do từ chối",
+      "returnNote": "Nội dung cần điều chỉnh",
+      "address": "Địa điểm công tác",
+      "approvalNote": "Ghi chú duyệt"
+    },
+    "review": {
+      "title": "Hành động duyệt",
+      "description": "Chọn cách bạn muốn xử lý yêu cầu đang chờ duyệt này.",
+      "rejectNoteLabel": "Ghi chú từ chối",
+      "rejectNotePlaceholder": "Giải thích lý do yêu cầu này bị từ chối",
+      "rejectNoteRequired": "Vui lòng nhập ghi chú từ chối trước khi từ chối yêu cầu này.",
+      "returnNoteLabel": "Nội dung cần chỉnh sửa",
+      "returnNoteRequired": "Vui lòng nêu nội dung cần chỉnh sửa.",
+      "confirmApproveTitle": "Duyệt yêu cầu này?",
+      "confirmApproveDescription": "Yêu cầu này sẽ được chuyển sang trạng thái đã duyệt.",
+      "confirmApprove": "Xác nhận duyệt",
+      "confirmRejectTitle": "Từ chối yêu cầu này?",
+      "confirmRejectDescription": "Yêu cầu này sẽ được chuyển sang trạng thái từ chối cùng với ghi chú của bạn.",
+      "confirmReject": "Xác nhận từ chối",
+      "confirmCancel": "Hủy"
+    },
+    "requester": {
+      "title": "Hành động người yêu cầu",
+      "description": "Hủy yêu cầu này nếu bạn không còn muốn gửi yêu cầu đó để duyệt nữa.",
+      "confirmDeleteTitle": "Hủy yêu cầu này?",
+      "confirmDeleteDescription": "Yêu cầu này sẽ bị hủy vĩnh viễn.",
+      "confirmDelete": "Xác nhận hủy",
+      "confirmCancel": "Hủy"
+    },
+    "actions": {
+      "edit": "Chỉnh sửa",
+      "return": "Cần điều chỉnh",
+      "delete": "Hủy yêu cầu",
+      "deleting": "Đang hủy...",
+      "approve": "Chấp nhận",
+      "approving": "Đang chấp nhận...",
+      "reject": "Từ chối",
+      "rejecting": "Đang từ chối...",
+      "close": "Đóng"
+    }
+  },
+  "actions": {
+    "create": "Tạo yêu cầu",
+    "detail": "Chi tiết",
+    "refresh": "Tải lại",
+    "cancel": "Hủy",
+    "approve": "Chấp nhận",
+    "reject": "Từ chối",
+    "return": "Cần điều chỉnh",
+    "delete": "Hủy yêu cầu",
+    "close": "Đóng"
+  },
+  "deleteConfirm": "Hủy yêu cầu đang chờ duyệt này?",
+  "messages": {
+    "loadFailed": "Không thể tải danh sách yêu cầu.",
+    "balanceFailed": "Không thể tải số phép năm.",
+    "invalidForm": "Vui lòng kiểm tra các trường bắt buộc, thời gian và địa điểm công tác.",
+    "saveFailed": "Không thể lưu thay đổi cho yêu cầu.",
+    "created": "Đã tạo yêu cầu.",
+    "returned": "Đã trả yêu cầu để chỉnh sửa.",
+    "approved": "Đã duyệt yêu cầu.",
+    "rejected": "Đã từ chối yêu cầu.",
+    "deleted": "Đã hủy yêu cầu."
+  },
+  "paginationSummary": "Hiển thị {start}–{end} trong tổng số {total} yêu cầu",
+  "coverage": {
+    "loading": "Đang tính thời lượng yêu cầu…",
+    "error": "Không thể tính thời lượng yêu cầu. Vui lòng thử lại.",
+    "retry": "Thử lại",
+    "total": "Thời lượng yêu cầu:",
+    "assignedDays": "{days} ngày có phân ca",
+    "unassignedDays": ", {days} ngày không có phân ca"
+  }
+}

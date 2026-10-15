@@ -1,0 +1,235 @@
+.personal-tasks-ui .task-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: hsl(var(--foreground));
+}
+
+.personal-tasks-ui .task-required {
+  margin-left: 2px;
+  font-weight: 700;
+  color: hsl(var(--destructive));
+}
+
+.personal-tasks-ui .task-icon-button {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  transition: background-color 150ms;
+}
+
+.personal-tasks-ui .task-icon-button:hover {
+  background: hsl(var(--muted));
+}
+
+.personal-tasks-ui button:focus-visible,
+.personal-tasks-ui a:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+
+.personal-tasks-ui .ant-input,
+.personal-tasks-ui .ant-input-affix-wrapper,
+.personal-tasks-ui .ant-picker,
+.personal-tasks-ui .ant-select-selector,
+.personal-tasks-ui .ant-btn {
+  min-height: 36px;
+  font-size: 14px;
+  border-radius: 8px;
+}
+
+.personal-tasks-ui .ant-input,
+.personal-tasks-ui .ant-input-affix-wrapper,
+.personal-tasks-ui .ant-picker,
+.personal-tasks-ui
+  .ant-select:not(.ant-select-customize-input)
+  .ant-select-selector {
+  color: hsl(var(--foreground));
+  background: hsl(var(--card));
+  border-color: hsl(var(--border));
+}
+
+.personal-tasks-ui .ant-input-affix-wrapper > .ant-input {
+  min-height: auto;
+}
+
+.personal-tasks-ui
+  .ant-select-single
+  .ant-select-selector
+  .ant-select-selection-item,
+.personal-tasks-ui
+  .ant-select-single
+  .ant-select-selector
+  .ant-select-selection-placeholder {
+  line-height: 34px;
+}
+
+.personal-tasks-ui .ant-input::placeholder,
+.personal-tasks-ui .ant-picker-input > input::placeholder {
+  color: hsl(var(--muted-foreground));
+}
+
+.personal-tasks-ui .ant-input:focus,
+.personal-tasks-ui .ant-input-affix-wrapper-focused,
+.personal-tasks-ui .ant-picker-focused,
+.personal-tasks-ui .ant-select-focused .ant-select-selector {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 15%);
+}
+
+.personal-tasks-ui .task-composer .ant-input,
+.personal-tasks-ui .task-composer .ant-input:focus {
+  padding-inline: 0;
+  font-weight: 500;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.personal-tasks-ui
+  .task-composer-list.ant-select:not(.ant-select-customize-input)
+  .ant-select-selector {
+  min-height: 28px;
+  padding-inline: 10px 24px;
+  font-size: 12px;
+  color: hsl(var(--muted-foreground));
+  background: hsl(var(--muted));
+  border: none;
+  border-radius: 9999px;
+}
+
+.personal-tasks-ui
+  .task-composer-list.ant-select-single
+  .ant-select-selector
+  .ant-select-selection-item {
+  line-height: 28px;
+}
+
+.personal-tasks-ui .task-composer-list .ant-select-arrow {
+  inset-inline-end: 8px;
+  font-size: 10px;
+}
+
+.personal-tasks-ui .task-composer-field {
+  position: relative;
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.personal-tasks-ui .task-composer-field::after {
+  position: absolute;
+  inset-inline: 0;
+  bottom: -1px;
+  height: 2px;
+  content: '';
+  background: hsl(var(--primary));
+  transform: scaleX(0);
+  transition: transform 200ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.personal-tasks-ui .task-composer-field:focus-within::after {
+  transform: scaleX(1);
+}
+
+.personal-tasks-ui .task-composer-send.ant-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  padding: 0;
+}
+
+.personal-tasks-ui .task-composer-send.ant-btn:not(:disabled) {
+  color: hsl(var(--primary));
+}
+
+.personal-tasks-ui .task-composer-send.ant-btn:not(:disabled):hover {
+  color: hsl(var(--primary));
+  background: hsl(var(--primary) / 10%);
+}
+
+.personal-tasks-ui .task-composer-send .ant-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  line-height: 0;
+}
+
+.personal-tasks-ui textarea.ant-input {
+  padding: 8px 12px;
+  line-height: 1.5;
+}
+
+.personal-tasks-ui .ant-tag {
+  font-size: 12px;
+  color: hsl(var(--muted-foreground));
+  background: hsl(var(--muted));
+  border-color: hsl(var(--border));
+}
+
+.personal-tasks-ui .ant-drawer-header,
+.personal-tasks-ui .ant-drawer-body,
+.personal-tasks-ui .ant-drawer-footer,
+.personal-tasks-ui .ant-modal-content {
+  color: hsl(var(--foreground));
+  background: hsl(var(--card));
+  border-color: hsl(var(--border));
+}
+
+.personal-tasks-ui .task-delete-action {
+  opacity: 0;
+}
+
+.personal-tasks-ui .group:hover .task-delete-action,
+.personal-tasks-ui .group:focus-within .task-delete-action {
+  opacity: 1;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .personal-tasks-ui .task-icon-button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .personal-tasks-ui .task-delete-action {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 767px) {
+  .personal-tasks-ui .task-icon-button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .personal-tasks-ui .task-delete-action {
+    opacity: 1;
+  }
+}
+
+.personal-tasks-ui .task-list-anim-move {
+  transition: transform 0.35s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.personal-tasks-ui .task-list-anim-enter-active {
+  transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.personal-tasks-ui .task-list-anim-enter-from {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .personal-tasks-ui .task-composer-field::after,
+  .personal-tasks-ui .task-list-anim-move,
+  .personal-tasks-ui .task-list-anim-enter-active {
+    transition: none;
+  }
+}

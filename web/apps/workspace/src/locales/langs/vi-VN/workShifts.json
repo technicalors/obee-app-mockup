@@ -1,0 +1,75 @@
+{
+  "titles": {
+    "catalog": "Cấu hình & Danh mục ca làm việc",
+    "create": "Thêm ca làm việc mới",
+    "edit": "Chỉnh sửa ca làm việc"
+  },
+  "fields": {
+    "name": "Tên ca",
+    "overnight": "Làm việc qua ngày",
+    "start": "Bắt đầu",
+    "end": "Kết thúc",
+    "shift": "Ca làm việc"
+  },
+  "placeholders": {
+    "name": "Ví dụ: Ca hành chính, Ca đêm",
+    "shift": "Chọn ca làm việc"
+  },
+  "labels": {
+    "assignmentDay": "Ngày phân ca",
+    "nextDay": "Hôm sau",
+    "catalogCount": "{count} ca làm việc",
+    "periodsCount": "Các khoảng làm việc ({count})",
+    "periodCount": "{count} khoảng",
+    "period": "Khoảng {index}",
+    "periodLabel": "Khoảng {index}:",
+    "periods": "Các khoảng làm việc:",
+    "hours": "{count} giờ",
+    "totalHours": "Tổng: {hours}",
+    "estimatedHours": "Tổng thời gian làm việc dự kiến:",
+    "nextDayHint": "hôm sau"
+  },
+  "actions": {
+    "configure": "Cấu hình ca",
+    "create": "Thêm ca làm việc",
+    "addShift": "Thêm ca",
+    "submitCreate": "Tạo ca làm việc",
+    "save": "Lưu thay đổi",
+    "edit": "Sửa",
+    "delete": "Xóa",
+    "cancel": "Hủy",
+    "close": "Đóng",
+    "retry": "Thử lại",
+    "addPeriod": "Thêm khoảng",
+    "deletePeriod": "Xóa khoảng",
+    "deletePeriodLabel": "Xóa khoảng {index}"
+  },
+  "states": {
+    "loading": "Đang tải danh mục ca...",
+    "loadFailed": "Lỗi tải danh mục ca làm việc",
+    "empty": "Chưa có ca làm việc nào.",
+    "emptyOrganization": "Chưa có ca làm việc nào trong tổ chức."
+  },
+  "editWarning": {
+    "description": "Sửa cấu hình sẽ áp dụng cho mọi ngày đã phân ca này (kể cả quá khứ). Nếu muốn đổi giờ cho một giai đoạn cụ thể, vui lòng tạo ca mới rồi phân lại."
+  },
+  "deleteConfirm": {
+    "title": "Xác nhận xóa ca làm việc?",
+    "description": "Ca đã được phân công sẽ không thể xóa."
+  },
+  "validation": {
+    "nameRequired": "Tên ca không được để trống.",
+    "periodRequired": "Ca làm việc phải có ít nhất 1 khoảng thời gian.",
+    "startDay": "Cấu hình ca phải bắt đầu trong ngày phân ca.",
+    "endAfterStart": "Khoảng {index}: Giờ kết thúc phải sau giờ bắt đầu.",
+    "overlap": "Các khoảng làm việc không được chồng lấn thời gian.",
+    "organizationRequired": "Chưa xác định tổ chức gốc."
+  },
+  "messages": {
+    "created": "Tạo ca làm việc thành công.",
+    "updated": "Cập nhật ca làm việc thành công.",
+    "deleted": "Xóa ca làm việc thành công.",
+    "saveFailed": "Không thể lưu ca làm việc.",
+    "deleteFailed": "Không thể xóa ca làm việc."
+  }
+}

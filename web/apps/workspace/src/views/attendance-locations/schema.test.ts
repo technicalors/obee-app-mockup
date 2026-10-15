@@ -11,16 +11,16 @@ describe('createAttendanceLocationIndexQuery', () => {
           per_page: 20,
         },
         {
-          is_active: false,
           search: 'office',
+          status: 'deleted',
           validation_mode: 'location',
         },
       ),
     ).toEqual({
-      is_active: false,
       page: 2,
       per_page: 20,
       search: 'office',
+      trashed: 'only',
       validation_mode: 'location',
     });
   });
@@ -34,11 +34,25 @@ describe('createAttendanceLocationIndexQuery', () => {
         },
         {
           search: '',
+          status: 'active',
         },
       ),
     ).toEqual({
       page: 1,
       per_page: 10,
+    });
+  });
+
+  it('includes deleted locations for the all status', () => {
+    expect(
+      createAttendanceLocationIndexQuery(
+        { page: 1, per_page: 10 },
+        { status: 'all' },
+      ),
+    ).toEqual({
+      page: 1,
+      per_page: 10,
+      trashed: 'with',
     });
   });
 });

@@ -1,0 +1,85 @@
+{
+  "messages": {
+    "avatarUpdated": "Đã cập nhật ảnh hồ sơ",
+    "unexpectedError": "Đã xảy ra lỗi không xác định"
+  },
+  "actions": {
+    "changeAvatar": "Đổi ảnh",
+    "back": "Quay lại",
+    "backToList": "Quay lại danh sách",
+    "detail": "Chi tiết"
+  },
+  "columns": {
+    "actions": "Thao tác",
+    "award": "Khen thưởng",
+    "content": "Nội dung",
+    "date": "Ngày tháng",
+    "employeeCode": "Mã nhân sự",
+    "fullName": "Họ tên",
+    "gender": "Giới tính",
+    "joinedAt": "Ngày vào công ty",
+    "level": "Trình độ",
+    "note": "Ghi chú",
+    "position": "Chức vụ",
+    "positionDepartment": "Vị trí / Phòng ban",
+    "sequence": "#",
+    "startingDate": "Ngày làm chính thức",
+    "organization": "Tổ chức"
+  },
+  "fields": {
+    "address": "Địa chỉ",
+    "age": "Tuổi",
+    "citizenId": "Số CCCD",
+    "contactInfo": "Thông tin liên lạc",
+    "currentPosition": "Chức vụ hiện tại",
+    "dateOfBirth": "Ngày sinh",
+    "dependentTaxId": "MST người phụ thuộc",
+    "educationLevel": "Trình độ học vấn",
+    "email": "Email",
+    "employeeCode": "Mã nhân viên",
+    "fullName": "Họ và tên",
+    "gender": "Giới tính",
+    "healthInsurance": "Số thẻ BHYT",
+    "joinedAt": "Ngày vào công ty",
+    "personalTaxId": "MST cá nhân",
+    "phone": "Điện thoại",
+    "seniority": "Thâm niên",
+    "socialInsurance": "Số BHXH",
+    "workUnit": "Đơn vị công tác"
+  },
+  "emptyHistory": {
+    "achievements": "Chưa có ghi nhận thành tích hoặc khen thưởng",
+    "achievementsDesc": "Thông tin khen thưởng, danh hiệu hoặc thành tích nổi bật sẽ hiển thị tại đây khi được ghi nhận.",
+    "educationHistory": "Chưa có ghi nhận quá trình đào tạo",
+    "educationHistoryDesc": "Thông tin học vấn, bằng cấp và các chứng chỉ chuyên môn sẽ hiển thị tại đây khi được cập nhật.",
+    "hrNotes": "Chưa có ghi chú từ phòng nhân sự",
+    "hrNotesDesc": "Các lưu ý, đánh giá và ghi chép nội bộ từ bộ phận nhân sự sẽ được lưu trữ tại đây.",
+    "noEmployeeFound": "Không tìm thấy hồ sơ nhân viên",
+    "noEmployeeFoundDesc": "Hồ sơ nhân viên này không tồn tại hoặc đã bị gỡ bỏ khỏi hệ thống.",
+    "workHistory": "Chưa có ghi nhận quá trình công tác",
+    "workHistoryDesc": "Lịch sử bổ nhiệm, luân chuyển bộ phận hoặc thăng tiến sẽ hiển thị tại đây khi có quyết định nhân sự."
+  },
+  "filters": {
+    "search": "Tìm kiếm",
+    "searchPlaceholder": "Mã nhân sự, họ tên..."
+  },
+  "listDescription": "Danh sách nhân sự và xem chi tiết lịch sử hồ sơ.",
+  "listTitle": "Lịch sử công tác",
+  "noEmployeeSelected": "Vui lòng chọn nhân viên để xem hồ sơ",
+  "pageDescription": "Xem thông tin hồ sơ và các mốc lịch sử của nhân viên.",
+  "pageTitle": "Lịch sử hồ sơ nhân sự",
+  "placeholder": "Chưa có dữ liệu",
+  "sections": {
+    "achievements": "Thành tích",
+    "educationHistory": "Quá trình học tập",
+    "hrNotes": "Ghi chép nhân sự",
+    "personalInfo": "Thông tin cá nhân",
+    "workHistory": "Quá trình công tác"
+  },
+  "selectEmployee": "Chọn nhân viên",
+  "selectEmployeePlaceholder": "Tìm theo tên hoặc mã nhân viên...",
+  "status": {
+    "active": "Đang làm việc",
+    "inactive": "Ngừng hoạt động"
+  }
+}

@@ -10,16 +10,16 @@ import {
 import { userProfileSchema } from './user-profile';
 
 describe('user contracts', () => {
-  it('requires company, profile, roles, and departments on user responses', () => {
+  it('requires organization, profile, roles, and organization_id on user responses', () => {
     expect(() =>
       userSchema.parse({
         avatar: null,
-        company_id: null,
+        organization_id: null,
         created_at: '2026-06-11T00:00:00.000000Z',
         email: 'admin@example.com',
         email_verified_at: null,
         id: 'user-1',
-        is_active: true,
+        deleted_at: null,
         name: 'Admin User',
         supabase_id: null,
         updated_at: '2026-06-11T00:00:00.000000Z',
@@ -32,14 +32,13 @@ describe('user contracts', () => {
     expect(() =>
       authUserSchema.parse({
         avatar: null,
-        company: null,
-        company_id: null,
+        organization: null,
+        organization_id: null,
         created_at: '2026-06-11T00:00:00.000000Z',
-        departments: [],
         email: 'admin@example.com',
         email_verified_at: null,
         id: 'user-1',
-        is_active: true,
+        deleted_at: null,
         name: 'Admin User',
         profile: null,
         roles: [],
@@ -73,6 +72,42 @@ describe('user contracts', () => {
         username: 'admin',
       }),
     ).toThrow('Unrecognized key');
+  });
+
+  it('rejects an active status when creating a user', () => {
+    expect(() =>
+      createUserPayloadSchema.parse({
+        email: null,
+        is_active: false,
+        name: 'Inactive User',
+        password: 'secret123',
+        username: 'inactive-user',
+      }),
+    ).toThrow('Unrecognized key');
+  });
+
+  it('requires deleted_at on user responses', () => {
+    const user = {
+      avatar: null,
+      created_at: '2026-06-11T00:00:00.000000Z',
+      email: 'admin@example.com',
+      email_verified_at: null,
+      id: 'user-1',
+      name: 'Admin User',
+      organization: null,
+      organization_id: null,
+      profile: null,
+      roles: [],
+      supabase_id: null,
+      updated_at: '2026-06-11T00:00:00.000000Z',
+      username: 'admin',
+    };
+
+    expect(() => userSchema.parse(user)).toThrow('Required');
+    expect(
+      userSchema.parse({ ...user, deleted_at: '2026-06-12T00:00:00.000000Z' })
+        .deleted_at,
+    ).toBe('2026-06-12T00:00:00.000000Z');
   });
 
   it('limits usernames to the users table length', () => {
@@ -143,7 +178,6 @@ describe('user contracts', () => {
     expect(
       updateUserPayloadSchema.parse({
         email: 'admin@example.com',
-        is_active: false,
         name: 'Admin User',
         profile: {
           address: '123 Main St',
@@ -158,7 +192,6 @@ describe('user contracts', () => {
         username: 'admin',
       }),
     ).toMatchObject({
-      is_active: false,
       role_names: ['admin'],
     });
 
@@ -178,7 +211,6 @@ describe('user contracts', () => {
       updateUserPayloadSchema.parse({
         avatar: null,
         email: 'admin@example.com',
-        is_active: false,
         name: 'Admin User',
         username: 'admin',
       }),
@@ -188,25 +220,29 @@ describe('user contracts', () => {
   it('extends the pagination query base for user index queries', () => {
     expect(
       userIndexQuerySchema.parse({
-        with_inactive: 1,
+        trashed: 'with',
         page: 2,
         per_page: 20,
+        organization_id: 'organization-1',
+        root_organization_id: 'root-organization-1',
         role_names: ['admin'],
         search: 'alice',
       }),
     ).toEqual({
-      with_inactive: 1,
+      trashed: 'with',
       page: 2,
       per_page: 20,
+      organization_id: 'organization-1',
+      root_organization_id: 'root-organization-1',
       role_names: ['admin'],
       search: 'alice',
     });
   });
 
-  it('rejects inactive-only user index filters', () => {
+  it('rejects unknown trashed filters on user index queries', () => {
     expect(
       userIndexQuerySchema.safeParse({
-        with_inactive: 0,
+        trashed: 'all',
         page: 1,
         per_page: 10,
       }).success,
@@ -217,14 +253,13 @@ describe('user contracts', () => {
     expect(() =>
       userSchema.parse({
         avatar: null,
-        company: null,
-        company_id: null,
+        organization: null,
+        organization_id: null,
         created_at: '2026-06-11',
-        departments: [],
         email: 'admin@example.com',
         email_verified_at: null,
         id: 'user-1',
-        is_active: true,
+        deleted_at: null,
         name: 'Admin User',
         profile: null,
         roles: [],
@@ -239,7 +274,6 @@ describe('user contracts', () => {
     expect(() =>
       updateUserPayloadSchema.parse({
         email: 'admin@example.com',
-        is_active: false,
         name: 'Admin User',
         profile: {
           address: '123 Main St',

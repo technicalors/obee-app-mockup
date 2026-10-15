@@ -1,0 +1,13 @@
+{
+  "developmentNotice": "此功能正在开发中。",
+  "evaluation": {
+    "routeTitle": "绩效评估"
+  },
+  "history": {
+    "routeTitle": "员工历史"
+  },
+  "routeTitle": "员工档案",
+  "skills": {
+    "routeTitle": "技能与能力"
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "routeTitle": "组织",
+  "listTitle": "组织列表",
+  "listDescription": "管理组织名称、类型、税号和层级关系。",
+  "columns": {
+    "name": "名称",
+    "type": "类型",
+    "parent": "上级组织",
+    "taxIdentificationNumber": "税号",
+    "createdAt": "创建时间",
+    "actions": "操作"
+  },
+  "filters": {
+    "search": "搜索",
+    "searchPlaceholder": "搜索组织...",
+    "type": "类型"
+  },
+  "fields": {
+    "name": "名称",
+    "type": "类型",
+    "parent": "上级组织",
+    "taxIdentificationNumber": "税号"
+  },
+  "sections": {
+    "organization": "组织信息"
+  },
+  "types": {
+    "company": "公司",
+    "department": "部门",
+    "division": "分部",
+    "team": "团队",
+    "unit": "小组"
+  },
+  "actions": {
+    "viewTree": "查看组织树",
+    "createRoot": "创建根组织",
+    "createChild": "创建下级组织",
+    "view": "查看详情",
+    "edit": "编辑",
+    "delete": "删除",
+    "save": "保存",
+    "cancel": "取消",
+    "backToList": "返回列表",
+    "create": "创建"
+  },
+  "values": {
+    "root": "根组织",
+    "parentLoading": "正在加载上级组织...",
+    "parentUnavailable": "无法加载上级组织"
+  },
+  "create": {
+    "title": "创建组织"
+  },
+  "edit": {
+    "title": "编辑组织"
+  },
+  "detail": {
+    "title": "组织详情"
+  },
+  "tree": {
+    "title": "组织树",
+    "description": "查看组织的上下级关系。",
+    "empty": "未找到组织。",
+    "root": "根组织",
+    "parent": "直属上级",
+    "memberCount": "成员数量",
+    "members": {
+      "name": "姓名",
+      "username": "用户名",
+      "avatar": "头像",
+      "roles": "角色",
+      "empty": "暂无直属用户。"
+    },
+    "chart": {
+      "zoomIn": "放大",
+      "zoomOut": "缩小",
+      "fit": "适应视图",
+      "expandAll": "全部展开",
+      "collapseAll": "全部折叠",
+      "expand": "展开",
+      "collapse": "折叠"
+    }
+  },
+  "delete": {
+    "title": "删除组织",
+    "description": "确定要删除 {name} 吗？此操作无法撤销。"
+  },
+  "validation": {
+    "nameRequired": "请输入组织名称",
+    "typeParentMismatch": "根组织必须选择公司，下级组织必须选择公司以外的类型。",
+    "taxRootOnly": "只有根组织可以填写税号。"
+  },
+  "users": {
+    "title": "成员列表",
+    "name": "姓名",
+    "username": "用户名"
+  },
+  "messages": {
+    "created": "组织已创建",
+    "updated": "组织已更新",
+    "deleted": "组织已删除",
+    "unexpectedError": "发生意外错误"
+  }
+}

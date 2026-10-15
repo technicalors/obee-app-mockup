@@ -50,15 +50,24 @@ vi.mock('#/api', () => ({
 function makeUser(overrides: Partial<AuthUser> = {}): AuthUser {
   return {
     avatar: null,
-    company: null,
-    company_id: null,
+    organization: null,
+    organization_id: null,
+    root_organization_id: null,
     created_at: '2026-06-11T00:00:00.000000Z',
     email: 'admin@example.com',
     email_verified_at: null,
     id: 'user-1',
-    is_active: true,
+    deleted_at: null,
     name: 'Admin User',
-    permissions: ['users.viewAny'],
+    permissions: [
+      {
+        id: 'permission-1',
+        name: 'users.viewAny',
+        description: null,
+        created_at: null,
+        updated_at: null,
+      },
+    ],
     profile: null,
     supabase_id: null,
     roles: [
@@ -70,7 +79,6 @@ function makeUser(overrides: Partial<AuthUser> = {}): AuthUser {
         updated_at: '2026-06-11T00:00:00.000000Z',
       },
     ],
-    departments: [],
     updated_at: '2026-06-11T00:00:00.000000Z',
     username: 'admin',
     ...overrides,
@@ -118,7 +126,15 @@ describe('auth store login flow', () => {
     const authStore = useAuthStore();
     const accessStore = useAccessStore();
     const user = makeUser({
-      permissions: ['departments.viewAny'],
+      permissions: [
+        {
+          id: 'permission-1',
+          name: 'organizations.viewAny',
+          description: null,
+          created_at: null,
+          updated_at: null,
+        },
+      ],
     });
 
     api.getUserInfoApi.mockResolvedValue(user);
@@ -127,7 +143,7 @@ describe('auth store login flow', () => {
 
     expect(api.getUserInfoApi).toHaveBeenCalledOnce();
     expect(accessStore.accessToken).toBe(SESSION_MARKER);
-    expect(accessStore.accessCodes).toEqual(['departments.viewAny']);
+    expect(accessStore.accessCodes).toEqual(['organizations.viewAny']);
     expect(userInfo.realName).toBe('Admin User');
     expect(useUserStore().userInfo?.realName).toBe('Admin User');
   });

@@ -85,6 +85,10 @@ export function useAttendancePage() {
     }));
   });
 
+  const noShiftToday = computed(
+    () => context.value !== null && !context.value.has_shift_today,
+  );
+
   const bestEvaluation = computed<AttendanceEvaluation | null>(() => {
     if (evaluations.value.length === 0) {
       return null;
@@ -113,7 +117,7 @@ export function useAttendancePage() {
     return `${position.value.latitude.toFixed(6)}, ${position.value.longitude.toFixed(6)}`;
   });
   const ipAddress = computed(
-    () => context.value?.ip_address ?? $t('page.attendance.noIp'),
+    () => context.value?.ip_address ?? $t('attendance.noIp'),
   );
   const ipLoading = computed(() => loadingContext.value);
   const ipValid = computed(
@@ -125,6 +129,10 @@ export function useAttendancePage() {
     }
 
     if (context.value.assigned_locations.length === 0) {
+      return false;
+    }
+
+    if (noShiftToday.value) {
       return false;
     }
 
@@ -144,7 +152,7 @@ export function useAttendancePage() {
   });
   const todayOnTimeStatus = computed(() => {
     if (todayDetail.value === null || todayDetail.value.logs.length === 0) {
-      return $t('page.attendance.noData');
+      return $t('attendance.noData');
     }
 
     if (todayDetail.value.first_check_in_at === null) {
@@ -152,14 +160,14 @@ export function useAttendancePage() {
     }
 
     return isOnTimeCheckIn(todayDetail.value.first_check_in_at)
-      ? $t('page.attendance.onTime')
-      : $t('page.attendance.late');
+      ? $t('attendance.onTime')
+      : $t('attendance.late');
   });
   const todayWorkHoursDecimal = computed(
     () => (todayDetail.value?.total_work_seconds ?? 0) / 3600,
   );
   const todayWorkHoursDecimalStr = computed(() =>
-    $t('page.attendance.totalWorkHoursValue', {
+    $t('attendance.totalWorkHoursValue', {
       hours: todayWorkHoursDecimal.value.toFixed(1),
     }),
   );
@@ -207,7 +215,7 @@ export function useAttendancePage() {
       selectedDayDetail.value === null ||
       selectedDayDetail.value.logs.length === 0
     ) {
-      return $t('page.attendance.noData');
+      return $t('attendance.noData');
     }
 
     if (selectedDayDetail.value.first_check_in_at === null) {
@@ -215,11 +223,11 @@ export function useAttendancePage() {
     }
 
     return isOnTimeCheckIn(selectedDayDetail.value.first_check_in_at)
-      ? $t('page.attendance.onTime')
-      : $t('page.attendance.late');
+      ? $t('attendance.onTime')
+      : $t('attendance.late');
   });
   const selectedDayHoursText = computed(() =>
-    $t('page.attendance.totalWorkHoursValue', {
+    $t('attendance.totalWorkHoursValue', {
       hours:
         selectedDayDetail.value === null
           ? '0.0'
@@ -242,7 +250,7 @@ export function useAttendancePage() {
     } catch (error: unknown) {
       showRequestError(
         error,
-        $t('page.attendance.messages.unexpectedError'),
+        $t('attendance.messages.unexpectedError'),
         'Failed to load attendance context.',
       );
     } finally {
@@ -260,7 +268,7 @@ export function useAttendancePage() {
     } catch (error: unknown) {
       showRequestError(
         error,
-        $t('page.attendance.messages.unexpectedError'),
+        $t('attendance.messages.unexpectedError'),
         'Failed to load today attendance logs.',
       );
     } finally {
@@ -278,7 +286,7 @@ export function useAttendancePage() {
     } catch (error: unknown) {
       showRequestError(
         error,
-        $t('page.attendance.messages.unexpectedError'),
+        $t('attendance.messages.unexpectedError'),
         'Failed to load monthly attendance logs.',
       );
     } finally {
@@ -303,7 +311,7 @@ export function useAttendancePage() {
     } catch (error: unknown) {
       showRequestError(
         error,
-        $t('page.attendance.messages.unexpectedError'),
+        $t('attendance.messages.unexpectedError'),
         'Failed to load selected attendance day.',
       );
     } finally {
@@ -343,6 +351,10 @@ export function useAttendancePage() {
   }
 
   async function handlePunch(): Promise<void> {
+    if (noShiftToday.value) {
+      return;
+    }
+
     if (position.value === null) {
       requestCurrentPosition();
       return;
@@ -350,8 +362,8 @@ export function useAttendancePage() {
 
     if (bestEvaluation.value?.eligibility.eligible !== true) {
       notification.error({
-        description: $t('page.attendance.notEligible'),
-        message: $t('page.attendance.messages.notEligibleTitle'),
+        description: $t('attendance.notEligible'),
+        message: $t('attendance.messages.notEligibleTitle'),
       });
       return;
     }
@@ -360,7 +372,7 @@ export function useAttendancePage() {
     try {
       await createAttendanceLog(position.value);
       notification.success({
-        message: $t('page.attendance.messages.punchSuccess'),
+        message: $t('attendance.messages.punchSuccess'),
       });
       await Promise.all([
         loadContext(),
@@ -372,7 +384,7 @@ export function useAttendancePage() {
     } catch (error: unknown) {
       showRequestError(
         error,
-        $t('page.attendance.messages.unexpectedError'),
+        $t('attendance.messages.unexpectedError'),
         'Failed to create attendance log.',
       );
     } finally {
@@ -431,13 +443,13 @@ export function useAttendancePage() {
     const day = Number(date.slice(8, 10));
     const selected = new Date(year, month - 1, day);
     const weekdays = [
-      $t('page.attendance.weekdays.sun'),
-      $t('page.attendance.weekdays.mon'),
-      $t('page.attendance.weekdays.tue'),
-      $t('page.attendance.weekdays.wed'),
-      $t('page.attendance.weekdays.thu'),
-      $t('page.attendance.weekdays.fri'),
-      $t('page.attendance.weekdays.sat'),
+      $t('attendance.weekdays.sun'),
+      $t('attendance.weekdays.mon'),
+      $t('attendance.weekdays.tue'),
+      $t('attendance.weekdays.wed'),
+      $t('attendance.weekdays.thu'),
+      $t('attendance.weekdays.fri'),
+      $t('attendance.weekdays.sat'),
     ];
 
     return `${weekdays[selected.getDay()]}, ${String(day).padStart(
@@ -503,6 +515,7 @@ export function useAttendancePage() {
     monthlyDeficientDays,
     monthlyTotalHours,
     monthlyWorkingDays,
+    noShiftToday,
     openDayDetail,
     positionState,
     punching,
@@ -546,9 +559,9 @@ function logToPunch(log: AttendanceLog): PunchLog {
   return {
     coords:
       log.latitude === null || log.longitude === null
-        ? $t('page.attendance.noPosition')
+        ? $t('attendance.noPosition')
         : `${log.latitude.toFixed(6)}, ${log.longitude.toFixed(6)}`,
-    ip: log.ip_address === null ? $t('page.attendance.noIp') : log.ip_address,
+    ip: log.ip_address === null ? $t('attendance.noIp') : log.ip_address,
     time: new Date(log.checked_at).toLocaleTimeString('vi-VN', {
       hour: '2-digit',
       minute: '2-digit',
@@ -570,19 +583,19 @@ function isOnTimeCheckIn(checkedAt: string): boolean {
 function positionStateLabel(state: PositionState): string {
   switch (state) {
     case 'denied': {
-      return $t('page.attendance.position.denied');
+      return $t('attendance.position.denied');
     }
     case 'failed': {
-      return $t('page.attendance.position.failed');
+      return $t('attendance.position.failed');
     }
     case 'idle': {
-      return $t('page.attendance.position.idle');
+      return $t('attendance.position.idle');
     }
     case 'loading': {
-      return $t('page.attendance.position.loading');
+      return $t('attendance.position.loading');
     }
     case 'ready': {
-      return $t('page.attendance.position.ready');
+      return $t('attendance.position.ready');
     }
   }
 }

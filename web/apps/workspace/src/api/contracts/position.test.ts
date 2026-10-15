@@ -33,7 +33,7 @@ describe('position contracts', () => {
     });
     expect(() =>
       updatePositionPayloadSchema.parse({
-        company_id: 'company-1',
+        organization_id: 'organization-1',
       }),
     ).toThrow('Unrecognized key');
     expect(() =>

@@ -20,14 +20,13 @@ describe('parsePaginatedResponse', () => {
         items: [
           {
             avatar: null,
-            company: null,
-            company_id: null,
+            organization: null,
+            organization_id: null,
             created_at: '2026-06-11T00:00:00.000000Z',
-            departments: [],
             email: 'admin@example.com',
             email_verified_at: null,
             id: 'user-1',
-            is_active: true,
+            deleted_at: null,
             name: 'Admin User',
             profile: null,
             roles: [],
@@ -77,18 +76,18 @@ describe('parsePaginatedResponse', () => {
     ).toThrow('Required');
   });
 
-  it('requires roles and departments on list rows', () => {
+  it('requires roles and organization on list rows', () => {
     expect(() =>
       parsePaginatedResponse(userSchema, {
         items: [
           {
             avatar: null,
-            company_id: null,
+            organization_id: null,
             created_at: '2026-06-11T00:00:00.000000Z',
             email: 'admin@example.com',
             email_verified_at: null,
             id: 'user-1',
-            is_active: true,
+            deleted_at: null,
             name: 'Admin User',
             supabase_id: null,
             updated_at: '2026-06-11T00:00:00.000000Z',
@@ -105,17 +104,16 @@ describe('parsePaginatedResponse', () => {
     ).toThrow('Required');
   });
 
-  it('requires company, profile, roles, and departments on user rows', () => {
+  it('requires organization, profile, roles, and organization_id on user rows', () => {
     expect(() =>
       userSchema.parse({
         avatar: null,
-        company_id: null,
+        organization_id: null,
         created_at: '2026-06-11T00:00:00.000000Z',
-        departments: [],
         email: 'admin@example.com',
         email_verified_at: null,
         id: 'user-1',
-        is_active: true,
+        deleted_at: null,
         name: 'Admin User',
         roles: [],
         supabase_id: null,
@@ -139,7 +137,7 @@ describe('createResourceApi', () => {
 
     await expect(
       api.create({
-        department_id: 'department-1',
+        organization_id: 'organization-1',
         email: 'not-an-email',
         name: 'Alice',
         password: 'secret123',
@@ -159,13 +157,12 @@ describe('createResourceApi', () => {
 
     requestClient.post.mockResolvedValue({
       avatar: null,
-      company_id: null,
+      organization_id: null,
       created_at: '2026-06-11T00:00:00.000000Z',
-      departments: [],
       email: 'admin@example.com',
       email_verified_at: null,
       id: 'user-1',
-      is_active: true,
+      deleted_at: null,
       name: 'Admin User',
       profile: null,
       roles: [],
@@ -176,7 +173,7 @@ describe('createResourceApi', () => {
 
     await expect(
       api.create({
-        department_id: 'department-1',
+        organization_id: 'organization-1',
         email: 'admin@example.com',
         name: 'Admin User',
         password: 'secret123',

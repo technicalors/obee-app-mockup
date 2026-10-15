@@ -1,0 +1,75 @@
+{
+  "titles": {
+    "catalog": "班次配置与目录",
+    "create": "新增班次",
+    "edit": "编辑班次"
+  },
+  "fields": {
+    "name": "班次名称",
+    "overnight": "跨日工作",
+    "start": "开始",
+    "end": "结束",
+    "shift": "工作班次"
+  },
+  "placeholders": {
+    "name": "例如：日班、夜班",
+    "shift": "选择班次"
+  },
+  "labels": {
+    "assignmentDay": "排班当天",
+    "nextDay": "次日",
+    "catalogCount": "{count} 个班次",
+    "periodsCount": "工作时段（{count}）",
+    "periodCount": "{count} 个时段",
+    "period": "时段 {index}",
+    "periodLabel": "时段 {index}：",
+    "periods": "工作时段：",
+    "hours": "{count} 小时",
+    "totalHours": "总计：{hours}",
+    "estimatedHours": "预计总工作时长：",
+    "nextDayHint": "次日"
+  },
+  "actions": {
+    "configure": "配置班次",
+    "create": "新增班次",
+    "addShift": "新增班次",
+    "submitCreate": "创建班次",
+    "save": "保存更改",
+    "edit": "编辑",
+    "delete": "删除",
+    "cancel": "取消",
+    "close": "关闭",
+    "retry": "重试",
+    "addPeriod": "新增时段",
+    "deletePeriod": "删除时段",
+    "deletePeriodLabel": "删除时段 {index}"
+  },
+  "states": {
+    "loading": "正在加载班次目录...",
+    "loadFailed": "无法加载班次目录",
+    "empty": "暂无班次。",
+    "emptyOrganization": "此组织暂无班次。"
+  },
+  "editWarning": {
+    "description": "配置更改将应用于使用此班次的所有排班日期，包括过去的日期。如需仅调整某个时间段的工作时间，请创建新班次并重新排班。"
+  },
+  "deleteConfirm": {
+    "title": "确认删除此班次？",
+    "description": "已用于排班的班次无法删除。"
+  },
+  "validation": {
+    "nameRequired": "班次名称不能为空。",
+    "periodRequired": "班次必须至少包含一个工作时段。",
+    "startDay": "班次必须从排班当天开始。",
+    "endAfterStart": "时段 {index}：结束时间必须晚于开始时间。",
+    "overlap": "工作时段不能重叠。",
+    "organizationRequired": "尚未确定根组织。"
+  },
+  "messages": {
+    "created": "班次创建成功。",
+    "updated": "班次更新成功。",
+    "deleted": "班次删除成功。",
+    "saveFailed": "无法保存班次。",
+    "deleteFailed": "无法删除班次。"
+  }
+}

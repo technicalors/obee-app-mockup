@@ -1,0 +1,52 @@
+{
+  "routeTitle": "Notifications",
+  "listTitle": "Notification list",
+  "listDescription": "Review your recent notifications.",
+  "columns": {
+    "content": "Content",
+    "actor": "Actor",
+    "status": "Status",
+    "occurredAt": "Time"
+  },
+  "filters": {
+    "readState": "Status",
+    "all": "All",
+    "read": "Read",
+    "unread": "Unread"
+  },
+  "fields": {
+    "by": "By",
+    "recipients": "Recipients",
+    "message": "Content",
+    "content": "Content",
+    "sender": "Sender",
+    "actor": "Actor",
+    "occurredAt": "Time"
+  },
+  "placeholders": {
+    "recipients": "Select one or more recipients",
+    "message": "Write a notification message"
+  },
+  "actions": {
+    "create": "New notification",
+    "send": "Send notification",
+    "markAllRead": "Mark all as read"
+  },
+  "create": {
+    "title": "New notification"
+  },
+  "detail": {
+    "title": "Notification details",
+    "statusTitle": "Notification status",
+    "informationTitle": "Notification information"
+  },
+  "status": {
+    "read": "Read notification",
+    "unread": "Unread notification"
+  },
+  "messages": {
+    "sent": "Notification sent",
+    "markedAllRead": "All notifications have been marked as read",
+    "unexpectedError": "An unexpected error occurred"
+  }
+}

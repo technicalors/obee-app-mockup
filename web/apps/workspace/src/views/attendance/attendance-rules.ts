@@ -34,7 +34,9 @@ export function haversineMeters(from: Coordinates, to: Coordinates): number {
       Math.cos(degreesToRadians(to.latitude)) *
       Math.sin(longitudeDelta / 2) ** 2;
 
-  return 2 * earthRadius * Math.asin(Math.sqrt(haversine));
+  return (
+    2 * earthRadius * Math.asin(Math.sqrt(Math.min(1, Math.max(0, haversine))))
+  );
 }
 
 export function evaluateAttendanceEligibility(

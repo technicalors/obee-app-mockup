@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import type { AttendanceLocationFormValues } from './form';
 
-import type { AttendanceLocation, Department, User } from '#/api';
+import type {
+  AttendanceLocation,
+  Organization,
+  UserTreeSelectionUser,
+} from '#/api';
 
-import { computed, h, onMounted, reactive, ref, watch } from 'vue';
+import { computed, h, onMounted, reactive, ref, useId, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { useAccess } from '@vben/access';
@@ -20,7 +24,6 @@ import {
   notification,
   Select,
   Spin,
-  Switch,
   Tabs,
   Tag,
   Tooltip,
@@ -28,24 +31,24 @@ import {
 
 import {
   attendanceLocationsResource,
-  companyUsersResource,
-  departmentOptionsResource,
+  filterOrganizationsByRoot,
+  organizationsResource,
+  userTreeResource,
 } from '#/api';
 import { $t } from '#/locales';
 import { showRequestError } from '#/shared/request-feedback';
+import UserTreeSelect from '#/shared/user-tree-select/user-tree-select.vue';
 import { useAuthStore } from '#/store';
 
 import {
   buildAttendanceLocationCreatePayload,
   buildAttendanceLocationDetail,
   buildAttendanceLocationUpdatePayload,
+  createAttendanceLocationRadiusInputSchema,
   toAttendanceLocationFormValues,
+  updateAttendanceLocationUserAssignments,
 } from './form';
 import MapboxMapPicker from './MapboxMapPicker.vue';
-
-interface EditableFormRef {
-  validate: () => Promise<void>;
-}
 
 interface Props {
   id?: string;
@@ -57,10 +60,9 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const DEFAULT_FORM_VALUES: AttendanceLocationFormValues = {
-  department_ids: [],
+  organization_ids: [],
   excluded_user_ids: [],
   ip_addresses: [],
-  is_active: true,
   latitude: '10.777',
   longitude: '106.699',
   name: '',
@@ -70,6 +72,7 @@ const DEFAULT_FORM_VALUES: AttendanceLocationFormValues = {
 };
 
 const router = useRouter();
+const formId = useId();
 const { hasAccessByCodes } = useAccess();
 const authStore = useAuthStore();
 
@@ -78,9 +81,8 @@ const optionsLoading = ref(false);
 const submitting = ref(false);
 const locating = ref(false);
 const originalEntity = ref<AttendanceLocation>();
-const departments = ref<Department[]>([]);
-const users = ref<User[]>([]);
-const formRef = ref<EditableFormRef | null>(null);
+const organizations = ref<Organization[]>([]);
+const users = ref<UserTreeSelectionUser[]>([]);
 const formState = reactive<AttendanceLocationFormValues>({
   ...DEFAULT_FORM_VALUES,
 });
@@ -98,51 +100,51 @@ const detail = computed(() =>
 
 const validationModeOptions = computed(() => [
   {
-    label: $t('page.attendanceLocations.validationMode.location'),
+    label: $t('attendanceLocations.validationMode.location'),
     value: 'location',
   },
   {
-    label: $t('page.attendanceLocations.validationMode.ip'),
+    label: $t('attendanceLocations.validationMode.ip'),
     value: 'ip',
   },
   {
-    label: $t('page.attendanceLocations.validationMode.both'),
+    label: $t('attendanceLocations.validationMode.both'),
     value: 'both',
   },
   {
-    label: $t('page.attendanceLocations.validationMode.either'),
+    label: $t('attendanceLocations.validationMode.either'),
     value: 'either',
   },
 ]);
 
-const departmentOptions = computed(() =>
-  departments.value.map((department) => ({
-    label: department.name,
-    value: String(department.id),
+const organizationOptions = computed(() =>
+  organizations.value.map((organization) => ({
+    label: organization.name,
+    value: organization.id,
   })),
 );
-const departmentSearch = ref('');
-const filteredDepartmentOptions = computed(() => {
-  const query = departmentSearch.value.trim().toLowerCase();
+const organizationSearch = ref('');
+const filteredOrganizationOptions = computed(() => {
+  const query = organizationSearch.value.trim().toLowerCase();
 
   if (query === '') {
-    return departmentOptions.value;
+    return organizationOptions.value;
   }
 
-  return departmentOptions.value.filter((department) =>
-    department.label.toLowerCase().includes(query),
+  return organizationOptions.value.filter((organization) =>
+    organization.label.toLowerCase().includes(query),
   );
 });
 
-const selectedDepartments = computed(() => {
-  return departments.value.filter((dep) =>
-    formState.department_ids.includes(String(dep.id)),
+const selectedOrganizations = computed(() => {
+  return organizations.value.filter((organization) =>
+    formState.organization_ids.includes(organization.id),
   );
 });
 
-function removeDepartment(id: number | string): void {
-  formState.department_ids = formState.department_ids.filter(
-    (depId) => depId !== String(id),
+function removeOrganization(id: string): void {
+  formState.organization_ids = formState.organization_ids.filter(
+    (organizationId) => organizationId !== id,
   );
 }
 
@@ -150,19 +152,17 @@ const activeUserSearch = ref('');
 const showIncludeSelect = ref(false);
 const showExcludeSelect = ref(false);
 
-const departmentUserIds = computed(() => {
-  const selectedDepIds = new Set(formState.department_ids);
+const organizationUserIds = computed(() => {
+  const selectedOrganizationIds = new Set(formState.organization_ids);
   return new Set(
     users.value
-      .filter((user) =>
-        user.departments.some((d) => selectedDepIds.has(String(d.id))),
-      )
+      .filter((user) => selectedOrganizationIds.has(user.organization_id))
       .map((user) => String(user.id)),
   );
 });
 
 const hasExplicitAssignments = computed(
-  () => formState.department_ids.length > 0 || formState.user_ids.length > 0,
+  () => formState.organization_ids.length > 0 || formState.user_ids.length > 0,
 );
 
 const applicableUsers = computed(() => {
@@ -172,7 +172,7 @@ const applicableUsers = computed(() => {
   return users.value.filter((user) => {
     const userId = String(user.id);
     const isApplicable = hasExplicitAssignments.value
-      ? selectedUserIds.has(userId) || departmentUserIds.value.has(userId)
+      ? selectedUserIds.has(userId) || organizationUserIds.value.has(userId)
       : true;
 
     return isApplicable && !excludedUserIds.has(userId);
@@ -194,7 +194,7 @@ const filteredApplicableUsers = computed(() => {
 
 interface CustomUserRule {
   type: 'exclude' | 'include';
-  user: User;
+  user: UserTreeSelectionUser;
 }
 
 const customUserRules = computed<CustomUserRule[]>(() => {
@@ -218,109 +218,73 @@ const customUserRules = computed<CustomUserRule[]>(() => {
   return rules.toSorted((a, b) => a.user.name.localeCompare(b.user.name));
 });
 
-const availableForInclude = computed(() => {
-  const currentIncludes = new Set(formState.user_ids);
-  return users.value.filter((user) => !currentIncludes.has(String(user.id)));
-});
-
-const availableForExclude = computed(() => {
-  const currentExcludes = new Set(formState.excluded_user_ids);
-  return users.value.filter((user) => !currentExcludes.has(String(user.id)));
-});
+const userOptionsLoadError = ref(false);
 
 function excludeUser(userId: number | string): void {
-  const userIdStr = String(userId);
-  formState.user_ids = formState.user_ids.filter(
-    (id) => String(id) !== userIdStr,
-  );
-  if (!formState.excluded_user_ids.includes(userIdStr)) {
-    formState.excluded_user_ids = [...formState.excluded_user_ids, userIdStr];
-  }
+  updateAttendanceLocationUserAssignments(formState, 'excluded_user_ids', [
+    ...formState.excluded_user_ids,
+    String(userId),
+  ]);
 }
 
 function removeManualInclude(userId: number | string): void {
-  formState.user_ids = formState.user_ids.filter(
-    (id) => String(id) !== String(userId),
+  updateAttendanceLocationUserAssignments(
+    formState,
+    'user_ids',
+    formState.user_ids.filter((id) => id !== String(userId)),
   );
 }
 
 function removeManualExclude(userId: number | string): void {
-  formState.excluded_user_ids = formState.excluded_user_ids.filter(
-    (id) => String(id) !== String(userId),
+  updateAttendanceLocationUserAssignments(
+    formState,
+    'excluded_user_ids',
+    formState.excluded_user_ids.filter((id) => id !== String(userId)),
   );
 }
 
-function handleSelectInclude(userId: unknown): void {
-  if (typeof userId !== 'number' && typeof userId !== 'string') {
-    return;
-  }
-
-  const userIdStr = String(userId);
-  formState.excluded_user_ids = formState.excluded_user_ids.filter(
-    (id) => String(id) !== userIdStr,
-  );
-  if (!formState.user_ids.includes(userIdStr)) {
-    formState.user_ids = [...formState.user_ids, userIdStr];
-  }
-  showIncludeSelect.value = false;
-}
-
-function handleSelectExclude(userId: unknown): void {
-  if (typeof userId !== 'number' && typeof userId !== 'string') {
-    return;
-  }
-
-  excludeUser(userId);
-  showExcludeSelect.value = false;
-}
-
-function filterUserOption(input: string, option: unknown): boolean {
-  if (typeof option !== 'object' || option === null || !('value' in option)) {
-    return false;
-  }
-
-  const optionValue = option.value;
-  if (typeof optionValue !== 'number' && typeof optionValue !== 'string') {
-    return false;
-  }
-
-  const user = users.value.find((u) => String(u.id) === String(optionValue));
-  if (user === undefined) {
-    return false;
-  }
-
-  const searchStr = `${user.name} ${user.username}`.toLowerCase();
-  return searchStr.includes(input.trim().toLowerCase());
+function updateUserAssignments(
+  field: 'excluded_user_ids' | 'user_ids',
+  selectedIds: string[],
+): void {
+  updateAttendanceLocationUserAssignments(formState, field, selectedIds);
 }
 
 const formRules = computed(() => ({
   latitude: [
     {
-      message: $t('page.attendanceLocations.validation.latitudeRequired'),
+      message: $t('attendanceLocations.validation.latitudeRequired'),
       required: true,
     },
   ],
   longitude: [
     {
-      message: $t('page.attendanceLocations.validation.longitudeRequired'),
+      message: $t('attendanceLocations.validation.longitudeRequired'),
       required: true,
     },
   ],
   name: [
     {
-      message: $t('page.attendanceLocations.validation.nameRequired'),
+      message: $t('attendanceLocations.validation.nameRequired'),
       required: true,
     },
   ],
   radius_meters: [
     {
-      message: $t('page.attendanceLocations.validation.radiusRequired'),
-      required: true,
+      async validator(_rule: unknown, value: string): Promise<void> {
+        const result =
+          createAttendanceLocationRadiusInputSchema().safeParse(value);
+        if (!result.success) {
+          throw new Error(
+            result.error.issues.map((issue) => issue.message).join('; '),
+          );
+        }
+      },
     },
   ],
   validation_mode: [
     {
-      message: $t('page.attendanceLocations.validation.validationModeRequired'),
+      message: $t('attendanceLocations.validation.validationModeRequired'),
       required: true,
     },
   ],
@@ -328,22 +292,24 @@ const formRules = computed(() => ({
 
 const pageTitle = computed(() => {
   if (props.mode === 'create') {
-    return $t('page.attendanceLocations.create.title');
+    return $t('attendanceLocations.create.title');
   }
 
   if (props.mode === 'edit') {
     return originalEntity.value === undefined
-      ? $t('page.attendanceLocations.edit.title')
-      : `${$t('page.attendanceLocations.edit.title')}: ${originalEntity.value.name}`;
+      ? $t('attendanceLocations.edit.title')
+      : `${$t('attendanceLocations.edit.title')}: ${originalEntity.value.name}`;
   }
 
   return originalEntity.value === undefined
-    ? $t('page.attendanceLocations.detail.title')
-    : `${$t('page.attendanceLocations.detail.title')}: ${originalEntity.value.name}`;
+    ? $t('attendanceLocations.detail.title')
+    : `${$t('attendanceLocations.detail.title')}: ${originalEntity.value.name}`;
 });
 
-const canEdit = computed(() =>
-  hasAccessByCodes(['attendance-locations.update']),
+const canEdit = computed(
+  () =>
+    originalEntity.value?.deleted_at === null &&
+    hasAccessByCodes(['attendance-locations.update']),
 );
 
 function syncMapStateFromForm(): void {
@@ -367,20 +333,39 @@ function setFormValues(values: AttendanceLocationFormValues): void {
 
 async function loadOptions(): Promise<void> {
   optionsLoading.value = true;
+  userOptionsLoadError.value = false;
   try {
-    const companyId = authStore.user?.company_id;
-    if (!companyId) {
+    const rootOrganizationId = authStore.user?.root_organization_id ?? null;
+    const [organizationResult, usersResult] = await Promise.allSettled([
+      rootOrganizationId === null
+        ? Promise.resolve<Organization[]>([])
+        : organizationsResource
+            .getAllRows()
+            .then((all) => filterOrganizationsByRoot(all, rootOrganizationId)),
+      rootOrganizationId === null
+        ? Promise.resolve<UserTreeSelectionUser[]>([])
+        : userTreeResource.getAll({
+            root_organization_id: rootOrganizationId,
+          }),
+    ]);
+
+    if (organizationResult.status === 'rejected') {
+      throw organizationResult.reason;
+    }
+
+    organizations.value = organizationResult.value;
+
+    if (usersResult.status === 'rejected') {
+      userOptionsLoadError.value = true;
+      showRequestError(
+        usersResult.reason,
+        $t('attendanceLocations.messages.unexpectedError'),
+        'Failed to load attendance location user options:',
+      );
       return;
     }
 
-    const [departmentsList, allUsers] = await Promise.all([
-      departmentOptionsResource.getAll(),
-      companyUsersResource.getAll({
-        department_company_id: companyId,
-      }),
-    ]);
-    departments.value = departmentsList;
-    users.value = allUsers;
+    users.value = usersResult.value;
   } finally {
     optionsLoading.value = false;
   }
@@ -405,7 +390,7 @@ async function loadEditableState(): Promise<void> {
   } catch (error) {
     showRequestError(
       error,
-      $t('page.attendanceLocations.messages.unexpectedError'),
+      $t('attendanceLocations.messages.unexpectedError'),
       'Failed to load attendance location details:',
     );
     goBack();
@@ -425,7 +410,7 @@ async function loadReadonlyState(): Promise<void> {
   } catch (error) {
     showRequestError(
       error,
-      $t('page.attendanceLocations.messages.unexpectedError'),
+      $t('attendanceLocations.messages.unexpectedError'),
       'Failed to load attendance location details:',
     );
     goBack();
@@ -444,7 +429,7 @@ function handleMapChange(position: { latitude: number; longitude: number }) {
 async function getCurrentLocation() {
   if (!navigator.geolocation) {
     notification.warning({
-      message: $t('page.attendanceLocations.messages.geolocationUnsupported'),
+      message: $t('attendanceLocations.messages.geolocationUnsupported'),
     });
     return;
   }
@@ -457,26 +442,24 @@ async function getCurrentLocation() {
       formState.latitude = String(position.coords.latitude);
       formState.longitude = String(position.coords.longitude);
       notification.success({
-        message: $t('page.attendanceLocations.messages.geolocationSuccess'),
+        message: $t('attendanceLocations.messages.geolocationSuccess'),
       });
       locating.value = false;
     },
     (error) => {
-      let msg = $t('page.attendanceLocations.messages.geolocationUnknown');
+      let msg = $t('attendanceLocations.messages.geolocationUnknown');
 
       switch (error.code) {
         case error.PERMISSION_DENIED: {
-          msg = $t(
-            'page.attendanceLocations.messages.geolocationPermissionDenied',
-          );
+          msg = $t('attendanceLocations.messages.geolocationPermissionDenied');
           break;
         }
         case error.POSITION_UNAVAILABLE: {
-          msg = $t('page.attendanceLocations.messages.geolocationUnavailable');
+          msg = $t('attendanceLocations.messages.geolocationUnavailable');
           break;
         }
         case error.TIMEOUT: {
-          msg = $t('page.attendanceLocations.messages.geolocationTimeout');
+          msg = $t('attendanceLocations.messages.geolocationTimeout');
           break;
         }
       }
@@ -495,14 +478,12 @@ async function submit() {
 
   submitting.value = true;
   try {
-    await formRef.value?.validate();
-
     if (props.mode === 'create') {
       await attendanceLocationsResource.create(
         buildAttendanceLocationCreatePayload(formState),
       );
       notification.success({
-        message: $t('page.attendanceLocations.messages.created'),
+        message: $t('attendanceLocations.messages.created'),
       });
     } else if (props.id) {
       await attendanceLocationsResource.update(
@@ -510,7 +491,7 @@ async function submit() {
         buildAttendanceLocationUpdatePayload(formState),
       );
       notification.success({
-        message: $t('page.attendanceLocations.messages.updated'),
+        message: $t('attendanceLocations.messages.updated'),
       });
     }
 
@@ -518,7 +499,7 @@ async function submit() {
   } catch (error) {
     showRequestError(
       error,
-      $t('page.attendanceLocations.messages.unexpectedError'),
+      $t('attendanceLocations.messages.unexpectedError'),
       'Failed to save attendance location:',
     );
   } finally {
@@ -556,7 +537,7 @@ onMounted(async () => {
     <template #extra>
       <div class="flex flex-wrap items-center gap-3">
         <Button @click="goBack">
-          {{ $t('page.attendanceLocations.actions.cancel') }}
+          {{ $t('attendanceLocations.actions.cancel') }}
         </Button>
         <Button
           v-if="mode === 'view' && canEdit"
@@ -564,16 +545,17 @@ onMounted(async () => {
           :icon="h(IconifyIcon, { icon: 'lucide:pencil', class: 'size-4' })"
           @click="navigateToEdit"
         >
-          {{ $t('page.attendanceLocations.actions.edit') }}
+          {{ $t('attendanceLocations.actions.edit') }}
         </Button>
         <Button
           v-if="mode !== 'view'"
           type="primary"
           :loading="submitting"
           :icon="h(IconifyIcon, { icon: 'lucide:save', class: 'size-4' })"
-          @click="submit"
+          :form="formId"
+          html-type="submit"
         >
-          {{ $t('page.attendanceLocations.actions.save') }}
+          {{ $t('attendanceLocations.actions.save') }}
         </Button>
       </div>
     </template>
@@ -603,7 +585,7 @@ onMounted(async () => {
                 {{ detail.name }}
               </p>
               <p class="text-sm text-muted-foreground">
-                {{ $t('page.attendanceLocations.detail.title') }}
+                {{ $t('attendanceLocations.detail.title') }}
               </p>
             </div>
             <Tag
@@ -666,18 +648,19 @@ onMounted(async () => {
 
     <Card v-else class="rounded-lg shadow-sm">
       <Form
-        ref="formRef"
+        :id="formId"
         :model="formState"
         :rules="formRules"
         class="attendance-location-form"
         layout="vertical"
+        @finish="submit"
       >
         <Tabs>
           <Tabs.TabPane key="basic">
             <template #tab>
               <span class="inline-flex items-center gap-2">
                 <IconifyIcon icon="lucide:map-pin" class="size-4" />
-                {{ $t('page.attendanceLocations.sections.basic') }}
+                {{ $t('attendanceLocations.sections.basic') }}
               </span>
             </template>
 
@@ -688,70 +671,60 @@ onMounted(async () => {
                 class="grid grid-cols-1 gap-x-5 gap-y-1 md:grid-cols-2 xl:grid-cols-1"
               >
                 <FormItem
-                  :label="$t('page.attendanceLocations.fields.name')"
+                  :label="$t('attendanceLocations.fields.name')"
                   name="name"
                 >
                   <Input
                     v-model:value="formState.name"
-                    :placeholder="
-                      $t('page.attendanceLocations.placeholders.name')
-                    "
+                    :placeholder="$t('attendanceLocations.placeholders.name')"
                   />
                 </FormItem>
                 <FormItem
-                  :label="$t('page.attendanceLocations.fields.validationMode')"
+                  :label="$t('attendanceLocations.fields.validationMode')"
                   name="validation_mode"
                 >
                   <Select
                     v-model:value="formState.validation_mode"
                     :options="validationModeOptions"
                     :placeholder="
-                      $t('page.attendanceLocations.placeholders.validationMode')
+                      $t('attendanceLocations.placeholders.validationMode')
                     "
                   />
                 </FormItem>
                 <FormItem
-                  :label="$t('page.attendanceLocations.fields.status')"
-                  name="is_active"
-                >
-                  <Switch v-model:checked="formState.is_active" />
-                </FormItem>
-                <FormItem
-                  :label="$t('page.attendanceLocations.fields.latitude')"
+                  :label="$t('attendanceLocations.fields.latitude')"
                   name="latitude"
                 >
                   <Input
                     v-model:value="formState.latitude"
                     inputmode="decimal"
                     :placeholder="
-                      $t('page.attendanceLocations.placeholders.latitude')
+                      $t('attendanceLocations.placeholders.latitude')
                     "
                     type="text"
                   />
                 </FormItem>
                 <FormItem
-                  :label="$t('page.attendanceLocations.fields.longitude')"
+                  :label="$t('attendanceLocations.fields.longitude')"
                   name="longitude"
                 >
                   <Input
                     v-model:value="formState.longitude"
                     inputmode="decimal"
                     :placeholder="
-                      $t('page.attendanceLocations.placeholders.longitude')
+                      $t('attendanceLocations.placeholders.longitude')
                     "
                     type="text"
                   />
                 </FormItem>
                 <FormItem
-                  :label="$t('page.attendanceLocations.fields.radius')"
+                  :label="$t('attendanceLocations.fields.radius')"
                   name="radius_meters"
                 >
                   <Input
                     v-model:value="formState.radius_meters"
                     inputmode="numeric"
-                    :placeholder="
-                      $t('page.attendanceLocations.placeholders.radius')
-                    "
+                    :placeholder="$t('attendanceLocations.placeholders.radius')"
                     type="text"
                   />
                 </FormItem>
@@ -763,16 +736,14 @@ onMounted(async () => {
                 >
                   <div class="space-y-1">
                     <h3 class="text-sm font-semibold text-foreground">
-                      {{ $t('page.attendanceLocations.fields.mapLocation') }}
+                      {{ $t('attendanceLocations.fields.mapLocation') }}
                     </h3>
                     <p class="text-xs text-muted-foreground">
-                      {{ $t('page.attendanceLocations.help.mapPicker') }}
+                      {{ $t('attendanceLocations.help.mapPicker') }}
                     </p>
                   </div>
                   <Tooltip
-                    :title="
-                      $t('page.attendanceLocations.actions.locateCurrent')
-                    "
+                    :title="$t('attendanceLocations.actions.locateCurrent')"
                   >
                     <Button
                       :loading="locating"
@@ -785,7 +756,7 @@ onMounted(async () => {
                       "
                       @click="getCurrentLocation"
                     >
-                      {{ $t('page.attendanceLocations.actions.locateCurrent') }}
+                      {{ $t('attendanceLocations.actions.locateCurrent') }}
                     </Button>
                   </Tooltip>
                 </div>
@@ -803,44 +774,44 @@ onMounted(async () => {
             <template #tab>
               <span class="inline-flex items-center gap-2">
                 <IconifyIcon icon="lucide:network" class="size-4" />
-                {{ $t('page.attendanceLocations.sections.ips') }}
+                {{ $t('attendanceLocations.sections.ips') }}
               </span>
             </template>
 
             <div class="pt-2">
               <FormItem
-                :label="$t('page.attendanceLocations.fields.ips')"
+                :label="$t('attendanceLocations.fields.ips')"
                 name="ip_addresses"
               >
                 <Select
                   v-model:value="formState.ip_addresses"
                   mode="tags"
-                  :placeholder="$t('page.attendanceLocations.placeholders.ips')"
+                  :placeholder="$t('attendanceLocations.placeholders.ips')"
                 />
               </FormItem>
             </div>
           </Tabs.TabPane>
 
-          <Tabs.TabPane key="departments">
+          <Tabs.TabPane key="organizations">
             <template #tab>
               <span class="inline-flex items-center gap-2">
                 <IconifyIcon icon="lucide:building-2" class="size-4" />
-                {{ $t('page.attendanceLocations.fields.departments') }}
+                {{ $t('attendanceLocations.fields.organizations') }}
               </span>
             </template>
 
             <div class="pt-2">
               <FormItem
-                :label="$t('page.attendanceLocations.fields.departments')"
-                name="department_ids"
+                :label="$t('attendanceLocations.fields.organizations')"
+                name="organization_ids"
               >
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div class="flex flex-col gap-3">
                     <Input
-                      v-model:value="departmentSearch"
+                      v-model:value="organizationSearch"
                       :placeholder="
                         $t(
-                          'page.attendanceLocations.placeholders.departmentSearch',
+                          'attendanceLocations.placeholders.organizationSearch',
                         )
                       "
                       allow-clear
@@ -849,17 +820,17 @@ onMounted(async () => {
                       class="min-h-[300px] max-h-[400px] overflow-y-auto rounded-lg border border-solid border-gray-200 bg-gray-50/50 p-4 dark:border-gray-800 dark:bg-gray-900/50"
                     >
                       <Checkbox.Group
-                        v-model:value="formState.department_ids"
+                        v-model:value="formState.organization_ids"
                         class="w-full"
                       >
                         <div class="flex flex-col gap-2">
                           <Checkbox
-                            v-for="department in filteredDepartmentOptions"
-                            :key="department.value"
-                            :value="department.value"
+                            v-for="organization in filteredOrganizationOptions"
+                            :key="organization.value"
+                            :value="organization.value"
                             class="m-0"
                           >
-                            {{ department.label }}
+                            {{ organization.label }}
                           </Checkbox>
                         </div>
                       </Checkbox.Group>
@@ -875,39 +846,37 @@ onMounted(async () => {
                       >
                         <span>{{
                           $t(
-                            'page.attendanceLocations.customAssign.selectedDepartments',
+                            'attendanceLocations.customAssign.selectedOrganizations',
                           )
                         }}</span>
                         <Tag
                           color="blue"
                           class="m-0 rounded-full px-2 py-0.5 text-xs font-medium"
                         >
-                          {{ formState.department_ids.length }}
+                          {{ formState.organization_ids.length }}
                         </Tag>
                       </div>
                       <div
-                        v-if="selectedDepartments.length === 0"
+                        v-if="selectedOrganizations.length === 0"
                         class="flex flex-1 items-center justify-center text-sm italic text-muted-foreground"
                       >
                         {{
                           $t(
-                            'page.attendanceLocations.customAssign.noDepartmentSelected',
+                            'attendanceLocations.customAssign.noOrganizationSelected',
                           )
                         }}
                       </div>
                       <div v-else class="flex flex-col gap-2">
                         <div
-                          v-for="dep in selectedDepartments"
-                          :key="dep.id"
+                          v-for="organization in selectedOrganizations"
+                          :key="organization.id"
                           class="flex items-center justify-between rounded-lg border border-solid border-gray-200 bg-card p-2.5 text-card-foreground shadow-sm transition-shadow hover:shadow-md dark:border-gray-800"
                         >
                           <span class="text-sm font-medium">{{
-                            dep.name
+                            organization.name
                           }}</span>
                           <Tooltip
-                            :title="
-                              $t('page.attendanceLocations.actions.delete')
-                            "
+                            :title="$t('attendanceLocations.actions.delete')"
                           >
                             <Button
                               type="text"
@@ -921,7 +890,7 @@ onMounted(async () => {
                                   class: 'size-4',
                                 })
                               "
-                              @click="removeDepartment(dep.id)"
+                              @click="removeOrganization(organization.id)"
                             />
                           </Tooltip>
                         </div>
@@ -937,7 +906,7 @@ onMounted(async () => {
             <template #tab>
               <span class="inline-flex items-center gap-2">
                 <IconifyIcon icon="lucide:users" class="size-4" />
-                {{ $t('page.attendanceLocations.fields.users') }}
+                {{ $t('attendanceLocations.fields.users') }}
               </span>
             </template>
 
@@ -947,9 +916,7 @@ onMounted(async () => {
                   <div class="flex items-center justify-between">
                     <h4 class="text-sm font-semibold text-foreground m-0">
                       {{
-                        $t(
-                          'page.attendanceLocations.customAssign.applicableUsers',
-                        )
+                        $t('attendanceLocations.customAssign.applicableUsers')
                       }}
                       ({{ applicableUsers.length }})
                     </h4>
@@ -957,9 +924,7 @@ onMounted(async () => {
                       v-model:value="activeUserSearch"
                       size="small"
                       :placeholder="
-                        $t(
-                          'page.attendanceLocations.customAssign.searchActiveUsers',
-                        )
+                        $t('attendanceLocations.customAssign.searchActiveUsers')
                       "
                       class="w-48"
                       allow-clear
@@ -973,11 +938,7 @@ onMounted(async () => {
                       v-if="filteredApplicableUsers.length === 0"
                       class="flex flex-1 items-center justify-center text-sm italic text-muted-foreground"
                     >
-                      {{
-                        $t(
-                          'page.attendanceLocations.customAssign.noActiveUsers',
-                        )
-                      }}
+                      {{ $t('attendanceLocations.customAssign.noActiveUsers') }}
                     </div>
                     <div
                       v-for="user in filteredApplicableUsers"
@@ -1008,9 +969,7 @@ onMounted(async () => {
                         "
                         @click="excludeUser(user.id)"
                       >
-                        {{
-                          $t('page.attendanceLocations.customAssign.excludeBtn')
-                        }}
+                        {{ $t('attendanceLocations.customAssign.excludeBtn') }}
                       </Button>
                     </div>
                   </div>
@@ -1018,9 +977,7 @@ onMounted(async () => {
 
                 <div class="flex flex-col gap-3">
                   <h4 class="text-sm font-semibold text-foreground m-0">
-                    {{
-                      $t('page.attendanceLocations.customAssign.customRules')
-                    }}
+                    {{ $t('attendanceLocations.customAssign.customRules') }}
                   </h4>
 
                   <div
@@ -1032,9 +989,7 @@ onMounted(async () => {
                         class="flex flex-1 items-center justify-center text-sm italic text-muted-foreground"
                       >
                         {{
-                          $t(
-                            'page.attendanceLocations.customAssign.noCustomRules',
-                          )
+                          $t('attendanceLocations.customAssign.noCustomRules')
                         }}
                       </div>
                       <div v-else class="flex flex-col gap-2">
@@ -1071,9 +1026,7 @@ onMounted(async () => {
                           </div>
 
                           <Tooltip
-                            :title="
-                              $t('page.attendanceLocations.actions.delete')
-                            "
+                            :title="$t('attendanceLocations.actions.delete')"
                           >
                             <Button
                               type="text"
@@ -1118,37 +1071,31 @@ onMounted(async () => {
                             "
                           >
                             {{
-                              $t(
-                                'page.attendanceLocations.customAssign.includeBtn',
-                              )
+                              $t('attendanceLocations.customAssign.includeBtn')
                             }}
                           </Button>
                         </template>
                         <template v-else>
                           <div class="col-span-2 flex gap-1 w-full">
-                            <Select
-                              show-search
+                            <UserTreeSelect
+                              :users="users"
+                              :disabled="userOptionsLoadError"
+                              :loading="optionsLoading"
+                              :load-error="userOptionsLoadError"
+                              :model-value="formState.user_ids"
                               :placeholder="
                                 $t(
-                                  'page.attendanceLocations.customAssign.includePlaceholder',
+                                  'attendanceLocations.customAssign.includePlaceholder',
                                 )
                               "
-                              :filter-option="filterUserOption"
+                              test-id="attendance-location-user-ids"
                               class="flex-1"
-                              @change="handleSelectInclude"
-                            >
-                              <Select.Option
-                                v-for="user in availableForInclude"
-                                :key="user.id"
-                                :value="user.id"
-                              >
-                                {{ user.name }} (@{{ user.username }})
-                              </Select.Option>
-                            </Select>
+                              @update:model-value="
+                                updateUserAssignments('user_ids', $event)
+                              "
+                            />
                             <Button @click="showIncludeSelect = false">
-                              {{
-                                $t('page.attendanceLocations.actions.cancel')
-                              }}
+                              {{ $t('attendanceLocations.actions.cancel') }}
                             </Button>
                           </div>
                         </template>
@@ -1170,36 +1117,35 @@ onMounted(async () => {
                           >
                             {{
                               $t(
-                                'page.attendanceLocations.customAssign.excludeBtnAction',
+                                'attendanceLocations.customAssign.excludeBtnAction',
                               )
                             }}
                           </Button>
                         </template>
                         <template v-else>
                           <div class="col-span-2 flex gap-1 w-full">
-                            <Select
-                              show-search
+                            <UserTreeSelect
+                              :users="users"
+                              :disabled="userOptionsLoadError"
+                              :loading="optionsLoading"
+                              :load-error="userOptionsLoadError"
+                              :model-value="formState.excluded_user_ids"
                               :placeholder="
                                 $t(
-                                  'page.attendanceLocations.customAssign.excludePlaceholder',
+                                  'attendanceLocations.customAssign.excludePlaceholder',
                                 )
                               "
-                              :filter-option="filterUserOption"
+                              test-id="attendance-location-excluded-user-ids"
                               class="flex-1"
-                              @change="handleSelectExclude"
-                            >
-                              <Select.Option
-                                v-for="user in availableForExclude"
-                                :key="user.id"
-                                :value="user.id"
-                              >
-                                {{ user.name }} (@{{ user.username }})
-                              </Select.Option>
-                            </Select>
+                              @update:model-value="
+                                updateUserAssignments(
+                                  'excluded_user_ids',
+                                  $event,
+                                )
+                              "
+                            />
                             <Button @click="showExcludeSelect = false">
-                              {{
-                                $t('page.attendanceLocations.actions.cancel')
-                              }}
+                              {{ $t('attendanceLocations.actions.cancel') }}
                             </Button>
                           </div>
                         </template>

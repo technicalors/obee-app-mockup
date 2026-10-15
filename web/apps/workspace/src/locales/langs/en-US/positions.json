@@ -1,0 +1,51 @@
+{
+  "routeTitle": "Positions",
+  "listTitle": "Position list",
+  "listDescription": "Manage the position catalog used by employee profiles.",
+  "columns": {
+    "name": "Position name",
+    "description": "Description",
+    "actions": "Actions"
+  },
+  "filters": {
+    "search": "Search",
+    "searchPlaceholder": "Position name..."
+  },
+  "fields": {
+    "name": "Position name",
+    "description": "Description"
+  },
+  "actions": {
+    "create": "Create position",
+    "view": "View details",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "values": {
+    "notProvided": "Not provided"
+  },
+  "create": {
+    "title": "Create position"
+  },
+  "edit": {
+    "title": "Edit position"
+  },
+  "detail": {
+    "title": "Position details"
+  },
+  "delete": {
+    "title": "Delete position",
+    "description": "Are you sure you want to delete position {name}? This action cannot be undone."
+  },
+  "validation": {
+    "nameRequired": "Enter the position name"
+  },
+  "messages": {
+    "created": "Position created",
+    "updated": "Position updated",
+    "deleted": "Position deleted",
+    "unexpectedError": "An unexpected error occurred"
+  }
+}

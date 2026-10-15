@@ -4,9 +4,11 @@ import type {
 } from '#/api';
 import type { ResourcePaginationQuery } from '#/api/resource';
 
+export type AttendanceLocationStatusFilter = 'active' | 'all' | 'deleted';
+
 export interface AttendanceLocationTableFilters {
-  is_active?: boolean;
   search?: string;
+  status?: AttendanceLocationStatusFilter;
   validation_mode?: AttendanceValidationMode;
 }
 
@@ -22,8 +24,12 @@ export function createAttendanceLocationIndexQuery(
     query.search = filters.search;
   }
 
-  if (filters.is_active !== undefined) {
-    query.is_active = filters.is_active;
+  if (filters.status === 'all') {
+    query.trashed = 'with';
+  }
+
+  if (filters.status === 'deleted') {
+    query.trashed = 'only';
   }
 
   if (filters.validation_mode !== undefined) {

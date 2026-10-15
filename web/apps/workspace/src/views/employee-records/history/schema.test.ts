@@ -12,7 +12,7 @@ describe('createEmployeeHistoryTableFilterSchema', () => {
     expect(filterSchema[0]).toMatchObject({
       component: 'Input',
       fieldName: 'search',
-      label: 'page.employeeHistory.filters.search',
+      label: 'employeeHistory.filters.search',
     });
   });
 });
@@ -28,15 +28,15 @@ describe('createEmployeeHistoryTableColumns', () => {
     }
 
     expect(columns.map((column) => column.title)).toEqual([
-      'page.employeeHistory.columns.sequence',
-      'page.employeeHistory.columns.employeeCode',
-      'page.employeeHistory.columns.fullName',
-      'page.employeeHistory.columns.gender',
-      'page.employeeHistory.columns.department',
-      'page.employeeHistory.columns.position',
-      'page.employeeHistory.columns.joinedAt',
-      'page.employeeHistory.columns.startingDate',
-      'page.employeeHistory.columns.actions',
+      'employeeHistory.columns.sequence',
+      'employeeHistory.columns.employeeCode',
+      'employeeHistory.columns.fullName',
+      'employeeHistory.columns.gender',
+      'employeeHistory.columns.organization',
+      'employeeHistory.columns.position',
+      'employeeHistory.columns.joinedAt',
+      'employeeHistory.columns.startingDate',
+      'employeeHistory.columns.actions',
     ]);
   });
 
@@ -51,7 +51,7 @@ describe('createEmployeeHistoryTableColumns', () => {
 
     const codeCol = columns[1];
     const genderCol = columns[3];
-    const deptCol = columns[4];
+    const organizationCol = columns[4];
     const posCol = columns[5];
     const joinedCol = columns[6];
     const startingCol = columns[7];
@@ -59,7 +59,7 @@ describe('createEmployeeHistoryTableColumns', () => {
     if (
       typeof codeCol?.formatter !== 'function' ||
       typeof genderCol?.formatter !== 'function' ||
-      typeof deptCol?.formatter !== 'function' ||
+      typeof organizationCol?.formatter !== 'function' ||
       typeof posCol?.formatter !== 'function' ||
       typeof joinedCol?.formatter !== 'function' ||
       typeof startingCol?.formatter !== 'function'
@@ -69,10 +69,7 @@ describe('createEmployeeHistoryTableColumns', () => {
 
     // When values are present
     const rowWithData = {
-      departments: [
-        { id: 'd1', name: 'Kỹ thuật' },
-        { id: 'd2', name: 'R&D' },
-      ],
+      organization: { id: 'org-1', name: 'Kỹ thuật' },
       name: 'Nguyen Van A',
       profile: {
         code: 'NV001',
@@ -85,10 +82,10 @@ describe('createEmployeeHistoryTableColumns', () => {
 
     expect(codeCol.formatter({ row: rowWithData } as never)).toBe('NV001');
     expect(genderCol.formatter({ row: rowWithData } as never)).toBe(
-      'page.users.gender.male',
+      'users.gender.male',
     );
-    expect(deptCol.formatter({ row: rowWithData } as never)).toBe(
-      'Kỹ thuật, R&D',
+    expect(organizationCol.formatter({ row: rowWithData } as never)).toBe(
+      'Kỹ thuật',
     );
     expect(posCol.formatter({ row: rowWithData } as never)).toBe(
       'Lập trình viên',
@@ -108,11 +105,11 @@ describe('createEmployeeHistoryTableColumns', () => {
           profile: { ...rowWithData.profile, sex: 'female' },
         },
       } as never),
-    ).toBe('page.users.gender.female');
+    ).toBe('users.gender.female');
 
     // When values are null or empty
     const rowEmpty = {
-      departments: [],
+      organization: null,
       name: 'Nguyen Van B',
       profile: null,
     };
@@ -123,7 +120,7 @@ describe('createEmployeeHistoryTableColumns', () => {
     expect(genderCol.formatter({ row: rowEmpty } as never)).toBe(
       'common.notProvided',
     );
-    expect(deptCol.formatter({ row: rowEmpty } as never)).toBe(
+    expect(organizationCol.formatter({ row: rowEmpty } as never)).toBe(
       'common.notProvided',
     );
     expect(posCol.formatter({ row: rowEmpty } as never)).toBe(
@@ -152,15 +149,15 @@ describe('createEmployeeHistoryTableColumns', () => {
 
     expect(cellRender?.options?.[0]).toMatchObject({
       code: 'detail',
-      label: 'page.employeeHistory.actions.detail',
+      label: 'employeeHistory.actions.detail',
     });
     expect(cellRender?.options?.[1]).toMatchObject({
       code: 'edit',
-      label: 'page.users.actions.edit',
+      label: 'users.actions.edit',
     });
     expect(cellRender?.options?.[2]).toMatchObject({
       code: 'delete',
-      label: 'page.users.actions.delete',
+      label: 'users.actions.delete',
     });
 
     const mockRow = { id: 'user-1' };

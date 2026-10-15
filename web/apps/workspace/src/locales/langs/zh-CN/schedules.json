@@ -1,0 +1,211 @@
+{
+  "routeTitle": "日程",
+  "title": "日程",
+  "description": "在现有 Obee 界面中浏览新的日程工作区。",
+  "currentMonth": "当前月份",
+  "loading": "正在加载月度数据",
+  "loadedCount": "已加载 {count} 条日程",
+  "empty": "没有符合此筛选条件的日程。",
+  "calendar": {
+    "showMore": "还有 {count} 个",
+    "showLess": "收起"
+  },
+  "messages": {
+    "createSuccess": "日程已创建",
+    "deleteSuccess": "日程已删除",
+    "eventUnavailable": "该日程已不存在或您无权查看",
+    "joinSuccess": "已加入日程",
+    "leaveSuccess": "已退出日程",
+    "updateSuccess": "日程已更新",
+    "unexpectedError": "发生意外错误"
+  },
+  "delete": {
+    "title": "删除日程",
+    "description": "确定要删除此日程吗？此操作无法撤销。",
+    "confirm": "删除日程",
+    "cancel": "取消"
+  },
+  "form": {
+    "editTitle": "编辑日程",
+    "reuseTitle": "复用日程",
+    "createTitle": "创建日程",
+    "createDescription": "根据所选日期上下文创建日程。",
+    "cancel": "取消",
+    "create": "创建",
+    "save": "保存",
+    "sections": {
+      "event": "事件信息",
+      "schedule": "时间安排",
+      "people": "参与人员和可见性",
+      "details": "地点和备注",
+      "reminders": "提醒"
+    },
+    "placeholders": {
+      "title": "请输入日程标题",
+      "eventType": "请选择事件类型",
+      "scheduleType": "请选择日程类型",
+      "repeatType": "请选择重复频率",
+      "startDate": "请选择开始日期",
+      "endDate": "请选择结束日期",
+      "startTime": "请选择开始时间",
+      "endTime": "请选择结束时间",
+      "participants": "请选择参与者",
+      "observers": "请选择关注者",
+      "privacy": "请选择隐私设置",
+      "location": "请输入地点",
+      "note": "请输入备注",
+      "reminderValue": "请输入提醒数值",
+      "reminderRange": "请选择提醒单位"
+    },
+    "title": "标题",
+    "eventType": "事件类型",
+    "scheduleType": "日程类型",
+    "startDate": "开始日期",
+    "endDate": "结束日期",
+    "startTime": "开始时间",
+    "endTime": "结束时间",
+    "participants": "参与者",
+    "observers": "关注者",
+    "privacy": "隐私",
+    "isGeneral": "公司日程",
+    "hasReminder": "启用提醒",
+    "reminderRange": "提醒单位",
+    "reminderValue": "提醒数值",
+    "repeatTitle": "重复设置",
+    "repeat": {
+      "type": "重复类型",
+      "startTime": "重复开始时间",
+      "endTime": "重复结束时间",
+      "timeRange": "重复时间段",
+      "dayPattern": "重复星期",
+      "monthPattern": "重复日期",
+      "selectAll": "全选"
+    },
+    "note": "备注",
+    "location": "物理地址",
+    "userOptionsLoading": "正在加载员工",
+    "modes": {
+      "create": "创建模式",
+      "edit": "编辑模式",
+      "reuse": "复用模式"
+    },
+    "validation": {
+      "companyNameInvalid": "公司名称不能为空。",
+      "companyNameTooLong": "公司名称不能超过255个字符。",
+      "companyPhoneNumberInvalid": "电话号码不能为空。",
+      "companyPhoneNumberTooLong": "电话号码不能超过32个字符。",
+      "dateInvalid": "请输入有效的日期和时间。",
+      "endBeforeStart": "结束日期时间必须不早于开始时间。",
+      "observersDuplicate": "不能重复选择同一位关注者。",
+      "noteTooLong": "备注不能超过65,535个字符。",
+      "physicalAddressInvalid": "地址不能为空。",
+      "physicalAddressTooLong": "地址不能超过255个字符。",
+      "participantsDuplicate": "不能重复选择同一位参与者。",
+      "participantsRequired": "至少选择一位参与者。",
+      "reminderFieldsUnexpected": "关闭提醒时请清空提醒范围和值。",
+      "reminderRangeRequired": "请选择提醒范围。",
+      "reminderValueInvalid": "提醒值必须是1到100之间的整数。",
+      "reminderValueRequired": "请输入1到100之间的提醒值。",
+      "repeatEndBeforeStart": "重复结束时间必须不早于开始时间。",
+      "repeatEndTimeRequired": "请选择重复结束时间。",
+      "repeatFieldsUnexpected": "非重复日程请清空重复设置。",
+      "repeatPatternInvalid": "至少选择一个有效的重复日期。",
+      "repeatPatternUnexpected": "每日重复日程不能设置重复日期。",
+      "repeatStartTimeRequired": "请选择重复开始时间。",
+      "repeatTypeRequired": "请选择重复类型。",
+      "timeInvalid": "请输入有效的时间。",
+      "titleRequired": "请输入标题。",
+      "titleTooLong": "标题不能超过255个字符。",
+      "userIdInvalid": "所选用户ID无效，请刷新员工列表。"
+    },
+    "typeOptions": {
+      "training": "培训",
+      "seminar": "研讨会",
+      "interview": "面试",
+      "meetup": "聚会",
+      "meeting": "会议",
+      "holiday": "假期",
+      "business_trip": "出差"
+    },
+    "scheduleTypeOptions": {
+      "ordinary": "普通",
+      "multiple_days": "多日",
+      "repeat": "重复"
+    },
+    "repeatOptions": {
+      "daily": "每天",
+      "weekly": "每周",
+      "monthly": "每月"
+    },
+    "privacyOptions": {
+      "public": "公开",
+      "private": "私密"
+    },
+    "reminderRangeOptions": {
+      "minute": "分钟",
+      "hour": "小时",
+      "day": "天"
+    },
+    "rootOrganizationRequiredTitle": "需要根组织",
+    "rootOrganizationRequiredDescription": "账号必须属于根组织才能创建日程。"
+  },
+  "detail": {
+    "title": "日程详情",
+    "actions": {
+      "edit": "编辑",
+      "delete": "删除",
+      "reuse": "复用",
+      "join": "加入",
+      "leave": "退出"
+    },
+    "reuse": {
+      "mode": "复用草稿",
+      "description": "在 Epic 3 表单编辑功能上线前，请先查看复用的事件草稿。"
+    },
+    "type": "类型",
+    "time": "时间",
+    "participants": "参与者",
+    "observers": "关注者",
+    "showMoreUsers": "+{count} 位用户查看更多",
+    "collapseUsers": "收起",
+    "reminder": "提醒",
+    "reminderOff": "未启用提醒",
+    "reminderOn": "提前 {value} {range} 提醒",
+    "reminderRange": {
+      "minute": "分钟",
+      "hour": "小时",
+      "day": "天"
+    },
+    "location": "地点",
+    "note": "备注",
+    "isGeneral": "公司日程",
+    "multiDay": "多日日程",
+    "repeat": {
+      "daily": "每天重复",
+      "weekly": "每周重复",
+      "monthly": "每月重复"
+    },
+    "typeLabels": {
+      "training": "培训",
+      "seminar": "研讨会",
+      "interview": "面试",
+      "meetup": "聚会",
+      "meeting": "会议",
+      "holiday": "假期",
+      "business_trip": "出差"
+    }
+  },
+  "actions": {
+    "all": "全部日程",
+    "create": "创建",
+    "created": "已创建",
+    "previousMonth": "上个月",
+    "nextMonth": "下个月",
+    "today": "今天",
+    "selectMonth": "选择月份",
+    "selectCalendars": "员工日程",
+    "selectVisibility": "可见性",
+    "participated": "已参与",
+    "observed": "已关注"
+  }
+}

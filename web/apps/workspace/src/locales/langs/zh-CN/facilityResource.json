@@ -1,0 +1,67 @@
+{
+  "routeTitle": "设施",
+  "listTitle": "设施列表",
+  "listDescription": "管理设施目录中的房间和设备。",
+  "columns": {
+    "sequence": "序号",
+    "code": "设施编码",
+    "name": "设施名称",
+    "type": "类型",
+    "quantity": "数量",
+    "note": "备注",
+    "createdAt": "创建时间",
+    "updatedAt": "更新时间",
+    "actions": "操作"
+  },
+  "filters": {
+    "search": "搜索",
+    "searchPlaceholder": "搜索设施...",
+    "type": "类型"
+  },
+  "fields": {
+    "code": "设施编码",
+    "name": "设施名称",
+    "type": "类型",
+    "quantity": "数量",
+    "note": "备注",
+    "createdAt": "创建时间",
+    "updatedAt": "更新时间"
+  },
+  "types": {
+    "room": "房间",
+    "equipment": "设备"
+  },
+  "actions": {
+    "create": "添加设施",
+    "view": "查看详情",
+    "edit": "编辑",
+    "delete": "删除",
+    "save": "保存",
+    "cancel": "取消"
+  },
+  "create": {
+    "title": "添加设施"
+  },
+  "edit": {
+    "title": "编辑设施"
+  },
+  "detail": {
+    "title": "设施详情"
+  },
+  "delete": {
+    "title": "删除设施",
+    "description": "确定要删除 {name} 吗？此操作无法撤销。"
+  },
+  "validation": {
+    "codeRequired": "请输入设施编码",
+    "nameRequired": "请输入设施名称",
+    "quantityPositive": "数量必须为正整数",
+    "quantityMax": "数量不能超过 2,147,483,647"
+  },
+  "messages": {
+    "created": "设施已添加",
+    "updated": "设施已更新",
+    "deleted": "设施已删除",
+    "unexpectedError": "发生未知错误"
+  }
+}

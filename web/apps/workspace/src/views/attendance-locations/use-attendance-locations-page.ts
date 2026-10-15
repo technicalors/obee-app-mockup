@@ -13,6 +13,7 @@ import { notification } from 'ant-design-vue';
 
 import { attendanceLocationsResource } from '#/api';
 import { $t } from '#/locales';
+import { showRequestError } from '#/shared/request-feedback';
 import { useResourceTable } from '#/shared/resource-table';
 import { useAuthStore } from '#/store';
 
@@ -34,7 +35,7 @@ export function useAttendanceLocationsPage() {
   >({
     buildQuery: createAttendanceLocationIndexQuery,
     enabled: () => authStore.hasSession,
-    errorMessage: $t('page.attendanceLocations.messages.unexpectedError'),
+    errorMessage: $t('attendanceLocations.messages.unexpectedError'),
     formOptions: {
       schema: createAttendanceLocationTableFilterSchema(),
       showCollapseButton: false,
@@ -51,7 +52,7 @@ export function useAttendanceLocationsPage() {
       },
     },
     resource: attendanceLocationsResource,
-    tableTitle: $t('page.attendanceLocations.listTitle'),
+    tableTitle: $t('attendanceLocations.listTitle'),
   });
 
   const canCreateAttendanceLocations = computed(() =>
@@ -87,19 +88,40 @@ export function useAttendanceLocationsPage() {
       return;
     }
 
+    if (action === 'restore') {
+      void restore(location);
+      return;
+    }
+
     void confirmDelete(location);
+  }
+
+  async function restore(location: AttendanceLocation): Promise<void> {
+    try {
+      await attendanceLocationsResource.restore(location.id);
+      notification.success({
+        message: $t('attendanceLocations.messages.restored'),
+      });
+      await table.reload();
+    } catch (error) {
+      showRequestError(
+        error,
+        $t('attendanceLocations.messages.unexpectedError'),
+        'Failed to restore attendance location:',
+      );
+    }
   }
 
   async function confirmDelete(location: AttendanceLocation): Promise<void> {
     try {
       await confirm({
-        cancelText: $t('page.attendanceLocations.actions.cancel'),
-        confirmText: $t('page.attendanceLocations.actions.delete'),
-        content: $t('page.attendanceLocations.delete.description', {
+        cancelText: $t('attendanceLocations.actions.cancel'),
+        confirmText: $t('attendanceLocations.actions.delete'),
+        content: $t('attendanceLocations.delete.description', {
           name: location.name,
         }),
         icon: 'warning',
-        title: $t('page.attendanceLocations.delete.title'),
+        title: $t('attendanceLocations.delete.title'),
       });
     } catch {
       return;
@@ -107,7 +129,7 @@ export function useAttendanceLocationsPage() {
 
     if (await table.remove(location.id)) {
       notification.success({
-        message: $t('page.attendanceLocations.messages.deleted'),
+        message: $t('attendanceLocations.messages.deleted'),
       });
     }
   }

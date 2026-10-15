@@ -9,15 +9,24 @@ import { isCustomerUser, SESSION_MARKER, toUserInfo } from './user-adapter';
 function makeUser(overrides: Partial<AuthUser> = {}): AuthUser {
   return {
     avatar: null,
-    company: null,
-    company_id: null,
+    organization: null,
+    organization_id: null,
+    root_organization_id: null,
     created_at: '2026-06-11T00:00:00.000000Z',
     email: 'admin@example.com',
     email_verified_at: null,
     id: 'user-1',
-    is_active: true,
+    deleted_at: null,
     name: 'Admin User',
-    permissions: ['users.viewAny'],
+    permissions: [
+      {
+        id: 'permission-1',
+        name: 'users.viewAny',
+        description: null,
+        created_at: null,
+        updated_at: null,
+      },
+    ],
     profile: null,
     supabase_id: null,
     roles: [
@@ -29,7 +38,6 @@ function makeUser(overrides: Partial<AuthUser> = {}): AuthUser {
         updated_at: '2026-06-11T00:00:00.000000Z',
       },
     ],
-    departments: [],
     updated_at: '2026-06-11T00:00:00.000000Z',
     username: 'admin',
     ...overrides,
@@ -41,16 +49,24 @@ describe('auth user adapter', () => {
     expect(
       authUserSchema.parse({
         avatar: null,
-        company: null,
-        company_id: null,
+        organization: null,
+        organization_id: null,
+        root_organization_id: null,
         created_at: '2026-06-11T00:00:00.000000Z',
-        departments: [],
         email: 'admin@example.com',
         email_verified_at: null,
         id: 'user-1',
-        is_active: true,
+        deleted_at: null,
         name: 'Admin User',
-        permissions: ['users.viewAny'],
+        permissions: [
+          {
+            id: 'permission-1',
+            name: 'users.viewAny',
+            description: null,
+            created_at: null,
+            updated_at: null,
+          },
+        ],
         profile: null,
         roles: [],
         supabase_id: null,
@@ -59,7 +75,15 @@ describe('auth user adapter', () => {
       }),
     ).toMatchObject({
       email: 'admin@example.com',
-      permissions: ['users.viewAny'],
+      permissions: [
+        {
+          id: 'permission-1',
+          name: 'users.viewAny',
+          description: null,
+          created_at: null,
+          updated_at: null,
+        },
+      ],
     });
   });
 
@@ -67,16 +91,24 @@ describe('auth user adapter', () => {
     expect(
       authUserSchema.parse({
         avatar: null,
-        company: null,
-        company_id: null,
+        organization: null,
+        organization_id: null,
+        root_organization_id: null,
         created_at: '2026-06-11T00:00:00.000000Z',
-        departments: [],
         email: 'admin@example.com',
         email_verified_at: null,
         id: 'user-1',
-        is_active: true,
+        deleted_at: null,
         name: 'Admin User',
-        permissions: ['users.viewAny'],
+        permissions: [
+          {
+            id: 'permission-1',
+            name: 'users.viewAny',
+            description: null,
+            created_at: null,
+            updated_at: null,
+          },
+        ],
         profile: null,
         roles: [],
         supabase_id: null,
@@ -84,9 +116,23 @@ describe('auth user adapter', () => {
         username: 'admin',
       }),
     ).toMatchObject({
-      company: null,
-      departments: [],
+      organization: null,
+      root_organization_id: null,
     });
+  });
+
+  it('rejects permission names and incomplete permission models at the API boundary', () => {
+    const user = makeUser();
+    expect(
+      authUserSchema.safeParse({ ...user, permissions: ['users.viewAny'] })
+        .success,
+    ).toBe(false);
+    expect(
+      authUserSchema.safeParse({
+        ...user,
+        permissions: [{ name: 'users.viewAny' }],
+      }).success,
+    ).toBe(false);
   });
 
   it('maps raw user roles and access fields to user info', () => {

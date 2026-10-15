@@ -1,0 +1,51 @@
+{
+  "routeTitle": "Chức vụ",
+  "listTitle": "Danh sách chức vụ",
+  "listDescription": "Quản lý danh mục chức vụ dùng cho hồ sơ nhân sự.",
+  "columns": {
+    "name": "Tên chức vụ",
+    "description": "Mô tả",
+    "actions": "Thao tác"
+  },
+  "filters": {
+    "search": "Tìm kiếm",
+    "searchPlaceholder": "Tên chức vụ..."
+  },
+  "fields": {
+    "name": "Tên chức vụ",
+    "description": "Mô tả"
+  },
+  "actions": {
+    "create": "Tạo chức vụ",
+    "view": "Xem chi tiết",
+    "edit": "Chỉnh sửa",
+    "delete": "Xóa",
+    "save": "Lưu",
+    "cancel": "Hủy"
+  },
+  "values": {
+    "notProvided": "Chưa cung cấp"
+  },
+  "create": {
+    "title": "Tạo chức vụ"
+  },
+  "edit": {
+    "title": "Chỉnh sửa chức vụ"
+  },
+  "detail": {
+    "title": "Chi tiết chức vụ"
+  },
+  "delete": {
+    "title": "Xóa chức vụ",
+    "description": "Bạn có chắc muốn xóa chức vụ {name}? Hành động này không thể hoàn tác."
+  },
+  "validation": {
+    "nameRequired": "Vui lòng nhập tên chức vụ"
+  },
+  "messages": {
+    "created": "Đã tạo chức vụ",
+    "updated": "Đã cập nhật chức vụ",
+    "deleted": "Đã xóa chức vụ",
+    "unexpectedError": "Đã xảy ra lỗi không xác định"
+  }
+}

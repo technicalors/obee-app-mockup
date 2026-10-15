@@ -13,10 +13,10 @@ const { Grid, UserDetailModal } = useEmployeeHistoryList();
       <template #table-title>
         <div class="flex min-w-0 flex-col gap-1">
           <h2 class="m-0 text-base font-semibold leading-6 text-foreground">
-            {{ $t('page.employeeHistory.listTitle') }}
+            {{ $t('employeeHistory.listTitle') }}
           </h2>
           <p class="m-0 text-xs text-muted-foreground">
-            {{ $t('page.employeeHistory.listDescription') }}
+            {{ $t('employeeHistory.listDescription') }}
           </p>
         </div>
       </template>

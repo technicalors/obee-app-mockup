@@ -11,6 +11,7 @@ import {
   createAttendanceLocationPayloadSchema,
   updateAttendanceLocationPayloadSchema,
 } from '#/api/contracts';
+import { requestClient } from '#/api/request';
 import { createResourceApi } from '#/api/resource';
 
 const baseAttendanceLocationsResource = createResourceApi<
@@ -38,6 +39,9 @@ export const attendanceLocationsResource = {
     baseAttendanceLocationsResource.getAll(params),
   getById: (id: number | string): Promise<AttendanceLocation> =>
     baseAttendanceLocationsResource.getById(id),
+  restore: async (id: number | string): Promise<void> => {
+    await requestClient.post(`/attendance-locations/${id}/restore`);
+  },
   update: (
     id: number | string,
     payload: UpdateAttendanceLocationPayload,

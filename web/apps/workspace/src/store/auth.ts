@@ -53,8 +53,8 @@ export const useAuthStore = defineStore(
         if (isCustomerUser(userInfo)) {
           await logout(false);
           notification.error({
-            description: $t('page.auth.customerLoginBlockedDescription'),
-            message: $t('page.auth.customerLoginBlocked'),
+            description: $t('auth.customerLoginBlockedDescription'),
+            message: $t('auth.customerLoginBlocked'),
           });
           return { userInfo: null };
         }
@@ -117,7 +117,9 @@ export const useAuthStore = defineStore(
       user.value = authenticatedUser;
       accessStore.setAccessToken(SESSION_MARKER);
       userStore.setUserInfo(toUserInfo(authenticatedUser));
-      accessStore.setAccessCodes([...authenticatedUser.permissions]);
+      accessStore.setAccessCodes(
+        authenticatedUser.permissions.map((permission) => permission.name),
+      );
     }
 
     function clearSession() {

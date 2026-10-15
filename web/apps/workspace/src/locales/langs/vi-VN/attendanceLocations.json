@@ -1,0 +1,150 @@
+{
+  "routeTitle": "Địa điểm chấm công",
+  "title": "Địa điểm chấm công",
+  "description": "Quản lý địa điểm chấm công, bán kính, tọa độ, IP và chế độ xác thực.",
+  "listTitle": "Danh sách địa điểm chấm công",
+  "listDescription": "Xem và cấu hình bán kính định vị, quy tắc IP và tiêu chí xác thực.",
+  "columns": {
+    "name": "Tên địa điểm",
+    "coordinates": "Tọa độ (Vĩ độ/Kinh độ)",
+    "radius": "Bán kính",
+    "validationMode": "Chế độ xác thực",
+    "status": "Trạng thái",
+    "createdAt": "Ngày tạo",
+    "actions": "Thao tác"
+  },
+  "filters": {
+    "search": "Tìm kiếm",
+    "searchPlaceholder": "Tên địa điểm...",
+    "validationMode": "Chế độ xác thực",
+    "status": "Trạng thái"
+  },
+  "fields": {
+    "name": "Tên địa điểm",
+    "latitude": "Vĩ độ",
+    "longitude": "Kinh độ",
+    "radius": "Bán kính (mét)",
+    "validationMode": "Chế độ xác thực",
+    "status": "Trạng thái",
+    "ips": "IP được phép",
+    "users": "Nhân viên áp dụng",
+    "excludedUsers": "Nhân viên ngoại lệ",
+    "mapLocation": "Vị trí trên bản đồ",
+    "createdAt": "Ngày tạo",
+    "updatedAt": "Ngày cập nhật",
+    "organizations": "Tổ chức được áp dụng"
+  },
+  "placeholders": {
+    "name": "Vui lòng nhập",
+    "validationMode": "Vui lòng chọn",
+    "latitude": "e.g. 10.762622",
+    "longitude": "e.g. 106.660172",
+    "radius": "e.g. 100",
+    "ips": "Nhập địa chỉ IP",
+    "mapSearch": "Tìm địa điểm...",
+    "users": "Chọn nhân viên áp dụng",
+    "excludedUsers": "Chọn nhân viên ngoại lệ",
+    "organizationSearch": "Tìm tổ chức",
+    "organizations": "Chọn tổ chức được áp dụng"
+  },
+  "sections": {
+    "basic": "Thông tin cơ bản",
+    "location": "Tọa độ GPS",
+    "ips": "Quy tắc địa chỉ IP",
+    "assignments": "Phân công & Ngoại lệ",
+    "information": "Thông tin hệ thống"
+  },
+  "tabs": {
+    "basic": "Thông tin cơ bản",
+    "ips": "Danh sách IP",
+    "users": "Danh sách nhân viên",
+    "organizations": "Danh sách tổ chức"
+  },
+  "help": {
+    "largeRadiusMap": "Bán kính lớn hơn 10 km: bản đồ chỉ hiển thị ghim địa điểm, không hiển thị vùng phủ.",
+    "mapPicker": "Nhấn hoặc kéo thả ghim trên bản đồ để chọn tọa độ.",
+    "ips": "Nhân viên chỉ có thể chấm công từ các IP này khi bật xác thực IP.",
+    "ipInput": "Thêm từng địa chỉ IP hoặc dải IP dưới dạng tag.",
+    "users": "Những nhân viên này được áp dụng địa điểm chấm công dù không thuộc tổ chức được chọn.",
+    "excludedUsers": "Những nhân viên này không thể chấm công tại đây dù thuộc tổ chức được áp dụng.",
+    "organizations": "Chọn các tổ chức được sử dụng địa điểm chấm công này. Để trống để áp dụng cho tất cả tổ chức."
+  },
+  "actions": {
+    "create": "Tạo địa điểm",
+    "view": "Xem chi tiết",
+    "edit": "Chỉnh sửa",
+    "delete": "Xóa",
+    "locateCurrent": "Lấy vị trí hiện tại",
+    "switchToSatellite": "Chuyển sang vệ tinh",
+    "switchToStandard": "Chuyển sang bản đồ tiêu chuẩn",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "restore": "Khôi phục"
+  },
+  "validationMode": {
+    "location": "Chỉ GPS",
+    "ip": "Chỉ IP",
+    "both": "GPS và IP",
+    "either": "GPS hoặc IP"
+  },
+  "values": {
+    "anyIp": "Mọi IP",
+    "allUsers": "Tất cả nhân viên",
+    "allOrganizations": "Tất cả tổ chức"
+  },
+  "status": {
+    "active": "Hoạt động",
+    "deleted": "Đã xóa",
+    "all": "Tất cả"
+  },
+  "create": {
+    "title": "Tạo địa điểm chấm công"
+  },
+  "edit": {
+    "title": "Chỉnh sửa địa điểm chấm công"
+  },
+  "detail": {
+    "title": "Chi tiết địa điểm chấm công"
+  },
+  "delete": {
+    "title": "Xóa địa điểm chấm công",
+    "description": "Bạn có chắc chắn muốn xóa địa điểm {name}? Nhân viên sẽ không thể chấm công tại đây, địa điểm có thể được khôi phục."
+  },
+  "validation": {
+    "radiusRange": "Bán kính phải là số nguyên từ 1 đến {max} mét.",
+    "nameRequired": "Vui lòng nhập tên địa điểm",
+    "latitudeRequired": "Vui lòng nhập vĩ độ hợp lệ (-90 đến 90)",
+    "longitudeRequired": "Vui lòng nhập kinh độ hợp lệ (-180 đến 180)",
+    "radiusRequired": "Vui lòng nhập bán kính hợp lệ",
+    "validationModeRequired": "Vui lòng chọn chế độ xác thực"
+  },
+  "messages": {
+    "created": "Đã tạo địa điểm chấm công",
+    "updated": "Đã cập nhật địa điểm chấm công",
+    "deleted": "Đã xóa địa điểm chấm công",
+    "mapboxKeyMissing": "Chưa cấu hình khóa truy cập Mapbox.",
+    "mapboxUnavailable": "WebGL không khả dụng hoặc Mapbox không thể tải.",
+    "geolocationPermissionDenied": "Quyền truy cập vị trí bị từ chối.",
+    "geolocationSuccess": "Lấy vị trí hiện tại thành công.",
+    "geolocationTimeout": "Thời gian lấy vị trí quá hạn.",
+    "geolocationUnknown": "Lỗi không xác định khi lấy vị trí.",
+    "geolocationUnavailable": "Thông tin vị trí không khả dụng.",
+    "geolocationUnsupported": "Trình duyệt không hỗ trợ lấy tọa độ vị trí GPS.",
+    "unexpectedError": "Đã xảy ra lỗi không xác định",
+    "restored": "Đã khôi phục địa điểm chấm công"
+  },
+  "customAssign": {
+    "applicableUsers": "Nhân viên áp dụng",
+    "searchActiveUsers": "Tìm kiếm nhân viên áp dụng...",
+    "noActiveUsers": "Không tìm thấy nhân viên nào",
+    "excludeBtn": "Loại trừ",
+    "customRules": "Danh sách tuỳ chỉnh (Bao gồm / Loại trừ)",
+    "noCustomRules": "Chưa có tuỳ chỉnh nào",
+    "includeBtn": "Bao gồm nhân viên",
+    "excludeBtnAction": "Loại trừ nhân viên",
+    "includePlaceholder": "Chọn nhân viên để bao gồm...",
+    "excludePlaceholder": "Chọn nhân viên để loại trừ...",
+    "selectedOrganizations": "Tổ chức đã chọn",
+    "noOrganizationSelected": "Chưa chọn tổ chức nào"
+  }
+}

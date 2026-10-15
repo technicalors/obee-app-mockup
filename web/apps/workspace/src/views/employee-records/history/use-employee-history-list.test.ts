@@ -140,7 +140,7 @@ describe('useEmployeeHistoryList', () => {
     expect(modalMock.setData).toHaveBeenCalledWith(
       expect.objectContaining({
         mode: 'edit',
-        user: mockUser,
+        userId: mockUser.id,
       }),
     );
     expect(modalMock.open).toHaveBeenCalled();
@@ -168,13 +168,13 @@ describe('useEmployeeHistoryList', () => {
     expect(antdModalMock.confirm).toHaveBeenCalled();
 
     const confirmOptions = antdModalMock.confirm.mock.calls[0]?.[0];
-    expect(confirmOptions?.title).toBe('page.users.delete.title');
+    expect(confirmOptions?.title).toBe('users.delete.title');
 
     await confirmOptions?.onOk();
 
     expect(tableRemoveMock).toHaveBeenCalledWith('user-del');
     expect(notificationMock.success).toHaveBeenCalledWith({
-      message: 'page.users.messages.deleted',
+      message: 'users.messages.deleted',
     });
   });
 });

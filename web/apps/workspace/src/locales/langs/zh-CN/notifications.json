@@ -1,0 +1,52 @@
+{
+  "routeTitle": "通知",
+  "listTitle": "通知列表",
+  "listDescription": "查看您最近的通知。",
+  "columns": {
+    "content": "内容",
+    "actor": "操作人",
+    "status": "状态",
+    "occurredAt": "时间"
+  },
+  "filters": {
+    "readState": "状态",
+    "all": "全部",
+    "read": "已读",
+    "unread": "未读"
+  },
+  "fields": {
+    "by": "由",
+    "recipients": "收件人",
+    "message": "内容",
+    "content": "内容",
+    "sender": "发送人",
+    "actor": "操作人",
+    "occurredAt": "时间"
+  },
+  "placeholders": {
+    "recipients": "选择一个或多个收件人",
+    "message": "输入通知内容"
+  },
+  "actions": {
+    "create": "新建通知",
+    "send": "发送通知",
+    "markAllRead": "全部标记为已读"
+  },
+  "create": {
+    "title": "新建通知"
+  },
+  "detail": {
+    "title": "通知详情",
+    "statusTitle": "通知状态",
+    "informationTitle": "通知信息"
+  },
+  "status": {
+    "read": "已读通知",
+    "unread": "未读通知"
+  },
+  "messages": {
+    "sent": "通知已发送",
+    "markedAllRead": "所有通知均已标记为已读",
+    "unexpectedError": "发生了意外错误"
+  }
+}

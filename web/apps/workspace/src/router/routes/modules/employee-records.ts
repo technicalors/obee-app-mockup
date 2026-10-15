@@ -9,7 +9,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('#/views/employee-records/history/index.vue'),
         meta: {
           icon: 'lucide:history',
-          title: $t('page.employeeRecord.history.routeTitle'),
+          title: $t('employeeRecord.history.routeTitle'),
         },
         name: 'EmployeeRecordHistory',
         path: 'history',
@@ -18,7 +18,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('#/views/employee-records/history/detail.vue'),
         meta: {
           hideInMenu: true,
-          title: $t('page.employeeHistory.pageTitle'),
+          title: $t('employeeHistory.pageTitle'),
         },
         name: 'EmployeeRecordHistoryDetail',
         path: 'history/:user',
@@ -28,7 +28,7 @@ const routes: RouteRecordRaw[] = [
           import('#/views/employee-records/evaluation/index.vue'),
         meta: {
           icon: 'lucide:award',
-          title: $t('page.employeeRecord.evaluation.routeTitle'),
+          title: $t('employeeRecord.evaluation.routeTitle'),
         },
         name: 'EmployeeRecordEvaluation',
         path: 'evaluation',
@@ -37,7 +37,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('#/views/employee-records/skills/index.vue'),
         meta: {
           icon: 'lucide:sparkles',
-          title: $t('page.employeeRecord.skills.routeTitle'),
+          title: $t('employeeRecord.skills.routeTitle'),
         },
         name: 'EmployeeRecordSkills',
         path: 'skills',
@@ -46,7 +46,7 @@ const routes: RouteRecordRaw[] = [
     meta: {
       icon: 'lucide:id-card',
       order: 18,
-      title: $t('page.employeeRecord.routeTitle'),
+      title: $t('employeeRecord.routeTitle'),
     },
     name: 'EmployeeRecord',
     path: '/employee-records',

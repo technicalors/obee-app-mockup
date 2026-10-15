@@ -1,0 +1,52 @@
+{
+  "routeTitle": "Thông báo",
+  "listTitle": "Danh sách thông báo",
+  "listDescription": "Xem các thông báo gần đây của bạn.",
+  "columns": {
+    "content": "Nội dung",
+    "actor": "Người thực hiện",
+    "status": "Trạng thái",
+    "occurredAt": "Thời điểm"
+  },
+  "filters": {
+    "readState": "Trạng thái",
+    "all": "Tất cả",
+    "read": "Đã đọc",
+    "unread": "Chưa đọc"
+  },
+  "fields": {
+    "by": "Bởi",
+    "recipients": "Người nhận",
+    "message": "Nội dung",
+    "content": "Nội dung",
+    "sender": "Người gửi",
+    "actor": "Người thực hiện",
+    "occurredAt": "Thời điểm"
+  },
+  "placeholders": {
+    "recipients": "Chọn một hoặc nhiều người nhận",
+    "message": "Nhập nội dung thông báo"
+  },
+  "actions": {
+    "create": "Tạo thông báo mới",
+    "send": "Gửi thông báo",
+    "markAllRead": "Đánh dấu tất cả đã đọc"
+  },
+  "create": {
+    "title": "Tạo thông báo mới"
+  },
+  "detail": {
+    "title": "Chi tiết thông báo",
+    "statusTitle": "Trạng thái thông báo",
+    "informationTitle": "Thông tin thông báo"
+  },
+  "status": {
+    "read": "Thông báo đã đọc",
+    "unread": "Thông báo chưa đọc"
+  },
+  "messages": {
+    "sent": "Đã gửi thông báo",
+    "markedAllRead": "Đã đánh dấu tất cả thông báo là đã đọc",
+    "unexpectedError": "Đã xảy ra lỗi không mong muốn"
+  }
+}

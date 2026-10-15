@@ -22,7 +22,6 @@ import {
   Radio,
   Select,
   Switch,
-  Tag,
   TimePicker,
   TreeSelect,
 } from 'ant-design-vue';

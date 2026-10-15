@@ -17,10 +17,10 @@ export function createEmployeeHistoryTableFilterSchema(): VbenFormSchema[] {
       component: 'Input',
       componentProps: {
         allowClear: true,
-        placeholder: $t('page.employeeHistory.filters.searchPlaceholder'),
+        placeholder: $t('employeeHistory.filters.searchPlaceholder'),
       },
       fieldName: 'search',
-      label: $t('page.employeeHistory.filters.search'),
+      label: $t('employeeHistory.filters.search'),
     },
   ];
 }
@@ -32,7 +32,7 @@ export function createEmployeeHistoryTableColumns(
 
   return [
     {
-      title: $t('page.employeeHistory.columns.sequence'),
+      title: $t('employeeHistory.columns.sequence'),
       type: 'seq',
       width: 60,
     },
@@ -40,34 +40,31 @@ export function createEmployeeHistoryTableColumns(
       formatter: ({ row }) =>
         row.profile === null ? notProvided : row.profile.code,
       minWidth: 140,
-      title: $t('page.employeeHistory.columns.employeeCode'),
+      title: $t('employeeHistory.columns.employeeCode'),
     },
     {
       field: 'name',
       minWidth: 160,
-      title: $t('page.employeeHistory.columns.fullName'),
+      title: $t('employeeHistory.columns.fullName'),
     },
     {
       formatter: ({ row }) => {
         const sex = row.profile?.sex;
         if (sex === 'male') {
-          return $t('page.users.gender.male');
+          return $t('users.gender.male');
         }
         if (sex === 'female') {
-          return $t('page.users.gender.female');
+          return $t('users.gender.female');
         }
         return notProvided;
       },
       minWidth: 100,
-      title: $t('page.employeeHistory.columns.gender'),
+      title: $t('employeeHistory.columns.gender'),
     },
     {
-      formatter: ({ row }) =>
-        row.departments.length > 0
-          ? row.departments.map((department) => department.name).join(', ')
-          : notProvided,
+      formatter: ({ row }) => row.organization?.name ?? notProvided,
       minWidth: 180,
-      title: $t('page.employeeHistory.columns.department'),
+      title: $t('employeeHistory.columns.organization'),
     },
     {
       formatter: ({ row }) =>
@@ -75,17 +72,17 @@ export function createEmployeeHistoryTableColumns(
           ? notProvided
           : row.profile.position.name,
       minWidth: 140,
-      title: $t('page.employeeHistory.columns.position'),
+      title: $t('employeeHistory.columns.position'),
     },
     {
       formatter: ({ row }) => row.profile?.joined_at ?? notProvided,
       minWidth: 140,
-      title: $t('page.employeeHistory.columns.joinedAt'),
+      title: $t('employeeHistory.columns.joinedAt'),
     },
     {
       formatter: ({ row }) => row.profile?.starting_date ?? notProvided,
       minWidth: 140,
-      title: $t('page.employeeHistory.columns.startingDate'),
+      title: $t('employeeHistory.columns.startingDate'),
     },
     {
       align: 'center',
@@ -107,7 +104,7 @@ export function createEmployeeHistoryTableColumns(
           {
             code: 'detail',
             icon: 'lucide:eye',
-            label: $t('page.employeeHistory.actions.detail'),
+            label: $t('employeeHistory.actions.detail'),
             type: 'text',
             visible: () =>
               actions.hasAccessByCodes
@@ -117,7 +114,7 @@ export function createEmployeeHistoryTableColumns(
           {
             code: 'edit',
             icon: 'lucide:pencil',
-            label: $t('page.users.actions.edit'),
+            label: $t('users.actions.edit'),
             type: 'text',
             visible: () =>
               actions.hasAccessByCodes
@@ -129,7 +126,7 @@ export function createEmployeeHistoryTableColumns(
             code: 'delete',
             danger: true,
             icon: 'lucide:trash-2',
-            label: $t('page.users.actions.delete'),
+            label: $t('users.actions.delete'),
             type: 'text',
             visible: () =>
               actions.hasAccessByCodes
@@ -141,7 +138,7 @@ export function createEmployeeHistoryTableColumns(
       field: 'actions',
       fixed: 'right',
       showOverflow: false,
-      title: $t('page.employeeHistory.columns.actions'),
+      title: $t('employeeHistory.columns.actions'),
       width: 140,
     },
   ];

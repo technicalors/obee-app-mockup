@@ -1,46 +1,19 @@
-import type { User } from '#/api/contracts';
 import type { Schedule } from '#/api/schedules';
 
 import { describe, expect, it } from 'vitest';
 
 import {
-  buildDepartmentUserTreeOptions,
+  buildAuthoringPayload,
   buildMonthGrid,
   buildWeekSegments,
+  createDraftFromEvent,
   formatAuthoringDate,
+  formatAuthoringTime,
   formatScheduleTileMeta,
-  getDraftTimeValue,
   getScheduleCardClass,
   getScheduleTypeClass,
   parseMonthValue,
 } from './schedule-page';
-
-function makeUser(overrides: Partial<User> = {}): User {
-  return {
-    avatar: null,
-    company: {
-      created_at: '2026-06-16T08:00:00.000000Z',
-      id: 'company-1',
-      name: 'Obee Company',
-      tax_identification_number: '123456789',
-      updated_at: '2026-06-16T08:00:00.000000Z',
-    },
-    company_id: 'company-1',
-    created_at: '2026-06-16T08:00:00.000000Z',
-    departments: [],
-    email: 'owner@example.com',
-    email_verified_at: null,
-    id: 'user-1',
-    is_active: true,
-    name: 'Owner User',
-    profile: null,
-    roles: [],
-    supabase_id: null,
-    updated_at: '2026-06-16T08:00:00.000000Z',
-    username: 'owner',
-    ...overrides,
-  };
-}
 
 function makeSchedule(overrides: Partial<Schedule> = {}): Schedule {
   return {
@@ -50,7 +23,8 @@ function makeSchedule(overrides: Partial<Schedule> = {}): Schedule {
       company_phone_number: null,
       created_at: '2026-06-16T08:00:00.000000Z',
       created_by: 'user-1',
-      end_date: '2026-06-15T17:00:00.000Z',
+      end_date: '2026-06-16',
+      end_time: '00:00',
       has_reminder: false,
       id: 'event-1',
       is_general: false,
@@ -66,7 +40,8 @@ function makeSchedule(overrides: Partial<Schedule> = {}): Schedule {
       repeat_start_time: null,
       repeat_type: null,
       schedule_type: 'ordinary',
-      start_date: '2026-06-15T17:00:00.000Z',
+      start_date: '2026-06-16',
+      start_time: '00:00',
       title: 'Midnight Shift',
       type: 'meeting',
       updated_at: '2026-06-16T08:00:00.000000Z',
@@ -82,6 +57,86 @@ function makeSchedule(overrides: Partial<Schedule> = {}): Schedule {
 }
 
 describe('buildMonthGrid', () => {
+  it('places a UTC timestamp on its schedule date in the application timezone', () => {
+    const schedule = makeSchedule({
+      end: '2026-09-24T17:30:00.000Z',
+      event: {
+        ...makeSchedule().event,
+        end_date: '2026-09-25',
+        end_time: '00:30',
+        start_date: '2026-09-25',
+        start_time: '00:26',
+      },
+      start: '2026-09-24T17:26:00.000Z',
+    });
+    const grid = buildMonthGrid(
+      parseMonthValue('2026-09'),
+      [schedule],
+      '2026-09-01',
+    );
+
+    expect(grid.find(({ date }) => date === '2026-09-25')?.schedules).toContain(
+      schedule,
+    );
+    expect(
+      grid.find(({ date }) => date === '2026-09-24')?.schedules,
+    ).toHaveLength(0);
+  });
+
+  it('keeps multi-day and repeat occurrences on their application dates', () => {
+    const multiDaySchedule = makeSchedule({
+      end: '2026-09-26T16:59:00.000Z',
+      event: {
+        ...makeSchedule().event,
+        end_date: '2026-09-26',
+        end_time: null,
+        schedule_type: 'multiple_days',
+        start_date: '2026-09-25',
+        start_time: null,
+      },
+      one_day: false,
+      start: '2026-09-24T17:00:00.000Z',
+    });
+    const repeatSchedule = makeSchedule({
+      end: '2026-09-24T17:30:00.000Z',
+      event: {
+        ...makeSchedule().event,
+        end_date: '2026-10-11',
+        end_time: '00:30',
+        repeat_pattern: [5],
+        repeat_type: 'weekly',
+        schedule_type: 'repeat',
+        start_date: '2026-09-25',
+        start_time: '00:26',
+      },
+      id: 'repeat-1',
+      start: '2026-09-24T17:26:00.000Z',
+    });
+    const grid = buildMonthGrid(
+      parseMonthValue('2026-09'),
+      [multiDaySchedule, repeatSchedule],
+      '2026-09-01',
+    );
+
+    expect(grid.find(({ date }) => date === '2026-09-25')?.schedules).toEqual(
+      expect.arrayContaining([multiDaySchedule, repeatSchedule]),
+    );
+    expect(grid.find(({ date }) => date === '2026-09-26')?.schedules).toContain(
+      multiDaySchedule,
+    );
+    expect(
+      grid.find(({ date }) => date === '2026-09-27')?.schedules,
+    ).toHaveLength(0);
+    expect(buildWeekSegments(grid.slice(21, 28))).toContainEqual(
+      expect.objectContaining({
+        columnSpan: 2,
+        endDate: '2026-09-26',
+        startColumn: 5,
+        startDate: '2026-09-25',
+      }),
+    );
+  });
+
   it('places midnight schedules on the local calendar day', () => {
     const grid = buildMonthGrid(
       parseMonthValue('2026-06'),
@@ -104,9 +159,11 @@ describe('buildMonthGrid', () => {
           end: '2026-08-10T17:00:00.000Z',
           event: {
             ...makeSchedule().event,
-            end_date: '2026-08-10T17:00:00.000Z',
+            end_date: '2026-08-10',
+            end_time: null,
             schedule_type: 'multiple_days',
-            start_date: '2026-05-20T09:00:00.000Z',
+            start_date: '2026-05-20',
+            start_time: null,
             title: 'Quarter Roadshow',
             type: 'business_trip',
           },
@@ -118,8 +175,10 @@ describe('buildMonthGrid', () => {
           end: '2026-07-02T10:00:00.000Z',
           event: {
             ...makeSchedule().event,
-            end_date: '2026-07-02T10:00:00.000Z',
-            start_date: '2026-07-02T09:00:00.000Z',
+            end_date: '2026-07-02',
+            end_time: '10:00',
+            start_date: '2026-07-02',
+            start_time: '09:00',
             title: 'Wrap-up',
           },
           id: 'schedule-next-month',
@@ -154,9 +213,11 @@ describe('buildWeekSegments', () => {
           end: '2026-06-21T17:00:00.000Z',
           event: {
             ...makeSchedule().event,
-            end_date: '2026-06-21T17:00:00.000Z',
+            end_date: '2026-06-21',
+            end_time: null,
             schedule_type: 'multiple_days',
-            start_date: '2026-06-20T09:00:00.000Z',
+            start_date: '2026-06-20',
+            start_time: null,
             title: 'Roadshow',
             type: 'business_trip',
           },
@@ -179,137 +240,61 @@ describe('buildWeekSegments', () => {
       }),
     ]);
   });
-});
 
-describe('buildDepartmentUserTreeOptions', () => {
-  it('groups users under nested departments and keeps users without departments selectable', () => {
-    const parentDepartment = {
-      children: [],
-      company: null,
-      company_id: 'company-1',
-      created_at: null,
-      id: 'department-parent',
-      name: 'Operations',
-      parent: null,
-      parent_id: null,
-      updated_at: null,
-    };
-
-    expect(
-      buildDepartmentUserTreeOptions([
-        makeUser({
-          departments: [
-            {
-              children: [],
-              company: null,
-              company_id: 'company-1',
-              created_at: null,
-              id: 'department-child',
-              name: 'Field Team',
-              parent: parentDepartment,
-              parent_id: 'department-parent',
-              updated_at: null,
-            },
-          ],
-        }),
-        makeUser({
-          departments: [
-            {
-              children: [],
-              company: null,
-              company_id: 'company-1',
-              created_at: null,
-              id: 'department-child',
-              name: 'Field Team',
-              parent: parentDepartment,
-              parent_id: 'department-parent',
-              updated_at: null,
-            },
-          ],
-          email: 'participant@example.com',
-          id: 'user-2',
-          name: 'Participant User',
-          username: 'participant',
-        }),
-        makeUser({
-          email: 'solo@example.com',
-          id: 'user-3',
-          name: 'Solo User',
-          username: 'solo',
-        }),
-      ]),
-    ).toEqual([
-      {
-        children: [
-          {
-            children: [
-              {
-                children: [
-                  {
-                    key: 'user-1',
-                    label: 'Owner User',
-                    value: 'user-1',
-                  },
-                  {
-                    key: 'user-2',
-                    label: 'Participant User',
-                    value: 'user-2',
-                  },
-                ],
-                key: 'department-department-child',
-                label: 'Field Team',
-                selectable: false,
-                value: 'department-department-child',
-              },
-            ],
-            key: 'department-department-parent',
-            label: 'Operations',
-            selectable: false,
-            value: 'department-department-parent',
+  it('continues a multi-day schedule with a new segment at the next week boundary', () => {
+    const grid = buildMonthGrid(
+      parseMonthValue('2026-06'),
+      [
+        makeSchedule({
+          end: '2026-07-02T17:00:00.000Z',
+          event: {
+            ...makeSchedule().event,
+            end_date: '2026-07-02',
+            end_time: null,
+            schedule_type: 'multiple_days',
+            start_date: '2026-06-28',
+            start_time: null,
+            title: 'Week boundary event',
           },
-          { key: 'user-3', label: 'Solo User', value: 'user-3' },
-        ],
-        key: 'company-company-1',
-        label: 'Obee Company',
-        selectable: false,
-        value: 'company-company-1',
-      },
-    ]);
-  });
-
-  it('falls back to department and user roots when company data is unavailable', () => {
-    expect(
-      buildDepartmentUserTreeOptions([
-        makeUser({
-          company: null,
-          departments: [
-            {
-              children: [],
-              company: null,
-              company_id: 'company-1',
-              created_at: null,
-              id: 'department-parent',
-              name: 'Operations',
-              parent: null,
-              parent_id: null,
-              updated_at: null,
-            },
-          ],
+          one_day: false,
+          start: '2026-06-28T09:00:00.000Z',
         }),
-      ]),
-    ).toEqual([
-      {
-        children: [{ key: 'user-1', label: 'Owner User', value: 'user-1' }],
-        key: 'department-department-parent',
-        label: 'Operations',
-        selectable: false,
-        value: 'department-department-parent',
-      },
+      ],
+      '2026-06-01',
+      'UTC',
+    );
+
+    expect(buildWeekSegments(grid.slice(21, 28), 'UTC')).toEqual([
+      expect.objectContaining({
+        columnSpan: 1,
+        endDate: '2026-06-28',
+        startColumn: 7,
+        startDate: '2026-06-28',
+      }),
+    ]);
+    expect(buildWeekSegments(grid.slice(28, 35), 'UTC')).toEqual([
+      expect.objectContaining({
+        columnSpan: 4,
+        endDate: '2026-07-02',
+        startColumn: 1,
+        startDate: '2026-06-29',
+      }),
     ]);
   });
 });
 
 describe('formatScheduleTileMeta', () => {
+  it('formats schedule times in the application timezone by default', () => {
+    expect(
+      formatScheduleTileMeta(
+        makeSchedule({
+          end: '2026-09-24T17:30:00.000Z',
+          start: '2026-09-24T17:26:00.000Z',
+        }),
+      ),
+    ).toBe('00:26 - 00:30');
+  });
+
   it('shows a single time when start and end times are equal', () => {
     expect(
       formatScheduleTileMeta(
@@ -337,34 +322,77 @@ describe('schedule color classes', () => {
     ).toContain('bg-[#3182dc]');
   });
 
-  it('returns static tailwind classes for multi-day schedule tiles', () => {
-    expect(
-      getScheduleCardClass(
-        makeSchedule({
-          event: {
-            ...makeSchedule().event,
-            schedule_type: 'multiple_days',
-            type: 'interview',
-          },
-          one_day: false,
-        }),
-      ),
-    ).toContain('border-[#ef9201]');
+  it('returns solid type colors for multi-day schedule bars', () => {
+    const multiDaySchedule = makeSchedule({
+      event: {
+        ...makeSchedule().event,
+        schedule_type: 'multiple_days',
+        type: 'interview',
+      },
+      one_day: false,
+    });
+    const classes = getScheduleCardClass(multiDaySchedule);
+
+    expect(classes).toContain('bg-[#ef9201]');
+    expect(classes).toContain('text-white');
+  });
+
+  it('uses a clean borderless style for repeat schedule tiles', () => {
+    const schedule = makeSchedule();
+    const repeatSchedule = makeSchedule({
+      event: {
+        ...schedule.event,
+        schedule_type: 'repeat',
+      },
+    });
+    const repeatClasses = getScheduleCardClass(repeatSchedule);
+
+    expect(repeatClasses).not.toContain('border-dashed');
+    expect(repeatClasses).not.toContain('border-');
+    expect(repeatClasses).toBe(getScheduleCardClass(schedule));
   });
 });
 
-describe('authoring timezone helpers', () => {
-  it('formats backend UTC datetimes to GMT+7 authoring dates', () => {
+describe('authoring helpers', () => {
+  it('formats backend UTC datetimes and YYYY-MM-DD strings to authoring dates', () => {
     expect(formatAuthoringDate('2026-06-15T17:00:00.000Z')).toBe('2026-06-16');
+    expect(formatAuthoringDate('2026-06-16')).toBe('2026-06-16');
   });
 
-  it('formats backend UTC datetimes to GMT+7 authoring times when repeat time is absent', () => {
-    expect(getDraftTimeValue(null, '2026-06-15T17:00:00.000Z')).toBe('00:00');
+  it('formats authoring times directly without timezone conversion', () => {
+    expect(formatAuthoringTime(null)).toBe('');
+    expect(formatAuthoringTime('09:30')).toBe('09:30');
   });
 
-  it('keeps explicit repeat time values unchanged', () => {
-    expect(getDraftTimeValue('09:30:00', '2026-06-15T17:00:00.000Z')).toBe(
-      '09:30',
+  it('hydrates draft and builds normalized write payloads across cadence types', () => {
+    const draft = createDraftFromEvent(
+      makeSchedule({
+        event: {
+          ...makeSchedule().event,
+          end_date: '2026-06-16',
+          end_time: '10:30',
+          remind_range: 'minute',
+          remind_value: 15,
+          start_date: '2026-06-16',
+          start_time: '09:00',
+        },
+      }),
+      'edit',
     );
+
+    expect(draft.has_reminder).toBe(true);
+    expect(draft.start_time).toBe('09:00');
+    expect(draft.end_time).toBe('10:30');
+    expect(buildAuthoringPayload(draft)).toMatchObject({
+      end_date: '2026-06-16',
+      end_time: '10:30',
+      remind_range: 'minute',
+      remind_value: 15,
+      repeat_pattern: null,
+      repeat_type: null,
+      schedule_type: 'ordinary',
+      start_date: '2026-06-16',
+      start_time: '09:00',
+    });
   });
 });

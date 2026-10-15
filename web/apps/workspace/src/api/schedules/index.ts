@@ -11,7 +11,7 @@ export const scheduleVisibilitySchema = z.enum([
 
 const scheduleUserSchema = z.object({
   avatar: z.nullable(z.string()),
-  email: z.string(),
+  email: z.nullable(z.string()),
   id: z.string(),
   name: z.string(),
 });
@@ -22,6 +22,7 @@ const scheduleEventSchema = z.object({
   created_at: z.string(),
   created_by: z.string(),
   end_date: z.string(),
+  end_time: z.nullable(z.string()).optional(),
   equipment_ids: z.nullable(z.array(z.string())).optional(),
   equipments: z
     .nullable(
@@ -37,6 +38,8 @@ const scheduleEventSchema = z.object({
   has_reminder: z.boolean(),
   id: z.string(),
   is_general: z.boolean(),
+  location: z.nullable(z.string()).optional(),
+  location_type: z.nullable(z.enum(['physical', 'online', 'hybrid'])).optional(),
   meeting_url: z.nullable(z.string()).optional(),
   note: z.nullable(z.string()),
   observers: z.array(scheduleUserSchema),
@@ -51,6 +54,7 @@ const scheduleEventSchema = z.object({
   repeat_type: z.nullable(z.enum(['daily', 'weekly', 'monthly'])),
   schedule_type: z.enum(['ordinary', 'multiple_days', 'repeat']),
   start_date: z.string(),
+  start_time: z.nullable(z.string()).optional(),
   title: z.string(),
   type: z.enum([
     'training',

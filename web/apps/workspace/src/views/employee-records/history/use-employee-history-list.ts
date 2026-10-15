@@ -22,8 +22,8 @@ import {
   createEmployeeHistoryTableFilterSchema,
 } from './schema';
 
-const UserDetailModalComponent = defineAsyncComponent(
-  () => import('#/views/users/user-detail-modal.vue'),
+const UserModalComponent = defineAsyncComponent(
+  () => import('#/views/users/user-modal.vue'),
 );
 
 export function useEmployeeHistoryList() {
@@ -32,7 +32,7 @@ export function useEmployeeHistoryList() {
   const router = useRouter();
 
   const [UserDetailModal, userDetailModalApi] = useVbenModal({
-    connectedComponent: UserDetailModalComponent,
+    connectedComponent: UserModalComponent,
   });
 
   const [Grid, table] = useResourceTable<
@@ -42,7 +42,7 @@ export function useEmployeeHistoryList() {
   >({
     buildQuery: createEmployeeHistoryIndexQuery,
     enabled: () => authStore.hasSession,
-    errorMessage: $t('page.users.messages.unexpectedError'),
+    errorMessage: $t('users.messages.unexpectedError'),
     formOptions: {
       schema: createEmployeeHistoryTableFilterSchema(),
       showCollapseButton: false,
@@ -59,32 +59,32 @@ export function useEmployeeHistoryList() {
       },
     },
     resource: usersResource,
-    tableTitle: $t('page.employeeHistory.listTitle'),
+    tableTitle: $t('employeeHistory.listTitle'),
   });
 
   function openEdit(user: User): void {
     userDetailModalApi.setData({
       mode: 'edit',
       onSaved: table.reload,
-      user,
+      userId: user.id,
     });
     userDetailModalApi.open();
   }
 
   function confirmDelete(user: User): void {
     Modal.confirm({
-      cancelText: $t('page.users.actions.cancel'),
-      content: $t('page.users.delete.description', { name: user.name }),
+      cancelText: $t('users.actions.cancel'),
+      content: $t('users.delete.description', { name: user.name }),
       okButtonProps: { danger: true },
-      okText: $t('page.users.actions.delete'),
+      okText: $t('users.actions.delete'),
       onOk: async () => {
         if (await table.remove(user.id)) {
           notification.success({
-            message: $t('page.users.messages.deleted'),
+            message: $t('users.messages.deleted'),
           });
         }
       },
-      title: $t('page.users.delete.title'),
+      title: $t('users.delete.title'),
     });
   }
 

@@ -1,18 +1,26 @@
 import type {
   AttendanceLocation,
   AuthUser,
-  Company,
-  DepartmentWithRelations,
-  Equipment,
+  FacilityResource,
+  HttpMutationLog,
   InboxNotification,
+  Organization,
   Permission,
   Position,
   Role,
   User,
+  UserTreeSelectionUser,
 } from '#/api/contracts';
+import type { AbsenceRequest, LeaveBalance } from '#/api/absence-requests';
+import type {
+  PersonalTask,
+  PersonalTaskList,
+} from '#/api/contracts/personal-tasks';
 import type { Schedule } from '#/api/schedules';
+import type { WorkShift } from '#/api/work-shifts';
+import type { WorkUserShift } from '#/api/work-user-shifts';
 
-const timestamp = '2026-10-13T08:00:00+07:00';
+const timestamp = '2026-10-15T08:00:00+07:00';
 
 function requiredItem<T>(items: T[], index: number): T {
   const item = items[index];
@@ -21,14 +29,6 @@ function requiredItem<T>(items: T[], index: number): T {
   }
   return item;
 }
-
-export const mockCompany: Company = {
-  created_at: timestamp,
-  id: 'a0000000-0000-4000-8000-000000000001',
-  name: 'Ouransoft Vietnam',
-  tax_identification_number: '0317654321',
-  updated_at: timestamp,
-};
 
 export const mockPositions: Position[] = [
   {
@@ -54,29 +54,50 @@ export const mockPositions: Position[] = [
   },
   {
     created_at: timestamp,
-    description: 'Thiết kế trải nghiệm và giao diện sản phẩm.',
+    description: 'Kiểm thử và bảo đảm chất lượng phần mềm.',
     id: 'b0000000-0000-4000-8000-000000000004',
+    name: 'QA Engineer',
+    updated_at: timestamp,
+  },
+  {
+    created_at: timestamp,
+    description: 'Quản lý nguồn nhân lực và tuyển dụng.',
+    id: 'b0000000-0000-4000-8000-000000000005',
+    name: 'HR Specialist',
+    updated_at: timestamp,
+  },
+  {
+    created_at: timestamp,
+    description: 'Phân tích yêu cầu và quy trình kinh doanh.',
+    id: 'b0000000-0000-4000-8000-000000000006',
+    name: 'Business Analyst',
+    updated_at: timestamp,
+  },
+  {
+    created_at: timestamp,
+    description: 'Thiết kế trải nghiệm người dùng và giao diện.',
+    id: 'b0000000-0000-4000-8000-000000000007',
     name: 'UI/UX Designer',
     updated_at: timestamp,
   },
   {
     created_at: timestamp,
-    description: 'Quản trị và phát triển nguồn nhân lực.',
-    id: 'b0000000-0000-4000-8000-000000000005',
-    name: 'HR Specialist',
+    description: 'Phát triển kinh doanh và chăm sóc khách hàng.',
+    id: 'b0000000-0000-4000-8000-000000000008',
+    name: 'Sales Executive',
     updated_at: timestamp,
   },
 ];
 
-export const mockPermissions: Permission[] = [
+const permissionNames = [
   'users.viewAny',
   'users.create',
   'users.update',
   'users.delete',
-  'departments.viewAny',
-  'departments.create',
-  'departments.update',
-  'departments.delete',
+  'organizations.viewAny',
+  'organizations.create',
+  'organizations.update',
+  'organizations.delete',
   'positions.viewAny',
   'positions.create',
   'positions.update',
@@ -85,27 +106,41 @@ export const mockPermissions: Permission[] = [
   'roles.create',
   'roles.update',
   'roles.delete',
-  'permissions.viewAny',
-  'equipments.viewAny',
-  'equipments.create',
-  'equipments.update',
-  'equipments.delete',
+  'facility-resources.viewAny',
+  'facility-resources.create',
+  'facility-resources.update',
+  'facility-resources.delete',
   'attendance-locations.viewAny',
   'attendance-locations.create',
   'attendance-locations.update',
   'attendance-locations.delete',
-].map((name, index) => ({
-  created_at: timestamp,
-  description: `Quyền ${name}`,
-  id: `c0000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
-  name,
-  updated_at: timestamp,
-}));
+  'work-user-shifts.viewAny',
+  'work-user-shifts.create',
+  'work-user-shifts.update',
+  'work-user-shifts.delete',
+  'absence-requests.viewAny',
+  'absence-requests.create',
+  'absence-requests.update',
+  'absence-requests.delete',
+  'http-mutation-logs.viewAny',
+  'permissions.viewAny',
+  'chat.viewAny',
+];
+
+export const mockPermissions: Permission[] = permissionNames.map(
+  (name, index) => ({
+    created_at: timestamp,
+    description: `Quyền ${name}`,
+    id: `c0000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
+    name,
+    updated_at: timestamp,
+  }),
+);
 
 export const mockRoles: Role[] = [
   {
     created_at: timestamp,
-    description: 'Toàn quyền quản trị hệ thống.',
+    description: 'Toàn quyền cấu hình và quản trị hệ thống.',
     id: 'd0000000-0000-4000-8000-000000000001',
     name: 'admin',
     permissions: mockPermissions,
@@ -116,7 +151,9 @@ export const mockRoles: Role[] = [
     description: 'Quản lý hoạt động phòng ban.',
     id: 'd0000000-0000-4000-8000-000000000002',
     name: 'manager',
-    permissions: mockPermissions.slice(0, 14),
+    permissions: mockPermissions.filter(
+      (p) => !p.name.includes('delete') && !p.name.includes('system'),
+    ),
     updated_at: timestamp,
   },
   {
@@ -124,110 +161,202 @@ export const mockRoles: Role[] = [
     description: 'Nhân viên sử dụng hệ thống.',
     id: 'd0000000-0000-4000-8000-000000000003',
     name: 'employee',
-    permissions: mockPermissions.slice(0, 5),
+    permissions: mockPermissions.filter(
+      (p) =>
+        p.name.endsWith('.viewAny') ||
+        p.name.startsWith('chat') ||
+        p.name.startsWith('absence'),
+    ),
     updated_at: timestamp,
   },
 ];
 
-const departmentSeed = [
-  ['Ban Giám đốc', null],
-  ['Phòng Công nghệ', 'e0000000-0000-4000-8000-000000000001'],
-  ['Phòng Sản phẩm', 'e0000000-0000-4000-8000-000000000001'],
-  ['Phòng Thiết kế', 'e0000000-0000-4000-8000-000000000003'],
-  ['Phòng Nhân sự', 'e0000000-0000-4000-8000-000000000001'],
-  ['Phòng Kinh doanh', 'e0000000-0000-4000-8000-000000000001'],
-] as const;
+const organizationSeed: Array<[string, string, null | string]> = [
+  ['Ouransoft Việt Nam', 'Công ty', null],
+  ['Ban Giám đốc', 'Ban', 'e0000000-0000-4000-8000-000000000001'],
+  ['Khối Công nghệ & Sản phẩm', 'Khối', 'e0000000-0000-4000-8000-000000000001'],
+  [
+    'Phòng Phát triển Phần mềm',
+    'Phòng ban',
+    'e0000000-0000-4000-8000-000000000003',
+  ],
+  ['Đội Frontend', 'Đội nhóm', 'e0000000-0000-4000-8000-000000000004'],
+  ['Đội Backend', 'Đội nhóm', 'e0000000-0000-4000-8000-000000000004'],
+  [
+    'Phòng Sản phẩm & Thiết kế',
+    'Phòng ban',
+    'e0000000-0000-4000-8000-000000000003',
+  ],
+  [
+    'Khối Vận hành & Kinh doanh',
+    'Khối',
+    'e0000000-0000-4000-8000-000000000001',
+  ],
+  [
+    'Phòng Nhân sự & Hành chính',
+    'Phòng ban',
+    'e0000000-0000-4000-8000-000000000008',
+  ],
+  [
+    'Phòng Kinh doanh & Đối ngoại',
+    'Phòng ban',
+    'e0000000-0000-4000-8000-000000000008',
+  ],
+];
 
-export const mockDepartments: DepartmentWithRelations[] = departmentSeed.map(
-  ([name, parentId], index) => ({
-    children: [],
-    company: mockCompany,
-    company_id: mockCompany.id,
+export const mockOrganizations: Organization[] = organizationSeed.map(
+  ([name, type, parentId], index) => ({
     created_at: timestamp,
     id: `e0000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
     name,
-    parent:
-      parentId === null
-        ? null
-        : {
-            company_id: mockCompany.id,
-            created_at: timestamp,
-            id: parentId,
-            name: parentId.endsWith('1') ? 'Ban Giám đốc' : 'Phòng Sản phẩm',
-            parent_id: null,
-            updated_at: timestamp,
-          },
     parent_id: parentId,
+    tax_identification_number: index === 0 ? '0317654321' : null,
+    type,
     updated_at: timestamp,
   }),
 );
 
 const userSeed = [
-  ['admin', 'Nguyễn Minh Anh', 'admin@obee.vn', 2, 0, 'female'],
-  ['quocbao', 'Trần Quốc Bảo', 'quocbao@obee.vn', 1, 1, 'male'],
-  ['hoangyen', 'Lê Hoàng Yến', 'hoangyen@obee.vn', 4, 4, 'female'],
-  ['giahuy', 'Phạm Gia Huy', 'giahuy@obee.vn', 1, 2, 'male'],
-  ['thanhtruc', 'Võ Thanh Trúc', 'thanhtruc@obee.vn', 5, 0, 'female'],
-  ['nhatnam', 'Đỗ Nhật Nam', 'nhatnam@obee.vn', 3, 3, 'male'],
-  ['khanhlinh', 'Bùi Khánh Linh', 'khanhlinh@obee.vn', 4, 4, 'female'],
-  ['duclong', 'Huỳnh Đức Long', 'duclong@obee.vn', 1, 2, 'male'],
-] as const;
+  {
+    name: 'Nguyễn Văn An',
+    orgIndex: 1,
+    posIndex: 0,
+    role: mockRoles[0]!,
+    sex: 'male' as const,
+    username: 'admin',
+  },
+  {
+    name: 'Trần Quốc Bảo',
+    orgIndex: 4,
+    posIndex: 1,
+    role: mockRoles[1]!,
+    sex: 'male' as const,
+    username: 'quocbao',
+  },
+  {
+    name: 'Lê Hoàng Yến',
+    orgIndex: 5,
+    posIndex: 2,
+    role: mockRoles[2]!,
+    sex: 'female' as const,
+    username: 'hoangyen',
+  },
+  {
+    name: 'Phạm Gia Huy',
+    orgIndex: 3,
+    posIndex: 3,
+    role: mockRoles[2]!,
+    sex: 'male' as const,
+    username: 'giahuy',
+  },
+  {
+    name: 'Vũ Thanh Trúc',
+    orgIndex: 8,
+    posIndex: 4,
+    role: mockRoles[1]!,
+    sex: 'female' as const,
+    username: 'thanhtruc',
+  },
+  {
+    name: 'Đặng Nhật Nam',
+    orgIndex: 6,
+    posIndex: 5,
+    role: mockRoles[2]!,
+    sex: 'male' as const,
+    username: 'nhatnam',
+  },
+  {
+    name: 'Bùi Khánh Linh',
+    orgIndex: 6,
+    posIndex: 6,
+    role: mockRoles[2]!,
+    sex: 'female' as const,
+    username: 'khanhlinh',
+  },
+  {
+    name: 'Hồ Đức Long',
+    orgIndex: 9,
+    posIndex: 7,
+    role: mockRoles[2]!,
+    sex: 'male' as const,
+    username: 'duclong',
+  },
+];
 
-export const mockUsers: User[] = userSeed.map(
-  ([username, name, email, departmentIndex, positionIndex, sex], index) => ({
-    avatar: `/avatars/avatar-${index + 1}.svg`,
-    company: mockCompany,
-    company_id: mockCompany.id,
+export const mockUsers: User[] = userSeed.map((user, index) => {
+  const org = requiredItem(mockOrganizations, user.orgIndex);
+  const position = requiredItem(mockPositions, user.posIndex);
+  const id = `00000000-0000-4000-8000-${String(index + 10).padStart(12, '0')}`;
+
+  return {
+    avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`,
     created_at: timestamp,
-    departments: [requiredItem(mockDepartments, departmentIndex)],
-    email,
+    deleted_at: null,
+    email: `${user.username}@obee.vn`,
     email_verified_at: timestamp,
-    id: `f0000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
-    is_active: true,
-    name,
+    id,
+    matrix_user_id: `@${user.username}:obee.local`,
+    name: user.name,
+    organization: org,
+    organization_id: org.id,
     profile: {
-      address: index % 2 === 0 ? 'TP. Hồ Chí Minh' : 'Hà Nội',
-      age: 26 + index,
-      bank_account_number: `01234567${index}`,
-      birthday: `199${index}-0${(index % 8) + 1}-15`,
-      citizen_identification_card: `07920${index}00123`,
-      code: `OBE-${String(index + 1).padStart(3, '0')}`,
+      address: 'TP. Hồ Chí Minh',
+      age: 28 + (index % 10),
+      bank_account_number: `1903${String(index + 10000000)}`,
+      birthday: '1995-05-15',
+      citizen_identification_card: `079${String(index + 100000000)}`,
+      code: `NV${String(index + 1).padStart(3, '0')}`,
       created_at: timestamp,
       dependent_tax_identification_number: null,
-      education_level: 'university',
-      employee_type: index > 5 ? 'probation' : 'official',
-      health_insurance_card_number: `HI000${index}`,
-      joined_at: `202${(index % 5) + 1}-0${(index % 8) + 1}-01`,
-      personal_tax_identification_number: `TAX000${index}`,
-      phone_number: `09000000${String(index).padStart(2, '0')}`,
-      position: requiredItem(mockPositions, positionIndex),
-      position_id: requiredItem(mockPositions, positionIndex).id,
-      seniority: index + 1,
-      sex,
-      social_insurance_number: `SI000${index}`,
-      starting_date: `202${(index % 5) + 1}-0${(index % 8) + 1}-01`,
+      education_level: 'university' as const,
+      employee_type: 'Toàn thời gian',
+      health_insurance_card_number: `DN479${String(index + 10000000)}`,
+      joined_at: '2023-01-15',
+      personal_tax_identification_number: `800123456${index}`,
+      phone_number: `090123456${index}`,
+      position,
+      position_id: position.id,
+      seniority: 2,
+      sex: user.sex,
+      social_insurance_number: `791234567${index}`,
+      starting_date: '2023-02-01',
       updated_at: timestamp,
     },
-    roles: [
-      index === 0 ? requiredItem(mockRoles, 0) : requiredItem(mockRoles, 2),
-    ],
+    roles: [user.role],
     supabase_id: null,
     updated_at: timestamp,
-    username,
-  }),
-);
+    username: user.username,
+  };
+});
+
+export const mockUserTree: UserTreeSelectionUser[] = mockUsers.map((user) => ({
+  deleted_at: null,
+  id: user.id,
+  name: user.name,
+  organization: {
+    ...user.organization!,
+    parent: null,
+  },
+  organization_id: user.organization_id!,
+  profile: user.profile ? { code: user.profile.code } : null,
+  username: user.username,
+}));
 
 export const mockAuthUser: AuthUser = {
-  ...requiredItem(mockUsers, 0),
-  permissions: mockPermissions.map((permission) => permission.name),
+  ...mockUsers[0]!,
+  permissions: mockPermissions,
+  root_organization_id: mockOrganizations[0]!.id,
 };
 
-export const mockEquipments: Equipment[] = [
+export const mockFacilityResources: FacilityResource[] = [
   {
     code: 'ROOM-LOTUS',
     created_at: timestamp,
     id: '11000000-0000-4000-8000-000000000010',
     name: 'Phòng họp Lotus (Tầng 3 - 20 người)',
+    note: 'Có máy chiếu, bảng kính, màn hình hội nghị.',
+    quantity: 1,
+    type: 'room',
     updated_at: timestamp,
   },
   {
@@ -235,373 +364,1292 @@ export const mockEquipments: Equipment[] = [
     created_at: timestamp,
     id: '11000000-0000-4000-8000-000000000011',
     name: 'Phòng họp Orchid (Tầng 2 - 10 người)',
+    note: 'Phòng họp vừa, cách âm tốt.',
+    quantity: 1,
+    type: 'room',
+    updated_at: timestamp,
+  },
+  {
+    code: 'ROOM-LAB',
+    created_at: timestamp,
+    id: '11000000-0000-4000-8000-000000000012',
+    name: 'Phòng Sáng Tạo Lab (Tầng 4 - 8 người)',
+    note: 'Thích hợp brainstorm ý tưởng, có TV thông minh.',
+    quantity: 1,
+    type: 'room',
+    updated_at: timestamp,
+  },
+  {
+    code: 'ROOM-GRAND',
+    created_at: timestamp,
+    id: '11000000-0000-4000-8000-000000000013',
+    name: 'Hội trường Grand Hall (Tầng 1 - 100 người)',
+    note: 'Hội thảo toàn công ty, sự kiện lớn.',
+    quantity: 1,
+    type: 'room',
     updated_at: timestamp,
   },
   {
     code: 'EQ-PROJECTOR-01',
     created_at: timestamp,
-    id: '11000000-0000-4000-8000-000000000012',
-    name: 'Máy chiếu Sony 4K Laser',
-    updated_at: timestamp,
-  },
-  {
-    code: 'EQ-POLYCOM-01',
-    created_at: timestamp,
-    id: '11000000-0000-4000-8000-000000000013',
-    name: 'Bộ Hội nghị Polycom Group 500',
-    updated_at: timestamp,
-  },
-  {
-    code: 'EQ-JABRA-01',
-    created_at: timestamp,
-    id: '11000000-0000-4000-8000-000000000014',
-    name: 'Loa & Micro Jabra Speak 710',
-    updated_at: timestamp,
-  },
-  {
-    code: 'OB-MBP-023',
-    created_at: timestamp,
     id: '11000000-0000-4000-8000-000000000001',
-    name: 'MacBook Pro 14 M3',
+    name: 'Máy chiếu EPSON 4K Pro',
+    note: 'Độ phân giải 4K, hỗ trợ HDMI không dây.',
+    quantity: 3,
+    type: 'equipment',
     updated_at: timestamp,
   },
   {
-    code: 'OB-MON-041',
+    code: 'EQ-SPEAKER-01',
     created_at: timestamp,
     id: '11000000-0000-4000-8000-000000000002',
-    name: 'Dell UltraSharp U2723QE',
+    name: 'Loa mic Jabra Speak 710 Bluetooth',
+    note: 'Mic thu âm 360 độ bán kính 5m.',
+    quantity: 5,
+    type: 'equipment',
     updated_at: timestamp,
   },
   {
-    code: 'OB-IP15-008',
+    code: 'EQ-RALLY-PLUS',
     created_at: timestamp,
     id: '11000000-0000-4000-8000-000000000003',
-    name: 'iPhone 15 128GB',
+    name: 'Thiết bị họp trực tuyến Logitech Rally Plus',
+    note: 'Camera PTZ 4K Ultra-HD cùng hệ thống loa mô-đun.',
+    quantity: 2,
+    type: 'equipment',
     updated_at: timestamp,
   },
   {
-    code: 'OB-DELL-017',
+    code: 'EQ-MACBOOK-01',
     created_at: timestamp,
     id: '11000000-0000-4000-8000-000000000004',
-    name: 'Dell Latitude 7440',
+    name: 'Laptop Demo Macbook Pro M3 16-inch',
+    note: 'Dùng cho thuyết trình và triển lãm.',
+    quantity: 4,
+    type: 'equipment',
     updated_at: timestamp,
   },
 ];
 
+export const mockEquipments = mockFacilityResources;
+
 export const mockLocations: AttendanceLocation[] = [
   {
     created_at: timestamp,
-    departments: mockDepartments.slice(0, 3),
+    deleted_at: null,
     excluded_users: [],
     id: '12000000-0000-4000-8000-000000000001',
     ips: [
       {
         attendance_location_id: '12000000-0000-4000-8000-000000000001',
         created_at: timestamp,
-        id: '12100000-0000-4000-8000-000000000001',
+        id: '14000000-0000-4000-8000-000000000001',
         ip_address: '127.0.0.1',
         updated_at: timestamp,
       },
+      {
+        attendance_location_id: '12000000-0000-4000-8000-000000000001',
+        created_at: timestamp,
+        id: '14000000-0000-4000-8000-000000000002',
+        ip_address: '192.168.1.1',
+        updated_at: timestamp,
+      },
     ],
-    is_active: true,
     latitude: 10.7743,
     longitude: 106.7037,
-    name: 'Obee HQ - Quận 1',
-    radius_meters: 500,
+    name: 'Trụ sở Ouransoft - TP. Hồ Chí Minh',
+    organizations: [mockOrganizations[0]!],
+    radius_meters: 150,
     updated_at: timestamp,
-    users: mockUsers.slice(0, 4).map(({ id, name }) => ({ id, name })),
+    users: mockUsers.map((u) => ({ id: u.id, name: u.name })),
     validation_mode: 'either',
   },
   {
     created_at: timestamp,
-    departments: mockDepartments.slice(3),
+    deleted_at: null,
     excluded_users: [],
     id: '12000000-0000-4000-8000-000000000002',
-    ips: [],
-    is_active: true,
+    ips: [
+      {
+        attendance_location_id: '12000000-0000-4000-8000-000000000002',
+        created_at: timestamp,
+        id: '14000000-0000-4000-8000-000000000003',
+        ip_address: '10.0.0.1',
+        updated_at: timestamp,
+      },
+    ],
     latitude: 21.0285,
     longitude: 105.8542,
-    name: 'Chi nhánh Hà Nội',
-    radius_meters: 300,
+    name: 'Chi nhánh Hà Nội - Hoàn Kiếm',
+    organizations: [mockOrganizations[0]!],
+    radius_meters: 200,
     updated_at: timestamp,
-    users: mockUsers.slice(4).map(({ id, name }) => ({ id, name })),
+    users: [],
     validation_mode: 'location',
   },
 ];
 
 const notificationMessages = [
-  'Lịch đánh giá hiệu suất quý III đã được cập nhật.',
-  'Yêu cầu nghỉ phép của bạn đã được phê duyệt.',
-  'Hệ thống sẽ bảo trì từ 22:00 đến 23:00 tối nay.',
+  'Đã cập nhật hệ thống chấm công tự động thành công.',
+  'Bạn có đơn xin nghỉ phép mới cần phê duyệt.',
+  'Lịch họp Sprint Planning bắt đầu sau 15 phút.',
+  'Phòng họp Lotus đã được đặt cho sự kiện demo chiều nay.',
+  'Khối Công nghệ vừa hoàn thành bản phát hành v5.7.0.',
 ];
 
 export const mockNotifications: InboxNotification[] = notificationMessages.map(
   (message, index) => ({
-    created_at: `2026-10-13T0${8 - index}:00:00+07:00`,
+    created_at: timestamp,
     data: {
-      action: { id: `schedule-${index + 1}`, type: 'schedule_event' },
+      action: { id: `act-${index + 1}`, type: 'view' },
       actor: {
-        id: requiredItem(mockUsers, index).id,
-        name: requiredItem(mockUsers, index).name,
-        username: requiredItem(mockUsers, index).username,
+        id: mockUsers[0]!.id,
+        name: mockUsers[0]!.name,
+        username: mockUsers[0]!.username,
       },
-      kind: index === 0 ? 'schedule_event' : 'manual',
+      kind: 'system',
       message,
       meta: {},
-      subject: { id: `subject-${index + 1}`, type: 'notification' },
+      subject: { id: `subj-${index + 1}`, type: 'announcement' },
       version: 1,
     },
-    id: `13000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
-    kind: index === 0 ? 'schedule_event' : 'manual',
-    read_at: index === 2 ? timestamp : null,
-    type:
-      index === 0
-        ? String.raw`App\Notifications\ScheduleEventNotification`
-        : String.raw`App\Notifications\ManualNotification`,
+    id: `15000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
+    kind: 'system',
+    read_at: index === 0 ? null : timestamp,
+    type: 'system',
   }),
 );
 
-const todayStr = new Date().toISOString().slice(0, 10);
-
 const scheduleSeed = [
-  // Events for today (dynamic so timeline and calendar always have today data)
-  [
-    'Họp Kế hoạch & Chiến lược Sản phẩm',
-    `${todayStr}T08:30:00+07:00`,
-    `${todayStr}T11:30:00+07:00`,
-    'meeting',
-  ],
-  [
-    'Phỏng vấn Ứng viên Senior Frontend',
-    `${todayStr}T09:30:00+07:00`,
-    `${todayStr}T12:00:00+07:00`,
-    'interview',
-  ],
-  [
-    'Hội nghị Khách hàng & Đối tác Doanh nghiệp',
-    `${todayStr}T14:00:00+07:00`,
-    `${todayStr}T17:30:00+07:00`,
-    'seminar',
-  ],
-  // Fixed demo events in October 2026
-  [
-    'Họp Sprint Planning',
-    '2026-10-13T09:00:00+07:00',
-    '2026-10-10T10:00:00+07:00',
-    'meeting',
-  ],
-  [
-    'Review giao diện Obee',
-    '2026-10-13T14:00:00+07:00',
-    '2026-10-13T15:00:00+07:00',
-    'meetup',
-  ],
-  [
-    'Workshop nội bộ',
-    '2026-10-15T10:00:00+07:00',
-    '2026-10-15T11:30:00+07:00',
-    'training',
-  ],
-  [
-    'Phỏng vấn Frontend Developer',
-    '2026-10-16T14:30:00+07:00',
-    '2026-10-16T15:30:00+07:00',
-    'interview',
-  ],
-  [
-    'Standup hàng ngày',
-    '2026-10-14T08:30:00+07:00',
-    '2026-10-14T08:45:00+07:00',
-    'meeting',
-  ],
-  [
-    'Hội thảo công nghệ AI',
-    '2026-10-14T13:00:00+07:00',
-    '2026-10-14T16:00:00+07:00',
-    'seminar',
-  ],
-  [
-    'Họp tổng kết quý',
-    '2026-10-15T14:00:00+07:00',
-    '2026-10-15T16:30:00+07:00',
-    'meeting',
-  ],
-  [
-    'Công tác Đà Nẵng',
-    '2026-10-12T07:00:00+07:00',
-    '2026-10-14T18:00:00+07:00',
-    'business_trip',
-  ],
-  [
-    'Nghỉ lễ Quốc khánh',
-    '2026-10-17T00:00:00+07:00',
-    '2026-10-18T23:59:00+07:00',
-    'holiday',
-  ],
-] as const;
-
-export const mockSchedules: Schedule[] = scheduleSeed.map(
-  ([title, start, end, type], index) => {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    const isMultiDay =
-      startDate.toISOString().slice(0, 10) !==
-      endDate.toISOString().slice(0, 10);
-    return {
-      end,
-      event: {
-        company_name: mockCompany.name,
-        company_phone_number: '02873001234',
-        created_at: timestamp,
-        created_by: requiredItem(mockUsers, 0).id,
-        end_date: end,
-        has_reminder: true,
-        id: `14000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
-        is_general: index === 2,
-        note: 'Dữ liệu cố định cho bản demo tương tác.',
-        observers: mockUsers.slice(3, 5).map(({ avatar, email, id, name }) => {
-          if (email === null) {
-            throw new Error(
-              `Mock schedule observer ${id} requires an email.`,
-            );
-          }
-          return { avatar, email, id, name };
-        }),
-        participants: mockUsers
-          .slice(0, 3)
-          .map(({ avatar, email, id, name }) => {
-            if (email === null) {
-              throw new Error(
-                `Mock schedule participant ${id} requires an email.`,
-              );
-            }
-            return { avatar, email, id, name };
-          }),
-        equipment_ids:
-          index === 0
-            ? ['11000000-0000-4000-8000-000000000010', '11000000-0000-4000-8000-000000000012']
-            : index === 1
-              ? ['11000000-0000-4000-8000-000000000011']
-              : index === 2
-                ? ['11000000-0000-4000-8000-000000000010', '11000000-0000-4000-8000-000000000013']
-                : index === 3
-                  ? ['11000000-0000-4000-8000-000000000010', '11000000-0000-4000-8000-000000000012']
-                  : index === 4
-                    ? ['11000000-0000-4000-8000-000000000011']
-                    : [],
-        equipments:
-          index === 0
-            ? [
-                {
-                  code: 'ROOM-LOTUS',
-                  id: '11000000-0000-4000-8000-000000000010',
-                  name: 'Phòng họp Lotus (Tầng 3 - 20 người)',
-                },
-                {
-                  code: 'EQ-PROJECTOR-01',
-                  id: '11000000-0000-4000-8000-000000000012',
-                  name: 'Máy chiếu Sony 4K Laser',
-                },
-              ]
-            : index === 1
-              ? [
-                  {
-                    code: 'ROOM-ORCHID',
-                    id: '11000000-0000-4000-8000-000000000011',
-                    name: 'Phòng họp Orchid (Tầng 2 - 10 người)',
-                  },
-                ]
-              : index === 2
-                ? [
-                    {
-                      code: 'ROOM-LOTUS',
-                      id: '11000000-0000-4000-8000-000000000010',
-                      name: 'Phòng họp Lotus (Tầng 3 - 20 người)',
-                    },
-                    {
-                      code: 'EQ-POLYCOM-01',
-                      id: '11000000-0000-4000-8000-000000000013',
-                      name: 'Bộ Hội nghị Polycom Group 500',
-                    },
-                  ]
-                : index === 3
-                  ? [
-                      {
-                        code: 'ROOM-LOTUS',
-                        id: '11000000-0000-4000-8000-000000000010',
-                        name: 'Phòng họp Lotus (Tầng 3 - 20 người)',
-                      },
-                      {
-                        code: 'EQ-PROJECTOR-01',
-                        id: '11000000-0000-4000-8000-000000000012',
-                        name: 'Máy chiếu Sony 4K Laser',
-                      },
-                    ]
-                  : index === 4
-                    ? [
-                        {
-                          code: 'ROOM-ORCHID',
-                          id: '11000000-0000-4000-8000-000000000011',
-                          name: 'Phòng họp Orchid (Tầng 2 - 10 người)',
-                        },
-                      ]
-                    : [],
-        meeting_url:
-          index === 0
-            ? 'https://meet.google.com/obee-strategy-plan'
-            : index === 1
-              ? 'https://zoom.us/j/9887766554'
-              : index === 2
-                ? 'https://teams.microsoft.com/l/meetup-join/obee-partner'
-                : index === 3
-                  ? 'https://meet.google.com/obee-sprint-plan'
-                  : index === 4
-                    ? 'https://zoom.us/j/9876543210'
-                    : index === 8
-                      ? 'https://teams.microsoft.com/l/meetup-join/obee-ai-workshop'
-                      : null,
-        physical_address:
-          index === 0 || index === 2 || index === 3
-            ? 'Phòng họp Lotus (Tầng 3 - 20 người)'
-            : index === 1 || index === 4
-              ? 'Phòng họp Orchid (Tầng 2 - 10 người)'
-              : index === 10
-                ? 'Chi nhánh Đà Nẵng - 120 Bạch Đằng'
-                : 'Phòng họp Lotus',
-        privacy: 'public',
-        remind_range: 'minute',
-        remind_value: 15,
-        repeat_end_time: null,
-        repeat_pattern: null,
-        repeat_start_time: null,
-        repeat_type: null,
-        schedule_type: isMultiDay ? 'multiple_days' : 'ordinary',
-        start_date: start,
-        title,
-        type,
-        updated_at: timestamp,
-        updated_by: null,
-      },
-      event_id: `14000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
-      id: `15000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
-      one_day: !isMultiDay,
-      remind_at: start,
-      start,
-    };
+  {
+    end: '2026-10-15T10:00:00+07:00',
+    id: 'schedule-today-planning',
+    location: 'Phòng họp Lotus',
+    privacy: 'public' as const,
+    scheduleType: 'one_day' as const,
+    start: '2026-10-15T08:30:00+07:00',
+    title: 'Họp giao ban & Kế hoạch tuần',
+    type: 'meeting' as const,
   },
-);
+  {
+    end: '2026-10-15T15:30:00+07:00',
+    id: 'schedule-today-review',
+    location: 'Phòng họp Orchid',
+    privacy: 'private' as const,
+    scheduleType: 'one_day' as const,
+    start: '2026-10-15T14:00:00+07:00',
+    title: 'Review thiết kế & Trải nghiệm giao diện mới',
+    type: 'training' as const,
+  },
+  {
+    end: '2026-10-16T17:00:00+07:00',
+    id: 'schedule-weekly-demo',
+    location: 'Online: Google Meet',
+    privacy: 'public' as const,
+    scheduleType: 'one_day' as const,
+    start: '2026-10-16T15:00:00+07:00',
+    title: 'Demo sản phẩm Sprint 42 cho khách hàng',
+    type: 'meetup' as const,
+  },
+  {
+    end: '2026-10-20T18:00:00+07:00',
+    id: 'schedule-seminar',
+    location: 'Grand Hall',
+    privacy: 'public' as const,
+    scheduleType: 'multiple_days' as const,
+    start: '2026-10-18T09:00:00+07:00',
+    title: 'Hội thảo Chuyển đổi số & Quản trị Tự động',
+    type: 'seminar' as const,
+  },
+];
+
+export const mockSchedules: Schedule[] = scheduleSeed.map((item, index) => ({
+  end: item.end,
+  event: {
+    can_edit: true,
+    company_name: null,
+    company_phone_number: null,
+    created_at: timestamp,
+    created_by: mockUsers[0]!.id,
+    creator: { id: mockUsers[0]!.id, name: mockUsers[0]!.name },
+    department_company_id: mockOrganizations[0]!.id,
+    end_date: item.end.slice(0, 10),
+    end_time: item.end.slice(11, 19),
+    has_reminder: true,
+    id: `event-${index + 1}`,
+    is_general: true,
+    is_joined: true,
+    location: item.location,
+    location_type: item.location.includes('Online') ? 'online' : 'physical',
+    meeting_url: item.location.includes('Online')
+      ? 'https://meet.google.com/obee-demo'
+      : null,
+    note: 'Lịch demo tương tác trực tiếp.',
+    observers: [mockUsers[1]!, mockUsers[2]!].map((u) => ({
+      avatar: u.avatar,
+      email: u.email,
+      id: u.id,
+      name: u.name,
+    })),
+    one_day: item.scheduleType === 'one_day',
+    participants: mockUsers.map((u) => ({
+      avatar: u.avatar,
+      email: u.email,
+      id: u.id,
+      name: u.name,
+    })),
+    physical_address: null,
+    privacy: item.privacy,
+    remind_range: 'minute' as const,
+    remind_value: 15,
+    repeat_end_time: null,
+    repeat_pattern: null,
+    repeat_start_time: null,
+    repeat_type: null,
+    schedule_type:
+      item.scheduleType === 'one_day'
+        ? ('ordinary' as const)
+        : item.scheduleType,
+    start_date: item.start.slice(0, 10),
+    start_time: item.start.slice(11, 19),
+    title: item.title,
+    type: item.type,
+    updated_at: timestamp,
+    updated_by: mockUsers[0]!.id,
+  },
+  event_id: `event-${index + 1}`,
+  id: item.id,
+  one_day: item.scheduleType === 'one_day',
+  remind_at: null,
+  repeat: false,
+  start: item.start,
+  user_id: mockUsers[0]!.id,
+}));
 
 export const mockAttendanceRange = Array.from({ length: 31 }, (_, index) => {
   const day = String(index + 1).padStart(2, '0');
-  const isWeekend = [3, 4, 10, 11, 17, 18, 24, 25, 31].includes(index + 1);
+  const date = `2026-10-${day}`;
+  const isWeekend = index % 7 === 5 || index % 7 === 6;
+
+  if (isWeekend) {
+    return {
+      date,
+      first_check_in_at: null,
+      last_check_out_at: null,
+      logs: [],
+      total_work_seconds: 0,
+    };
+  }
+
+  const first_check_in_at = `${date}T08:2${index % 8}:00+07:00`;
+  const last_check_out_at = `${date}T17:3${index % 9}:00+07:00`;
+
   return {
-    date: `2026-10-${day}`,
-    first_check_in_at: isWeekend
-      ? null
-      : `2026-10-${day}T08:${index % 4}5:00+07:00`,
-    last_check_out_at: isWeekend ? null : `2026-10-${day}T17:30:00+07:00`,
-    logs_count: isWeekend ? 0 : 2,
-    on_leave: index + 1 === 6,
-    total_work_seconds: isWeekend ? 0 : 31_500,
+    date,
+    first_check_in_at,
+    last_check_out_at,
+    logs: [
+      {
+        attendance_location_id: mockLocations[0]!.id,
+        checked_at: first_check_in_at,
+        id: `log-in-${day}`,
+        ip_address: '127.0.0.1',
+        latitude: 10.7743,
+        location: mockLocations[0]!,
+        longitude: 106.7037,
+        source: 'web',
+        user_id: mockUsers[0]!.id,
+      },
+      {
+        attendance_location_id: mockLocations[0]!.id,
+        checked_at: last_check_out_at,
+        id: `log-out-${day}`,
+        ip_address: '127.0.0.1',
+        latitude: 10.7743,
+        location: mockLocations[0]!,
+        longitude: 106.7037,
+        source: 'web',
+        user_id: mockUsers[0]!.id,
+      },
+    ],
+    total_work_seconds: 28_800 + (index % 5) * 600,
   };
 });
+
+function getRelativeDate(offsetDays = 0): string {
+  const date = new Date();
+  date.setDate(date.getDate() + offsetDays);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+// Personal Tasks
+const personalTaskListIds = {
+  admin: '71000000-0000-4000-8000-000000000004',
+  default: '71000000-0000-4000-8000-000000000001',
+  digital: '71000000-0000-4000-8000-000000000003',
+  hr: '71000000-0000-4000-8000-000000000005',
+  sprint: '71000000-0000-4000-8000-000000000002',
+} as const;
+
+function personalTaskId(index: number): string {
+  return `72000000-0000-4000-8000-${String(index).padStart(12, '0')}`;
+}
+
+export const mockPersonalTaskLists: PersonalTaskList[] = [
+  {
+    created_at: timestamp,
+    id: personalTaskListIds.default,
+    is_default: true,
+    title: 'Việc của tôi',
+    updated_at: timestamp,
+    user_id: mockUsers[0]!.id,
+  },
+  {
+    created_at: timestamp,
+    id: personalTaskListIds.sprint,
+    is_default: false,
+    title: 'Sprint 42 - Phát hành Obee Web & App',
+    updated_at: timestamp,
+    user_id: mockUsers[0]!.id,
+  },
+  {
+    created_at: timestamp,
+    id: personalTaskListIds.digital,
+    is_default: false,
+    title: 'Dự án Chuyển đổi số Doanh nghiệp',
+    updated_at: timestamp,
+    user_id: mockUsers[0]!.id,
+  },
+  {
+    created_at: timestamp,
+    id: personalTaskListIds.admin,
+    is_default: false,
+    title: 'Quản trị & Báo cáo Ban Giám đốc',
+    updated_at: timestamp,
+    user_id: mockUsers[0]!.id,
+  },
+  {
+    created_at: timestamp,
+    id: personalTaskListIds.hr,
+    is_default: false,
+    title: 'Tuyển dụng & Đào tạo Nhân sự',
+    updated_at: timestamp,
+    user_id: mockUsers[0]!.id,
+  },
+];
+
+export const mockPersonalTasks: PersonalTask[] = [
+  // --- Danh mục: Việc của tôi (task-list-default) ---
+  {
+    completed_at: null,
+    created_at: timestamp,
+    deleted_at: null,
+    due_date: getRelativeDate(0), // Hôm nay
+    extension: {
+      created_at: timestamp,
+      recurrence: {
+        count: null,
+        frequency: 'week',
+        interval: 1,
+        until: null,
+        weekdays: [2, 4, 6],
+      },
+      starred: true,
+      task_id: personalTaskId(1),
+      updated_at: timestamp,
+    },
+    hidden: false,
+    id: personalTaskId(1),
+    notes:
+      'Tổng hợp danh sách giao diện hoàn chỉnh gồm: Chấm công GPS, Phân ca làm việc, Quản lý nghỉ phép, Đặt phòng & thiết bị, Personal Tasks và Chat nội bộ.',
+    parent_id: null,
+    position: 0,
+    status: 'needsAction',
+    task_list_id: personalTaskListIds.default,
+    title: 'Chuẩn bị kịch bản & slide demo tính năng mới cho khách hàng',
+    updated_at: timestamp,
+    user_id: mockUsers[0]!.id,
+  },
+  {
+    completed_at: null,
+    created_at: timestamp,
+    deleted_at: null,
+    due_date: getRelativeDate(0),
+    extension: {
+      created_at: timestamp,
+      recurrence: null,
+      starred: false,
+      task_id: personalTaskId(101),
+      updated_at: timestamp,
+    },
+    hidden: false,
+    id: personalTaskId(101),
+    notes:
+      'Kiểm tra độ phản hồi và thao tác mượt mà trong khung mô phỏng điện thoại.',
+    parent_id: personalTaskId(1),
+    position: 0,
+    status: 'needsAction',
+    task_list_id: personalTaskListIds.default,
+    title: 'Kiểm tra hiển thị trên mobile preview (/mobile/) và desktop',
+    updated_at: timestamp,
+    user_id: mockUsers[0]!.id,
+  },
+  {
+    completed_at: null,
+    created_at: timestamp,
+    deleted_at: null,
+    due_date: getRelativeDate(0),
+    extension: {
+      created_at: timestamp,
+      recurrence: null,
+      starred: false,
+      task_id: personalTaskId(102),
+      updated_at: timestamp,
+    },
+    hidden: false,
+    id: personalTaskId(102),
+    notes:
+      'Dữ liệu gồm: Đơn phép năm được duyệt, đơn công tác chờ duyệt, đơn không lương bị từ chối.',
+    parent_id: personalTaskId(1),
+    position: 1,
+    status: 'needsAction',
+    task_list_id: personalTaskListIds.default,
+    title: 'Chuẩn bị dữ liệu mẫu cho quy trình duyệt đơn nghỉ phép 3 bước',
+    updated_at: timestamp,
+    user_id: mockUsers[0]!.id,
+  },
+  {
+    completed_at: timestamp,
+    created_at: timestamp,
+    deleted_at: null,
+    due_date: getRelativeDate(0),
+    extension: {
+      created_at: timestamp,
+      recurrence: null,
+      starred: false,
+      task_id: personalTaskId(103),
+      updated_at: timestamp,
+    },
+    hidden: false,
+    id: personalTaskId(103),
+    notes: 'Đã hoàn thành slide PowerPoint tóm tắt 10 trang.',
+    parent_id: personalTaskId(1),
+    position: 2,
+    status: 'completed',
+    task_list_id: personalTaskListIds.default,
+    title: 'Soạn slide tóm tắt luồng chấm công & ca làm việc',
+    updated_at: timestamp,
+    user_id: mockUsers[0]!.id,
+  },
+  {
+    completed_at: null,
+    created_at: timestamp,
+    deleted_at: null,
+    due_date: getRelativeDate(0), // Hôm nay
+    extension: {
+      created_at: timestamp,
+      recurrence: {
+        count: null,
+        frequency: 'day',
+        interval: 1,
+        until: null,
+        weekdays: null,
+      },
+      starred: false,
+      task_id: personalTaskId(2),
+      updated_at: timestamp,
+    },
+    hidden: false,
+    id: personalTaskId(2),
+    notes:
+      'Theo dõi tình hình chấm công tại Trụ sở TP.HCM và Chi nhánh Hà Nội qua màn hình Quản lý chấm công.',
+    parent_id: null,
+    position: 1,
+    status: 'needsAction',
+    task_list_id: personalTaskListIds.default,
+    title: 'Điểm danh và kiểm tra quân số các phòng ban đầu giờ',
+    updated_at: timestamp,
+    user_id: mockUsers[0]!.id,
+  },
+  {
+    completed_at: null,
+    created_at: timestamp,
+    deleted_at: null,
+    due_date: getRelativeDate(1), // Ngày mai
+    extension: {
+      created_at: timestamp,
+      recurrence: null,
+      starred: true,
+      task_id: personalTaskId(3),
+      updated_at: timestamp,
+    },
+    hidden: false,
+    id: personalTaskId(3),
+    notes:
+      'Kiểm tra luồng gửi đơn nghỉ phép, tính toán số ngày công bị ảnh hưởng qua bảng Coverage Table và khấu trừ số dư phép.',
+    parent_id: null,
+    position: 2,
+    status: 'needsAction',
+    task_list_id: personalTaskListIds.default,
+    title: 'Rà soát quy trình duyệt đơn nghỉ phép & công tác tự động',
+    updated_at: timestamp,
+    user_id: mockUsers[0]!.id,
+  },
+  {
+    completed_at: null,
+    created_at: timestamp,
+    deleted_at: null,
+    due_date: getRelativeDate(-1), // Quá hạn (Overdue)
+    extension: {
+      created_at: timestamp,
+      recurrence: null,
+      starred: false,
+      task_id: personalTaskId(4),
+      updated_at: timestamp,
+    },
+    hidden: false,
+    id: personalTaskId(4),
+    notes:
+      'Bổ sung camera hội nghị Logitech Rally Plus và 2 micro không dây vào danh mục tài nguyên có thể đặt trước.',
+    parent_id: null,
+    position: 3,
+    status: 'needsAction',
+    task_list_id: personalTaskListIds.default,
+    title: 'Cập nhật danh sách trang thiết bị phòng họp Lotus lên hệ thống',
+    updated_at: timestamp,
+    user_id: mockUsers[0]!.id,
+  },
+  {
+    completed_at: timestamp,
+    created_at: timestamp,
+    deleted_at: null,
+    due_date: getRelativeDate(-2),
+    extension: {
+      created_at: timestamp,
+      recurrence: null,
+      starred: false,
+      task_id: personalTaskId(5),
+      updated_at: timestamp,
+    },
+    hidden: false,
+    id: personalTaskId(5),
+    notes:
+      'Đã hoàn tất cấu hình điểm chấm công với bản đồ Mapbox và chế độ xác thực kết hợp GPS + IP.',
+    parent_id: null,
+    position: 4,
+    status: 'completed',
+    task_list_id: personalTaskListIds.default,
+    title: 'Thiết lập bán kính điểm chấm công chi nhánh TP.HCM (150m)',
+    updated_at: timestamp,
+    user_id: mockUsers[0]!.id,
+  },
+
+  // --- Danh mục: Sprint 42 (task-list-sprint) ---
+  {
+    completed_at: null,
+    created_at: timestamp,
+    deleted_at: null,
+    due_date: getRelativeDate(2),
+    extension: {
+      created_at: timestamp,
+      recurrence: {
+        count: null,
+        frequency: 'week',
+        interval: 1,
+        until: null,
+        weekdays: [5],
+      },
+      starred: true,
+      task_id: personalTaskId(6),
+      updated_at: timestamp,
+    },
+    hidden: false,
+    id: personalTaskId(6),
+    notes:
+      'Nội dung: Trải nghiệm sử dụng Vite 8, tối ưu hóa bundle kích thước lớn và lập trình phản ứng với Vue 3 Composition API.',
+    parent_id: null,
+    position: 0,
+    status: 'needsAction',
+    task_list_id: personalTaskListIds.sprint,
+    title: 'Họp Retro cuối tuần & chia sẻ chuyên môn Tech Talk',
+    updated_at: timestamp,
+    user_id: mockUsers[0]!.id,
+  },
+  {
+    completed_at: null,
+    created_at: timestamp,
+    deleted_at: null,
+    due_date: getRelativeDate(3),
+    extension: {
+      created_at: timestamp,
+      recurrence: null,
+      starred: false,
+      task_id: personalTaskId(7),
+      updated_at: timestamp,
+    },
+    hidden: false,
+    id: personalTaskId(7),
+    notes:
+      'Lazy load các biểu đồ ECharts và cache dữ liệu thống kê tổng lượt truy cập.',
+    parent_id: null,
+    position: 1,
+    status: 'needsAction',
+    task_list_id: personalTaskListIds.sprint,
+    title: 'Tối ưu hóa thời gian tải trang Dashboard Analytics',
+    updated_at: timestamp,
+    user_id: mockUsers[0]!.id,
+  },
+  {
+    completed_at: null,
+    created_at: timestamp,
+    deleted_at: null,
+    due_date: getRelativeDate(4),
+    extension: {
+      created_at: timestamp,
+      recurrence: null,
+      starred: true,
+      task_id: personalTaskId(8),
+      updated_at: timestamp,
+    },
+    hidden: false,
+    id: personalTaskId(8),
+    notes:
+      'Kiểm tra phát hiện trùng lịch (conflict detection) khi 2 sự kiện cùng đặt phòng họp Orchid vào cùng khung giờ.',
+    parent_id: null,
+    position: 2,
+    status: 'needsAction',
+    task_list_id: personalTaskListIds.sprint,
+    title: 'Kiểm thử hồi quy toàn bộ chức năng đặt lịch phòng họp & thiết bị',
+    updated_at: timestamp,
+    user_id: mockUsers[0]!.id,
+  },
+  {
+    completed_at: timestamp,
+    created_at: timestamp,
+    deleted_at: null,
+    due_date: getRelativeDate(-3),
+    extension: {
+      created_at: timestamp,
+      recurrence: null,
+      starred: false,
+      task_id: personalTaskId(9),
+      updated_at: timestamp,
+    },
+    hidden: false,
+    id: personalTaskId(9),
+    notes:
+      'Đã rà soát và bổ sung toàn bộ locale keys cho Personal Tasks, Absence Requests, Work Shifts và Schedules.',
+    parent_id: null,
+    position: 3,
+    status: 'completed',
+    task_list_id: personalTaskListIds.sprint,
+    title: 'Hoàn thiện bản dịch đa ngôn ngữ Tiếng Việt & Tiếng Anh',
+    updated_at: timestamp,
+    user_id: mockUsers[0]!.id,
+  },
+
+  // --- Danh mục: Dự án Chuyển đổi số Doanh nghiệp (task-list-digital) ---
+  {
+    completed_at: null,
+    created_at: timestamp,
+    deleted_at: null,
+    due_date: getRelativeDate(5),
+    extension: {
+      created_at: timestamp,
+      recurrence: null,
+      starred: true,
+      task_id: personalTaskId(10),
+      updated_at: timestamp,
+    },
+    hidden: false,
+    id: personalTaskId(10),
+    notes:
+      'Định nghĩa cây cơ cấu: Công ty -> Khối -> Phòng ban -> Đội nhóm, hiển thị trực quan bằng D3 Organization Graph.',
+    parent_id: null,
+    position: 0,
+    status: 'needsAction',
+    task_list_id: personalTaskListIds.digital,
+    title: 'Xây dựng sơ đồ phân cấp tổ chức dạng cây cho toàn bộ chi nhánh',
+    updated_at: timestamp,
+    user_id: mockUsers[0]!.id,
+  },
+  {
+    completed_at: null,
+    created_at: timestamp,
+    deleted_at: null,
+    due_date: getRelativeDate(7),
+    extension: {
+      created_at: timestamp,
+      recurrence: {
+        count: null,
+        frequency: 'month',
+        interval: 1,
+        until: null,
+        weekdays: null,
+      },
+      starred: false,
+      task_id: personalTaskId(11),
+      updated_at: timestamp,
+    },
+    hidden: false,
+    id: personalTaskId(11),
+    notes:
+      'Kiểm tra các bản ghi audit log trong hệ thống, đảm bảo không có giao dịch mutation nào gặp lỗi 500.',
+    parent_id: null,
+    position: 1,
+    status: 'needsAction',
+    task_list_id: personalTaskListIds.digital,
+    title: 'Sao lưu cơ sở dữ liệu định kỳ và kiểm tra nhật ký Mutation Logs',
+    updated_at: timestamp,
+    user_id: mockUsers[0]!.id,
+  },
+  {
+    completed_at: timestamp,
+    created_at: timestamp,
+    deleted_at: null,
+    due_date: getRelativeDate(-4),
+    extension: {
+      created_at: timestamp,
+      recurrence: null,
+      starred: true,
+      task_id: personalTaskId(12),
+      updated_at: timestamp,
+    },
+    hidden: false,
+    id: personalTaskId(12),
+    notes:
+      'Cho phép tìm kiếm địa chỉ tự động, kéo thả ghim vị trí và trực quan hóa vòng tròn bán kính cho phép chấm công.',
+    parent_id: null,
+    position: 2,
+    status: 'completed',
+    task_list_id: personalTaskListIds.digital,
+    title: 'Tích hợp bản đồ GPS Mapbox định vị điểm chấm công',
+    updated_at: timestamp,
+    user_id: mockUsers[0]!.id,
+  },
+
+  // --- Danh mục: Quản trị & Báo cáo Ban Giám đốc (task-list-admin) ---
+  {
+    completed_at: null,
+    created_at: timestamp,
+    deleted_at: null,
+    due_date: getRelativeDate(0), // Hôm nay
+    extension: {
+      created_at: timestamp,
+      recurrence: null,
+      starred: true,
+      task_id: personalTaskId(13),
+      updated_at: timestamp,
+    },
+    hidden: false,
+    id: personalTaskId(13),
+    notes:
+      'Xuất dữ liệu chấm công tháng 10, danh sách nhân viên thiếu công và các ca làm việc đặc thù.',
+    parent_id: null,
+    position: 0,
+    status: 'needsAction',
+    task_list_id: personalTaskListIds.admin,
+    title: 'Gửi báo cáo tổng hợp công ca tháng cho phòng Kế toán',
+    updated_at: timestamp,
+    user_id: mockUsers[0]!.id,
+  },
+  {
+    completed_at: null,
+    created_at: timestamp,
+    deleted_at: null,
+    due_date: getRelativeDate(3),
+    extension: {
+      created_at: timestamp,
+      recurrence: null,
+      starred: true,
+      task_id: personalTaskId(14),
+      updated_at: timestamp,
+    },
+    hidden: false,
+    id: personalTaskId(14),
+    notes:
+      'Dự trù ngân sách mua sắm bản quyền phần mềm, hạ tầng đám mây và nâng cấp phòng họp thông minh.',
+    parent_id: null,
+    position: 1,
+    status: 'needsAction',
+    task_list_id: personalTaskListIds.admin,
+    title: 'Phê duyệt kế hoạch ngân sách quý 4 cho Khối Công nghệ',
+    updated_at: timestamp,
+    user_id: mockUsers[0]!.id,
+  },
+  {
+    completed_at: timestamp,
+    created_at: timestamp,
+    deleted_at: null,
+    due_date: getRelativeDate(-1),
+    extension: {
+      created_at: timestamp,
+      recurrence: null,
+      starred: false,
+      task_id: personalTaskId(15),
+      updated_at: timestamp,
+    },
+    hidden: false,
+    id: personalTaskId(15),
+    notes:
+      'Đã thiết lập khung giờ và khoảng thời gian giao ca chuẩn xác cho Khối Vận hành.',
+    parent_id: null,
+    position: 2,
+    status: 'completed',
+    task_list_id: personalTaskListIds.admin,
+    title:
+      'Cấu hình 4 mẫu ca làm việc tiêu chuẩn (Hành chính, Sáng, Chiều, Đêm)',
+    updated_at: timestamp,
+    user_id: mockUsers[0]!.id,
+  },
+
+  // --- Danh mục: Tuyển dụng & Đào tạo Nhân sự (task-list-hr) ---
+  {
+    completed_at: null,
+    created_at: timestamp,
+    deleted_at: null,
+    due_date: getRelativeDate(1), // Ngày mai
+    extension: {
+      created_at: timestamp,
+      recurrence: null,
+      starred: false,
+      task_id: personalTaskId(16),
+      updated_at: timestamp,
+    },
+    hidden: false,
+    id: personalTaskId(16),
+    notes:
+      'Phỏng vấn trực tuyến qua Google Meet với ứng viên Trần Minh Tuấn, đánh giá chuyên sâu về Vue 3 và TypeScript.',
+    parent_id: null,
+    position: 0,
+    status: 'needsAction',
+    task_list_id: personalTaskListIds.hr,
+    title: 'Phỏng vấn ứng viên vị trí Senior Frontend Developer (Vòng 2)',
+    updated_at: timestamp,
+    user_id: mockUsers[0]!.id,
+  },
+  {
+    completed_at: null,
+    created_at: timestamp,
+    deleted_at: null,
+    due_date: getRelativeDate(6),
+    extension: {
+      created_at: timestamp,
+      recurrence: null,
+      starred: false,
+      task_id: personalTaskId(17),
+      updated_at: timestamp,
+    },
+    hidden: false,
+    id: personalTaskId(17),
+    notes:
+      'Hướng dẫn cài đặt ứng dụng Obee Mobile, quy định chấm công và gửi đơn xin nghỉ trực tuyến.',
+    parent_id: null,
+    position: 1,
+    status: 'needsAction',
+    task_list_id: personalTaskListIds.hr,
+    title: 'Biên soạn tài liệu Onboarding nhân sự mới tháng 11',
+    updated_at: timestamp,
+    user_id: mockUsers[0]!.id,
+  },
+  {
+    completed_at: timestamp,
+    created_at: timestamp,
+    deleted_at: null,
+    due_date: getRelativeDate(-5),
+    extension: {
+      created_at: timestamp,
+      recurrence: null,
+      starred: false,
+      task_id: personalTaskId(18),
+      updated_at: timestamp,
+    },
+    hidden: false,
+    id: personalTaskId(18),
+    notes:
+      '92% phản hồi tích cực về tốc độ và tính tiện lợi của tính năng chấm công 1 chạm trên di động.',
+    parent_id: null,
+    position: 2,
+    status: 'completed',
+    task_list_id: personalTaskListIds.hr,
+    title: 'Khảo sát ý kiến nhân viên về trải nghiệm giao diện Obee mới',
+    updated_at: timestamp,
+    user_id: mockUsers[0]!.id,
+  },
+];
+
+// Absence Requests
+const relatedUser = (u: User) => ({
+  avatar: u.avatar,
+  created_at: u.created_at,
+  deleted_at: u.deleted_at,
+  email: u.email,
+  email_verified_at: u.email_verified_at,
+  id: u.id,
+  matrix_user_id: u.matrix_user_id,
+  name: u.name,
+  organization_id: u.organization_id,
+  supabase_id: u.supabase_id,
+  updated_at: u.updated_at,
+  username: u.username,
+});
+
+export const mockLeaveBalance: LeaveBalance = {
+  cycle_end: '2026-12-31',
+  cycle_start: '2026-01-01',
+  entitlement: 14,
+  remaining: 10.5,
+  used: 3.5,
+};
+
+export const mockAbsenceRequests: AbsenceRequest[] = [
+  {
+    address: null,
+    approval_note: 'Đã duyệt, chúc bạn có kỳ nghỉ vui vẻ.',
+    approved_at: '2026-10-10T14:00:00+07:00',
+    created_at: '2026-10-09T09:00:00+07:00',
+    duration_days: 1.5,
+    end_at: '2026-10-21T17:30:00+07:00',
+    id: 'absence-req-1',
+    leave_type: 'ANNUAL',
+    reason: 'Nghỉ phép thường niên giải quyết việc gia đình.',
+    rejected_at: null,
+    requested_by: mockUsers[1]!.id,
+    requester: relatedUser(mockUsers[1]!),
+    reviewer: relatedUser(mockUsers[0]!),
+    reviewer_id: mockUsers[0]!.id,
+    root_organization: mockOrganizations[0]!,
+    root_organization_id: mockOrganizations[0]!.id,
+    start_at: '2026-10-20T08:00:00+07:00',
+    status: 'approved',
+    submitted_at: '2026-10-09T09:00:00+07:00',
+    updated_at: '2026-10-10T14:00:00+07:00',
+    user: relatedUser(mockUsers[1]!),
+    user_id: mockUsers[1]!.id,
+  },
+  {
+    address: 'Văn phòng Chi nhánh Hà Nội, Quận Hoàn Kiếm',
+    approval_note: null,
+    approved_at: null,
+    created_at: '2026-10-14T10:30:00+07:00',
+    duration_days: 3,
+    end_at: '2026-10-28T17:30:00+07:00',
+    id: 'absence-req-2',
+    leave_type: 'BUSINESS_TRIP',
+    reason:
+      'Công tác hỗ trợ triển khai hệ thống cho khách hàng tại chi nhánh phía Bắc.',
+    rejected_at: null,
+    requested_by: mockUsers[2]!.id,
+    requester: relatedUser(mockUsers[2]!),
+    reviewer: relatedUser(mockUsers[0]!),
+    reviewer_id: mockUsers[0]!.id,
+    root_organization: mockOrganizations[0]!,
+    root_organization_id: mockOrganizations[0]!.id,
+    start_at: '2026-10-26T08:00:00+07:00',
+    status: 'pending',
+    submitted_at: '2026-10-14T10:30:00+07:00',
+    updated_at: '2026-10-14T10:30:00+07:00',
+    user: relatedUser(mockUsers[2]!),
+    user_id: mockUsers[2]!.id,
+  },
+  {
+    address: null,
+    approval_note:
+      'Trùng lịch sprint release quan trọng, vui lòng sắp xếp lại sau.',
+    approved_at: null,
+    created_at: '2026-10-11T11:00:00+07:00',
+    duration_days: 1,
+    end_at: '2026-10-16T17:30:00+07:00',
+    id: 'absence-req-3',
+    leave_type: 'UNPAID',
+    reason: 'Việc cá nhân đột xuất.',
+    rejected_at: '2026-10-12T08:30:00+07:00',
+    requested_by: mockUsers[3]!.id,
+    requester: relatedUser(mockUsers[3]!),
+    reviewer: relatedUser(mockUsers[0]!),
+    reviewer_id: mockUsers[0]!.id,
+    root_organization: mockOrganizations[0]!,
+    root_organization_id: mockOrganizations[0]!.id,
+    start_at: '2026-10-16T08:00:00+07:00',
+    status: 'rejected',
+    submitted_at: '2026-10-11T11:00:00+07:00',
+    updated_at: '2026-10-12T08:30:00+07:00',
+    user: relatedUser(mockUsers[3]!),
+    user_id: mockUsers[3]!.id,
+  },
+];
+
+// Work Shifts
+export const mockWorkShifts: WorkShift[] = [
+  {
+    created_at: timestamp,
+    created_by: mockUsers[0]!.id,
+    id: 'shift-office',
+    name: 'Ca Hành Chính (08:00 - 17:30)',
+    periods: [
+      {
+        created_at: timestamp,
+        end_day_offset: 0,
+        end_time: '12:00:00',
+        id: 'shift-p-1',
+        start_day_offset: 0,
+        start_time: '08:00:00',
+        updated_at: timestamp,
+        work_shift_id: 'shift-office',
+      },
+      {
+        created_at: timestamp,
+        end_day_offset: 0,
+        end_time: '17:30:00',
+        id: 'shift-p-2',
+        start_day_offset: 0,
+        start_time: '13:30:00',
+        updated_at: timestamp,
+        work_shift_id: 'shift-office',
+      },
+    ],
+    root_organization_id: mockOrganizations[0]!.id,
+    updated_at: timestamp,
+  },
+  {
+    created_at: timestamp,
+    created_by: mockUsers[0]!.id,
+    id: 'shift-morning',
+    name: 'Ca Sáng (06:00 - 14:00)',
+    periods: [
+      {
+        created_at: timestamp,
+        end_day_offset: 0,
+        end_time: '14:00:00',
+        id: 'shift-p-3',
+        start_day_offset: 0,
+        start_time: '06:00:00',
+        updated_at: timestamp,
+        work_shift_id: 'shift-morning',
+      },
+    ],
+    root_organization_id: mockOrganizations[0]!.id,
+    updated_at: timestamp,
+  },
+  {
+    created_at: timestamp,
+    created_by: mockUsers[0]!.id,
+    id: 'shift-afternoon',
+    name: 'Ca Chiều (14:00 - 22:00)',
+    periods: [
+      {
+        created_at: timestamp,
+        end_day_offset: 0,
+        end_time: '22:00:00',
+        id: 'shift-p-4',
+        start_day_offset: 0,
+        start_time: '14:00:00',
+        updated_at: timestamp,
+        work_shift_id: 'shift-afternoon',
+      },
+    ],
+    root_organization_id: mockOrganizations[0]!.id,
+    updated_at: timestamp,
+  },
+  {
+    created_at: timestamp,
+    created_by: mockUsers[0]!.id,
+    id: 'shift-night',
+    name: 'Ca Đêm (22:00 - 06:00)',
+    periods: [
+      {
+        created_at: timestamp,
+        end_day_offset: 1,
+        end_time: '06:00:00',
+        id: 'shift-p-5',
+        start_day_offset: 0,
+        start_time: '22:00:00',
+        updated_at: timestamp,
+        work_shift_id: 'shift-night',
+      },
+    ],
+    root_organization_id: mockOrganizations[0]!.id,
+    updated_at: timestamp,
+  },
+];
+
+export const mockWorkUserShifts: WorkUserShift[] = mockUsers.flatMap(
+  (user, userIdx) => {
+    const dates = [
+      '2026-10-12',
+      '2026-10-13',
+      '2026-10-14',
+      '2026-10-15',
+      '2026-10-16',
+    ];
+    const shift = mockWorkShifts[userIdx % 2 === 0 ? 0 : 1]!;
+
+    return dates.map((date, dIdx) => ({
+      created_at: timestamp,
+      created_by: mockUsers[0]!.id,
+      creator: relatedUser(mockUsers[0]!),
+      end_at: `${date}T17:30:00+07:00`,
+      id: `user-shift-${user.id}-${dIdx}`,
+      root_organization: mockOrganizations[0]!,
+      root_organization_id: mockOrganizations[0]!.id,
+      start_at: `${date}T08:00:00+07:00`,
+      updated_at: timestamp,
+      user: relatedUser(user),
+      user_id: user.id,
+      work_date: date,
+      work_periods: [
+        {
+          end_at: `${date}T17:30:00+07:00`,
+          start_at: `${date}T08:00:00+07:00`,
+        },
+      ],
+      work_shift: shift,
+      work_shift_id: shift.id,
+    }));
+  },
+);
+
+// Http Mutation Logs
+export const mockHttpMutationLogs: HttpMutationLog[] = [
+  {
+    action: 'PersonalTasks@Store',
+    app_url: 'https://app.obee.vn',
+    code: 'MUT-001',
+    code_snippet: 'StorePersonalTaskAction.php:42',
+    git_sha_1: 'dc3b45b1',
+    id: 'f0000000-0000-4000-8000-000000000001',
+    instance_id: '99000000-0000-4000-8000-000000000001',
+    is_error: false,
+    logged_at: '2026-10-15T09:30:00+07:00',
+    payload: JSON.stringify({
+      recurrence: { frequency: 'week', interval: 1 },
+      title: 'Chuẩn bị kịch bản demo',
+    }),
+    requested_by: mockUsers[0]!.id,
+    requested_by_user: {
+      avatar: mockUsers[0]!.avatar,
+      created_at: timestamp,
+      deleted_at: null,
+      email: mockUsers[0]!.email,
+      email_verified_at: timestamp,
+      id: mockUsers[0]!.id,
+      name: mockUsers[0]!.name,
+      organization_id: mockOrganizations[0]!.id,
+      supabase_id: null,
+      updated_at: timestamp,
+      username: mockUsers[0]!.username,
+    },
+    response: JSON.stringify({
+      id: 'task-1',
+      message: 'Tạo công việc thành công.',
+    }),
+    response_status: 201,
+    trace: null,
+    uri: '/api/personal-tasks/tasks',
+  },
+  {
+    action: 'AbsenceRequests@Approve',
+    app_url: 'https://app.obee.vn',
+    code: 'MUT-002',
+    code_snippet: 'ApproveAbsenceRequestAction.php:28',
+    git_sha_1: 'dc3b45b1',
+    id: 'f0000000-0000-4000-8000-000000000002',
+    instance_id: '99000000-0000-4000-8000-000000000001',
+    is_error: false,
+    logged_at: '2026-10-15T08:50:00+07:00',
+    payload: JSON.stringify({
+      approval_note: 'Đã duyệt đơn nghỉ phép thường niên.',
+    }),
+    requested_by: mockUsers[0]!.id,
+    requested_by_user: {
+      avatar: mockUsers[0]!.avatar,
+      created_at: timestamp,
+      deleted_at: null,
+      email: mockUsers[0]!.email,
+      email_verified_at: timestamp,
+      id: mockUsers[0]!.id,
+      name: mockUsers[0]!.name,
+      organization_id: mockOrganizations[0]!.id,
+      supabase_id: null,
+      updated_at: timestamp,
+      username: mockUsers[0]!.username,
+    },
+    response: JSON.stringify({ id: 'absence-req-1', status: 'approved' }),
+    response_status: 200,
+    trace: null,
+    uri: '/api/absence-requests/absence-req-1/approve',
+  },
+  {
+    action: 'AttendanceLocations@Update',
+    app_url: 'https://app.obee.vn',
+    code: 'MUT-003',
+    code_snippet: 'UpdateAttendanceLocationAction.php:33',
+    git_sha_1: 'dc3b45b1',
+    id: 'f0000000-0000-4000-8000-000000000003',
+    instance_id: '99000000-0000-4000-8000-000000000001',
+    is_error: false,
+    logged_at: '2026-10-14T16:15:00+07:00',
+    payload: JSON.stringify({
+      name: 'Trụ sở Ouransoft - TP. Hồ Chí Minh',
+      radius_meters: 150,
+    }),
+    requested_by: mockUsers[0]!.id,
+    requested_by_user: {
+      avatar: mockUsers[0]!.avatar,
+      created_at: timestamp,
+      deleted_at: null,
+      email: mockUsers[0]!.email,
+      email_verified_at: timestamp,
+      id: mockUsers[0]!.id,
+      name: mockUsers[0]!.name,
+      organization_id: mockOrganizations[0]!.id,
+      supabase_id: null,
+      updated_at: timestamp,
+      username: mockUsers[0]!.username,
+    },
+    response: JSON.stringify({
+      id: '12000000-0000-4000-8000-000000000001',
+      radius_meters: 150,
+    }),
+    response_status: 200,
+    trace: null,
+    uri: '/api/attendance-locations/12000000-0000-4000-8000-000000000001',
+  },
+  {
+    action: 'WorkUserShifts@AssignRange',
+    app_url: 'https://app.obee.vn',
+    code: 'MUT-004',
+    code_snippet: 'AssignUserShiftRangeAction.php:55',
+    git_sha_1: 'dc3b45b1',
+    id: 'f0000000-0000-4000-8000-000000000004',
+    instance_id: '99000000-0000-4000-8000-000000000001',
+    is_error: false,
+    logged_at: '2026-10-14T11:20:00+07:00',
+    payload: JSON.stringify({
+      date_from: '2026-10-12',
+      date_to: '2026-10-16',
+      work_shift_id: 'shift-office',
+    }),
+    requested_by: mockUsers[0]!.id,
+    requested_by_user: {
+      avatar: mockUsers[0]!.avatar,
+      created_at: timestamp,
+      deleted_at: null,
+      email: mockUsers[0]!.email,
+      email_verified_at: timestamp,
+      id: mockUsers[0]!.id,
+      name: mockUsers[0]!.name,
+      organization_id: mockOrganizations[0]!.id,
+      supabase_id: null,
+      updated_at: timestamp,
+      username: mockUsers[0]!.username,
+    },
+    response: JSON.stringify({ count: 40, message: 'Phân ca thành công.' }),
+    response_status: 201,
+    trace: null,
+    uri: '/api/work-user-shifts/range',
+  },
+];

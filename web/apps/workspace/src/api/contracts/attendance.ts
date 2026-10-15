@@ -1,6 +1,6 @@
 import { z } from '@vben/common-ui';
 
-import { departmentSchema } from './department';
+import { organizationSchema } from './organization';
 
 export const attendanceValidationModeSchema = z.enum([
   'location',
@@ -29,19 +29,22 @@ const attendanceLocationBaseSchema = z.object({
   longitude: z.number(),
   radius_meters: z.number(),
   validation_mode: attendanceValidationModeSchema,
-  is_active: z.boolean(),
   created_at: z.string(),
   updated_at: z.string(),
+  deleted_at: z.string().nullable(),
 });
 
 export const attendanceLocationSchema = attendanceLocationBaseSchema.extend({
   ips: z.array(attendanceLocationIpSchema),
   users: z.array(attendanceUserSchema),
-  departments: z.array(departmentSchema),
+  organizations: z.array(organizationSchema),
   excluded_users: z.array(attendanceUserSchema),
 });
 
 export const attendanceContextSchema = z.object({
+  has_shift_today: z.boolean(),
+  shift_start_at: z.string().nullable().optional(),
+  shift_end_at: z.string().nullable().optional(),
   ip_address: z.string().nullable(),
   user: attendanceUserSchema,
   assigned_locations: z.array(attendanceLocationSchema),
@@ -66,6 +69,9 @@ export const attendanceDayDetailSchema = z.object({
   first_check_in_at: z.string().nullable(),
   last_check_out_at: z.string().nullable(),
   total_work_seconds: z.number().int().nonnegative(),
+  is_late: z.boolean().optional(),
+  shift_start_at: z.string().nullable().optional(),
+  shift_end_at: z.string().nullable().optional(),
   logs: z.array(attendanceLogSchema),
 });
 
@@ -76,6 +82,9 @@ export const attendanceRangeSummarySchema = z.object({
   logs_count: z.number().int().nonnegative(),
   on_leave: z.boolean(),
   total_work_seconds: z.number().int().nonnegative(),
+  is_late: z.boolean().optional(),
+  shift_start_at: z.string().nullable().optional(),
+  shift_end_at: z.string().nullable().optional(),
 });
 
 export const attendancePunchPayloadSchema = z

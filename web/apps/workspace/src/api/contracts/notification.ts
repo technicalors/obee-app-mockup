@@ -44,6 +44,12 @@ export const notificationSchema = z
     path: ['kind'],
   });
 
+export const notificationDeletionSchema = z
+  .object({
+    id: z.string().uuid(),
+  })
+  .strict();
+
 export const notificationIndexQuerySchema = paginationQuerySchema
   .extend({
     is_read: z.union([z.literal(0), z.literal(1)]).optional(),
@@ -65,6 +71,7 @@ export const markAllNotificationsReadResponseSchema = z
   .strict();
 
 export type InboxNotification = z.infer<typeof notificationSchema>;
+export type NotificationDeletion = z.infer<typeof notificationDeletionSchema>;
 export type ManualNotificationPayload = z.input<
   typeof manualNotificationPayloadSchema
 >;

@@ -1,0 +1,150 @@
+{
+  "routeTitle": "考勤地点",
+  "title": "考勤地点",
+  "description": "管理考勤地点、半径、坐标、IP和验证模式。",
+  "listTitle": "考勤地点列表",
+  "listDescription": "查看和配置地理围栏、IP规则和验证标准。",
+  "columns": {
+    "name": "地点名称",
+    "coordinates": "坐标（纬度/经度）",
+    "radius": "半径",
+    "validationMode": "验证模式",
+    "status": "状态",
+    "createdAt": "创建时间",
+    "actions": "操作"
+  },
+  "filters": {
+    "search": "搜索",
+    "searchPlaceholder": "地点名称...",
+    "validationMode": "验证模式",
+    "status": "状态"
+  },
+  "fields": {
+    "name": "地点名称",
+    "latitude": "纬度",
+    "longitude": "经度",
+    "radius": "半径（米）",
+    "validationMode": "验证模式",
+    "status": "状态",
+    "ips": "允许的 IP",
+    "users": "应用员工",
+    "excludedUsers": "例外员工",
+    "mapLocation": "地图位置",
+    "createdAt": "创建时间",
+    "updatedAt": "更新时间",
+    "organizations": "适用组织"
+  },
+  "placeholders": {
+    "name": "请输入",
+    "validationMode": "请选择",
+    "latitude": "e.g. 10.762622",
+    "longitude": "e.g. 106.660172",
+    "radius": "e.g. 100",
+    "ips": "输入 IP 地址",
+    "mapSearch": "搜索地点...",
+    "users": "选择适用员工",
+    "excludedUsers": "选择例外员工",
+    "organizationSearch": "搜索组织",
+    "organizations": "选择适用组织"
+  },
+  "sections": {
+    "basic": "基本信息",
+    "location": "GPS 坐标",
+    "ips": "IP 地址规则",
+    "assignments": "分配与例外",
+    "information": "系统信息"
+  },
+  "tabs": {
+    "basic": "基本信息",
+    "ips": "IP 列表",
+    "users": "员工列表",
+    "organizations": "组织列表"
+  },
+  "help": {
+    "largeRadiusMap": "半径超过 10 公里时，地图仅显示地点标记，不显示覆盖区域。",
+    "mapPicker": "点击或拖动地图标记以选择坐标。",
+    "ips": "启用 IP 验证时，员工只能从这些 IP 打卡。",
+    "ipInput": "将每个 IP 地址或 IP 范围添加为标签。",
+    "users": "这些员工即使不属于所选组织，也可以使用此考勤地点。",
+    "excludedUsers": "这些员工即使属于适用组织，也不能在此地点打卡。",
+    "organizations": "选择可以使用此考勤地点的组织。留空表示适用于所有组织。"
+  },
+  "actions": {
+    "create": "创建地点",
+    "view": "查看详情",
+    "edit": "编辑",
+    "delete": "删除",
+    "locateCurrent": "使用当前位置",
+    "switchToSatellite": "切换到卫星地图",
+    "switchToStandard": "切换到标准地图",
+    "save": "保存",
+    "cancel": "取消",
+    "restore": "恢复"
+  },
+  "validationMode": {
+    "location": "仅 GPS",
+    "ip": "仅 IP",
+    "both": "GPS 和 IP",
+    "either": "GPS 或 IP"
+  },
+  "values": {
+    "anyIp": "任意 IP",
+    "allUsers": "所有员工",
+    "allOrganizations": "所有组织"
+  },
+  "status": {
+    "active": "启用",
+    "deleted": "已删除",
+    "all": "全部"
+  },
+  "create": {
+    "title": "创建考勤地点"
+  },
+  "edit": {
+    "title": "编辑考勤地点"
+  },
+  "detail": {
+    "title": "考勤地点详情"
+  },
+  "delete": {
+    "title": "删除考勤地点",
+    "description": "您确定要删除 {name} 吗？员工将无法在此打卡，该地点之后可以恢复。"
+  },
+  "validation": {
+    "radiusRange": "半径必须为 1 到 {max} 米之间的整数。",
+    "nameRequired": "请输入地点名称",
+    "latitudeRequired": "请输入有效纬度（-90 至 90）",
+    "longitudeRequired": "请输入有效经度（-180 至 180）",
+    "radiusRequired": "请输入有效半径",
+    "validationModeRequired": "请选择验证模式"
+  },
+  "messages": {
+    "created": "考勤地点创建成功",
+    "updated": "考勤地点更新成功",
+    "deleted": "考勤地点删除成功",
+    "mapboxKeyMissing": "缺少 Mapbox 访问密钥。",
+    "mapboxUnavailable": "WebGL 不可用或 Mapbox 加载失败。",
+    "geolocationPermissionDenied": "位置访问权限被拒绝。",
+    "geolocationSuccess": "已成功获取当前位置。",
+    "geolocationTimeout": "获取当前位置超时。",
+    "geolocationUnknown": "获取当前位置时发生未知错误。",
+    "geolocationUnavailable": "位置信息不可用。",
+    "geolocationUnsupported": "当前浏览器不支持获取 GPS 位置。",
+    "unexpectedError": "发生未知错误",
+    "restored": "考勤地点已恢复"
+  },
+  "customAssign": {
+    "applicableUsers": "适用员工",
+    "searchActiveUsers": "搜索适用员工...",
+    "noActiveUsers": "未找到适用员工",
+    "excludeBtn": "排除",
+    "customRules": "自定义规则（包含 / 排除）",
+    "noCustomRules": "暂无自定义规则",
+    "includeBtn": "包含员工",
+    "excludeBtnAction": "排除员工",
+    "includePlaceholder": "选择要包含的员工...",
+    "excludePlaceholder": "选择要排除的员工...",
+    "selectedOrganizations": "已选组织",
+    "noOrganizationSelected": "尚未选择组织"
+  }
+}

@@ -1,9 +1,11 @@
 import type { ResourcePaginationQuery, UserIndexQuery } from '#/api';
 
+export type UserStatusFilter = 'active' | 'all' | 'deleted';
+
 export interface UserTableFilters {
-  with_inactive?: boolean;
   role_names?: string[];
   search?: string;
+  status?: UserStatusFilter;
 }
 
 export function createUserIndexQuery(
@@ -16,8 +18,12 @@ export function createUserIndexQuery(
     query.search = filters.search;
   }
 
-  if (filters.with_inactive) {
-    query.with_inactive = 1;
+  if (filters.status === 'all') {
+    query.trashed = 'with';
+  }
+
+  if (filters.status === 'deleted') {
+    query.trashed = 'only';
   }
 
   if (filters.role_names !== undefined && filters.role_names.length > 0) {

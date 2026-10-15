@@ -1,0 +1,104 @@
+{
+  "routeTitle": "Tổ chức",
+  "listTitle": "Danh sách tổ chức",
+  "listDescription": "Quản lý tên, loại, mã số thuế và phân cấp tổ chức.",
+  "columns": {
+    "name": "Tên",
+    "type": "Loại",
+    "parent": "Trực thuộc",
+    "taxIdentificationNumber": "Mã số thuế",
+    "createdAt": "Ngày tạo",
+    "actions": "Thao tác"
+  },
+  "filters": {
+    "search": "Tìm kiếm",
+    "searchPlaceholder": "Tìm tổ chức...",
+    "type": "Loại"
+  },
+  "fields": {
+    "name": "Tên",
+    "type": "Loại",
+    "parent": "Tổ chức trực thuộc",
+    "taxIdentificationNumber": "Mã số thuế"
+  },
+  "sections": {
+    "organization": "Thông tin tổ chức"
+  },
+  "types": {
+    "company": "Công ty",
+    "department": "Phòng ban",
+    "division": "Bộ phận",
+    "team": "Nhóm",
+    "unit": "Tổ"
+  },
+  "actions": {
+    "viewTree": "Xem cây tổ chức",
+    "createRoot": "Thêm tổ chức",
+    "createChild": "Tạo tổ chức cấp dưới",
+    "view": "Xem chi tiết",
+    "edit": "Chỉnh sửa",
+    "delete": "Xóa",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "backToList": "Quay lại danh sách",
+    "create": "Tạo"
+  },
+  "values": {
+    "root": "Tổ chức gốc",
+    "parentLoading": "Đang tải tổ chức trực thuộc...",
+    "parentUnavailable": "Không thể tải tổ chức trực thuộc"
+  },
+  "create": {
+    "title": "Tạo tổ chức"
+  },
+  "edit": {
+    "title": "Chỉnh sửa tổ chức"
+  },
+  "detail": {
+    "title": "Chi tiết tổ chức"
+  },
+  "tree": {
+    "title": "Cây tổ chức",
+    "description": "Xem các tổ chức theo quan hệ cấp trên và cấp dưới.",
+    "empty": "Không tìm thấy tổ chức.",
+    "root": "Tổ chức gốc",
+    "parent": "Trực thuộc",
+    "memberCount": "Số lượng thành viên",
+    "members": {
+      "name": "Tên",
+      "username": "Tên đăng nhập",
+      "avatar": "Avatar",
+      "roles": "Vai trò",
+      "empty": "Không có nhân viên trực thuộc."
+    },
+    "chart": {
+      "zoomIn": "Phóng to",
+      "zoomOut": "Thu nhỏ",
+      "fit": "Vừa khung nhìn",
+      "expandAll": "Mở rộng tất cả",
+      "collapseAll": "Thu gọn tất cả",
+      "expand": "Mở rộng",
+      "collapse": "Thu gọn"
+    }
+  },
+  "delete": {
+    "title": "Xóa tổ chức",
+    "description": "Bạn có chắc muốn xóa {name}? Hành động này không thể hoàn tác."
+  },
+  "validation": {
+    "nameRequired": "Vui lòng nhập tên tổ chức",
+    "typeParentMismatch": "Vui lòng chọn tổ chức trực thuộc",
+    "taxRootOnly": "Mã số thuế chỉ được đặt cho tổ chức gốc."
+  },
+  "users": {
+    "title": "Danh sách thành viên",
+    "name": "Tên",
+    "username": "Tên đăng nhập"
+  },
+  "messages": {
+    "created": "Đã tạo tổ chức",
+    "updated": "Đã cập nhật tổ chức",
+    "deleted": "Đã xóa tổ chức",
+    "unexpectedError": "Đã xảy ra lỗi không xác định"
+  }
+}

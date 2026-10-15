@@ -1,0 +1,85 @@
+{
+  "messages": {
+    "avatarUpdated": "Profile photo updated",
+    "unexpectedError": "An unexpected error occurred"
+  },
+  "actions": {
+    "changeAvatar": "Change photo",
+    "back": "Back",
+    "backToList": "Back to list",
+    "detail": "Detail"
+  },
+  "columns": {
+    "actions": "Actions",
+    "award": "Award",
+    "content": "Content",
+    "date": "Date",
+    "employeeCode": "Employee Code",
+    "fullName": "Full Name",
+    "gender": "Gender",
+    "joinedAt": "Joined Date",
+    "level": "Level",
+    "note": "Note",
+    "position": "Position",
+    "positionDepartment": "Position / Department",
+    "sequence": "#",
+    "startingDate": "Official Date",
+    "organization": "Organization"
+  },
+  "fields": {
+    "address": "Address",
+    "age": "Age (years)",
+    "citizenId": "Citizen ID",
+    "contactInfo": "Contact information",
+    "currentPosition": "Current position",
+    "dateOfBirth": "Date of birth",
+    "dependentTaxId": "Dependent tax ID",
+    "educationLevel": "Education level",
+    "email": "Email",
+    "employeeCode": "Employee code",
+    "fullName": "Full name",
+    "gender": "Gender",
+    "healthInsurance": "Health insurance number",
+    "joinedAt": "Joined date",
+    "personalTaxId": "Personal tax ID",
+    "phone": "Phone",
+    "seniority": "Seniority (years)",
+    "socialInsurance": "Social insurance number",
+    "workUnit": "Work unit"
+  },
+  "emptyHistory": {
+    "achievements": "No achievements or awards recorded",
+    "achievementsDesc": "Awards, recognitions, or notable achievements will be displayed here when recorded.",
+    "educationHistory": "No education or training history recorded",
+    "educationHistoryDesc": "Educational degrees, qualifications, and certificates will be displayed here when updated.",
+    "hrNotes": "No HR notes recorded",
+    "hrNotesDesc": "Internal notes, assessments, and remarks from human resources will be kept here.",
+    "noEmployeeFound": "Employee record not found",
+    "noEmployeeFoundDesc": "This employee record does not exist or has been removed from the system.",
+    "workHistory": "No work history recorded",
+    "workHistoryDesc": "Appointments, departmental transfers, and promotions will appear here when recorded."
+  },
+  "filters": {
+    "search": "Search",
+    "searchPlaceholder": "Employee code, full name..."
+  },
+  "listDescription": "Employee list and history records.",
+  "listTitle": "Work History",
+  "noEmployeeSelected": "Please select an employee to view their record",
+  "pageDescription": "Review employee profile information and historical records.",
+  "pageTitle": "Employee history",
+  "placeholder": "No data available",
+  "sections": {
+    "achievements": "Achievements",
+    "educationHistory": "Education History",
+    "hrNotes": "HR Notes",
+    "personalInfo": "Personal Information",
+    "workHistory": "Work History"
+  },
+  "selectEmployee": "Select employee",
+  "selectEmployeePlaceholder": "Search by name or employee code...",
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  }
+}

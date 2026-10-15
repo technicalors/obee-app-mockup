@@ -1,0 +1,211 @@
+{
+  "routeTitle": "Lịch trình",
+  "title": "Lịch trình",
+  "description": "Truy cập không gian làm việc lịch trình mới trong giao diện Obee hiện tại.",
+  "currentMonth": "Tháng hiện tại",
+  "loading": "Đang tải dữ liệu lịch trình",
+  "loadedCount": "Đã tải {count} lịch",
+  "empty": "Không có lịch trình nào khớp với bộ lọc này.",
+  "calendar": {
+    "showMore": "+{count} lịch khác",
+    "showLess": "Thu gọn"
+  },
+  "messages": {
+    "createSuccess": "Tạo lịch mới thành công",
+    "deleteSuccess": "Xóa lịch thành công",
+    "eventUnavailable": "Lịch này không còn tồn tại hoặc bạn không có quyền xem",
+    "joinSuccess": "Tham gia lịch thành công",
+    "leaveSuccess": "Rời lịch thành công",
+    "updateSuccess": "Cập nhật lịch thành công",
+    "unexpectedError": "Đã xảy ra lỗi không mong muốn"
+  },
+  "delete": {
+    "title": "Xóa lịch",
+    "description": "Xóa lịch trình này? Hành động này không thể hoàn tác.",
+    "confirm": "Xóa lịch",
+    "cancel": "Hủy"
+  },
+  "form": {
+    "editTitle": "Chỉnh sửa lịch",
+    "reuseTitle": "Dùng lại lịch",
+    "createTitle": "Tạo lịch",
+    "createDescription": "Tạo lịch từ ngữ cảnh ngày đã chọn.",
+    "cancel": "Hủy",
+    "create": "Tạo",
+    "save": "Lưu",
+    "sections": {
+      "event": "Thông tin sự kiện",
+      "schedule": "Thời gian và lặp lại",
+      "people": "Người liên quan và quyền riêng tư",
+      "details": "Địa điểm và ghi chú",
+      "reminders": "Nhắc lịch"
+    },
+    "placeholders": {
+      "title": "Nhập tiêu đề lịch",
+      "eventType": "Chọn loại sự kiện",
+      "scheduleType": "Chọn loại lịch",
+      "repeatType": "Chọn kiểu lặp",
+      "startDate": "Chọn ngày bắt đầu",
+      "endDate": "Chọn ngày kết thúc",
+      "startTime": "Chọn giờ bắt đầu",
+      "endTime": "Chọn giờ kết thúc",
+      "participants": "Chọn người tham gia",
+      "observers": "Chọn người theo dõi",
+      "privacy": "Chọn quyền riêng tư",
+      "location": "Nhập địa điểm",
+      "note": "Nhập ghi chú",
+      "reminderValue": "Nhập giá trị nhắc",
+      "reminderRange": "Chọn đơn vị nhắc"
+    },
+    "title": "Tiêu đề",
+    "eventType": "Loại sự kiện",
+    "scheduleType": "Loại lịch",
+    "startDate": "Ngày bắt đầu",
+    "endDate": "Ngày kết thúc",
+    "startTime": "Thời điểm bắt đầu",
+    "endTime": "Thời điểm kết thúc",
+    "participants": "Người tham gia",
+    "observers": "Người theo dõi",
+    "privacy": "Quyền riêng tư",
+    "isGeneral": "Lịch công ty",
+    "hasReminder": "Bật nhắc lịch",
+    "reminderRange": "Khoảng nhắc",
+    "reminderValue": "Giá trị nhắc",
+    "repeatTitle": "Thiết lập lặp lại",
+    "repeat": {
+      "type": "Kiểu lặp lại",
+      "startTime": "Giờ bắt đầu lặp lại",
+      "endTime": "Giờ kết thúc lặp lại",
+      "timeRange": "Khung giờ lặp lại",
+      "dayPattern": "Ngày lặp lại",
+      "monthPattern": "Ngày trong tháng",
+      "selectAll": "Chọn tất cả"
+    },
+    "note": "Ghi chú",
+    "location": "Địa chỉ",
+    "userOptionsLoading": "Đang tải nhân viên",
+    "modes": {
+      "create": "Chế độ tạo",
+      "edit": "Chế độ chỉnh sửa",
+      "reuse": "Chế độ dùng lại"
+    },
+    "validation": {
+      "companyNameInvalid": "Tên công ty không được để trống.",
+      "companyNameTooLong": "Tên công ty không được vượt quá 255 ký tự.",
+      "companyPhoneNumberInvalid": "Số điện thoại không được để trống.",
+      "companyPhoneNumberTooLong": "Số điện thoại không được vượt quá 32 ký tự.",
+      "dateInvalid": "Vui lòng nhập ngày và giờ hợp lệ.",
+      "endBeforeStart": "Ngày giờ kết thúc phải bằng hoặc sau ngày giờ bắt đầu.",
+      "observersDuplicate": "Không thể chọn trùng người theo dõi.",
+      "noteTooLong": "Ghi chú không được vượt quá 65.535 ký tự.",
+      "physicalAddressInvalid": "Địa chỉ không được để trống.",
+      "physicalAddressTooLong": "Địa chỉ không được vượt quá 255 ký tự.",
+      "participantsDuplicate": "Không thể chọn trùng người tham gia.",
+      "participantsRequired": "Chọn ít nhất một người tham gia.",
+      "reminderFieldsUnexpected": "Xóa khoảng và giá trị nhắc khi tắt nhắc lịch.",
+      "reminderRangeRequired": "Chọn khoảng nhắc.",
+      "reminderValueInvalid": "Giá trị nhắc phải là số nguyên từ 1 đến 100.",
+      "reminderValueRequired": "Nhập giá trị nhắc từ 1 đến 100.",
+      "repeatEndBeforeStart": "Giờ kết thúc lặp phải bằng hoặc sau giờ bắt đầu.",
+      "repeatEndTimeRequired": "Chọn giờ kết thúc lặp.",
+      "repeatFieldsUnexpected": "Xóa thiết lập lặp khi lịch không lặp lại.",
+      "repeatPatternInvalid": "Chọn ít nhất một ngày lặp hợp lệ.",
+      "repeatPatternUnexpected": "Xóa mẫu lặp với lịch lặp hàng ngày.",
+      "repeatStartTimeRequired": "Chọn giờ bắt đầu lặp.",
+      "repeatTypeRequired": "Chọn kiểu lặp.",
+      "timeInvalid": "Vui lòng nhập giờ hợp lệ.",
+      "titleRequired": "Nhập tiêu đề.",
+      "titleTooLong": "Tiêu đề không được vượt quá 255 ký tự.",
+      "userIdInvalid": "Mã người dùng được chọn không hợp lệ. Hãy tải lại danh sách nhân viên."
+    },
+    "typeOptions": {
+      "training": "Đào tạo",
+      "seminar": "Hội thảo",
+      "interview": "Phỏng vấn",
+      "meetup": "Gặp mặt",
+      "meeting": "Cuộc họp",
+      "holiday": "Nghỉ lễ",
+      "business_trip": "Công tác"
+    },
+    "scheduleTypeOptions": {
+      "ordinary": "Thông thường",
+      "multiple_days": "Nhiều ngày",
+      "repeat": "Lặp lại"
+    },
+    "repeatOptions": {
+      "daily": "Hằng ngày",
+      "weekly": "Hằng tuần",
+      "monthly": "Hằng tháng"
+    },
+    "privacyOptions": {
+      "public": "Công khai",
+      "private": "Riêng tư"
+    },
+    "reminderRangeOptions": {
+      "minute": "Phút",
+      "hour": "Giờ",
+      "day": "Ngày"
+    },
+    "rootOrganizationRequiredTitle": "Cần tổ chức gốc",
+    "rootOrganizationRequiredDescription": "Tài khoản cần thuộc một tổ chức gốc trước khi tạo lịch."
+  },
+  "detail": {
+    "title": "Chi tiết lịch trình",
+    "actions": {
+      "edit": "Chỉnh sửa",
+      "delete": "Xóa",
+      "reuse": "Dùng lại",
+      "join": "Tham gia",
+      "leave": "Rời lịch"
+    },
+    "reuse": {
+      "mode": "Bản nháp dùng lại",
+      "description": "Xem trước bản nháp dùng lại trước khi biểu mẫu Epic 3 hoàn thiện."
+    },
+    "type": "Loại",
+    "time": "Thời gian",
+    "participants": "Người tham gia",
+    "observers": "Người theo dõi",
+    "showMoreUsers": "+{count} người xem thêm",
+    "collapseUsers": "Thu gọn",
+    "reminder": "Nhắc nhở",
+    "reminderOff": "Không có nhắc nhở",
+    "reminderOn": "Nhắc trước {value} {range}",
+    "reminderRange": {
+      "minute": "phút",
+      "hour": "giờ",
+      "day": "ngày"
+    },
+    "location": "Địa điểm",
+    "note": "Ghi chú",
+    "isGeneral": "Lịch công ty",
+    "multiDay": "Lịch nhiều ngày",
+    "repeat": {
+      "daily": "Lặp lại hằng ngày",
+      "weekly": "Lặp lại hằng tuần",
+      "monthly": "Lặp lại hằng tháng"
+    },
+    "typeLabels": {
+      "training": "Đào tạo",
+      "seminar": "Hội thảo",
+      "interview": "Phỏng vấn",
+      "meetup": "Gặp mặt",
+      "meeting": "Cuộc họp",
+      "holiday": "Nghỉ lễ",
+      "business_trip": "Công tác"
+    }
+  },
+  "actions": {
+    "all": "Tất cả lịch trình",
+    "create": "Tạo",
+    "created": "Lịch trình đã tạo",
+    "previousMonth": "Tháng trước",
+    "nextMonth": "Tháng sau",
+    "today": "Hôm nay",
+    "selectMonth": "Chọn tháng",
+    "selectCalendars": "Lịch của nhân viên",
+    "selectVisibility": "Hiển thị",
+    "participated": "Lịch trình đã tham gia",
+    "observed": "Lịch trình đang theo dõi"
+  }
+}

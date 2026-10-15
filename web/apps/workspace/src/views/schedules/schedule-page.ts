@@ -1,6 +1,6 @@
 import type { Dayjs } from 'dayjs';
 
-import type { Company, Department, User } from '#/api/contracts';
+import type { Organization, User } from '#/api/contracts';
 import type { Schedule, ScheduleEventWritePayload } from '#/api/schedules';
 
 export interface ScheduleAuthoringDraft {
@@ -278,49 +278,39 @@ export function getMonthGridDateRange(monthDate: Date): {
 export function buildDepartmentUserTreeOptions(
   users: User[],
 ): ScheduleUserTreeOption[] {
-  const departmentsById = new Map<string, Department>();
+  const departmentsById = new Map<string, Organization>();
   const departmentIdsByParentId = new Map<null | string, string[]>();
   const usersByDepartmentId = new Map<string, User[]>();
   const usersWithoutDepartment: User[] = [];
 
   for (const user of users) {
-    if (user.departments.length === 0) {
+    if (!user.organization) {
       usersWithoutDepartment.push(user);
       continue;
     }
 
-    for (const department of user.departments) {
-      let hierarchyDepartment: Department | null | undefined = department;
+    const org = user.organization;
+    departmentsById.set(org.id, org);
 
-      while (
-        hierarchyDepartment !== null &&
-        hierarchyDepartment !== undefined
-      ) {
-        departmentsById.set(hierarchyDepartment.id, hierarchyDepartment);
-        hierarchyDepartment = hierarchyDepartment.parent;
-      }
-
-      const departmentUsers = usersByDepartmentId.get(department.id);
-
-      if (departmentUsers === undefined) {
-        usersByDepartmentId.set(department.id, [user]);
-        continue;
-      }
-
+    const departmentUsers = usersByDepartmentId.get(org.id);
+    if (departmentUsers === undefined) {
+      usersByDepartmentId.set(org.id, [user]);
+    } else {
       departmentUsers.push(user);
     }
   }
 
   for (const department of departmentsById.values()) {
+    const parentId = department.parent_id;
     const siblingDepartmentIds =
-      departmentIdsByParentId.get(department.parent_id) ?? [];
+      departmentIdsByParentId.get(parentId) ?? [];
 
     if (siblingDepartmentIds.includes(department.id)) {
       continue;
     }
 
     departmentIdsByParentId.set(
-      department.parent_id,
+      parentId,
       [...siblingDepartmentIds, department.id].toSorted((left, right) => {
         const leftDepartment = departmentsById.get(left);
         const rightDepartment = departmentsById.get(right);
@@ -343,27 +333,13 @@ export function buildDepartmentUserTreeOptions(
     ...buildUserTreeLeafOptions(usersWithoutDepartment),
   ];
 
-  const company = getScheduleUserTreeCompany(users, departmentsById);
-
-  if (company === null) {
-    return rootChildren;
-  }
-
-  return [
-    {
-      children: rootChildren,
-      key: `company-${company.id}`,
-      label: company.name,
-      selectable: false,
-      value: `company-${company.id}`,
-    },
-  ];
+  return rootChildren;
 }
 
 function buildDepartmentTreeOptions(
   parentDepartmentId: null | string,
   departmentIdsByParentId: Map<null | string, string[]>,
-  departmentsById: Map<string, Department>,
+  departmentsById: Map<string, Organization>,
   usersByDepartmentId: Map<string, User[]>,
 ): ScheduleUserTreeOption[] {
   return (departmentIdsByParentId.get(parentDepartmentId) ?? []).flatMap(
@@ -405,23 +381,6 @@ function buildUserTreeLeafOptions(users: User[]): ScheduleUserTreeOption[] {
       label: user.name,
       value: user.id,
     }));
-}
-
-function getScheduleUserTreeCompany(
-  users: User[],
-  departmentsById: Map<string, Department>,
-): Company | null {
-  const companyFromUsers = users.find((user) => user.company !== null)?.company;
-
-  if (companyFromUsers !== undefined) {
-    return companyFromUsers;
-  }
-
-  return (
-    [...departmentsById.values()].find(
-      (department) => department.company !== null,
-    )?.company ?? null
-  );
 }
 
 export function buildMonthGrid(

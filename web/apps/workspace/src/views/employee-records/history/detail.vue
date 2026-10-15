@@ -74,13 +74,13 @@ function goBack(): void {
               <IconifyIcon icon="lucide:user-x" class="size-8" />
             </div>
             <h3 class="mb-1.5 text-base font-semibold text-foreground">
-              {{ $t('page.employeeHistory.emptyHistory.noEmployeeFound') }}
+              {{ $t('employeeHistory.emptyHistory.noEmployeeFound') }}
             </h3>
             <p class="mb-5 text-sm text-muted-foreground">
-              {{ $t('page.employeeHistory.emptyHistory.noEmployeeFoundDesc') }}
+              {{ $t('employeeHistory.emptyHistory.noEmployeeFoundDesc') }}
             </p>
             <Button type="primary" @click="goBack">
-              {{ $t('page.employeeHistory.actions.backToList') }}
+              {{ $t('employeeHistory.actions.backToList') }}
             </Button>
           </div>
         </div>
@@ -95,6 +95,7 @@ function goBack(): void {
   flex-direction: column;
   gap: 16px;
   min-height: 100%;
+  padding: 16px;
 }
 
 .employee-history-layout {

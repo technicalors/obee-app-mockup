@@ -1,0 +1,13 @@
+export { default as ChatComposer } from './chat-composer.vue';
+export { default as ChatFilePreviewModal } from './chat-file-preview-modal.vue';
+export { default as ChatGroupAvatar } from './chat-group-avatar.vue';
+export { default as ChatHeader } from './chat-header.vue';
+export { default as ChatImagePreviewModal } from './chat-image-preview-modal.vue';
+export { default as ChatInfoPanel } from './chat-info-panel.vue';
+export { default as ChatMessageActions } from './chat-message-actions.vue';
+export { default as ChatMessages } from './chat-messages.vue';
+export { default as ChatReactionDetailsModal } from './chat-reaction-details-modal.vue';
+export { default as ChatSidebar } from './chat-sidebar.vue';
+export { default as CreateGroupModal } from './create-group-modal.vue';
+export { default as GroupMembersModal } from './group-members-modal.vue';
+export { default as MatrixRecoveryKeyPreviewModal } from './matrix-recovery-key-preview-modal.vue';

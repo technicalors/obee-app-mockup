@@ -1,0 +1,62 @@
+{
+  "routeTitle": "Mutation logs",
+  "listTitle": "HTTP Mutation logs",
+  "listDescription": "Search recorded HTTP requests.",
+  "columns": {
+    "loggedAt": "Logged at",
+    "code": "Reference code",
+    "uri": "URI",
+    "action": "Action",
+    "requestedBy": "Requested by",
+    "status": "HTTP status",
+    "actions": "Actions"
+  },
+  "filters": {
+    "search": "Search",
+    "action": "Action",
+    "instanceId": "Instance ID",
+    "requestedBy": "Requested by",
+    "status": "HTTP status",
+    "error": "Result",
+    "range": "Recent time",
+    "from": "From",
+    "to": "To",
+    "all": "All",
+    "errors": "Errors",
+    "successes": "No error",
+    "twoMinutes": "2 minutes",
+    "fiveMinutes": "5 minutes",
+    "fifteenMinutes": "15 minutes",
+    "oneHour": "1 hour",
+    "oneDay": "1 day",
+    "searchPlaceholder": "Enter reference code or Instance ID",
+    "actionPlaceholder": "Action",
+    "requestedByPlaceholder": "Requested by",
+    "statusPlaceholder": "HTTP status",
+    "datePlaceholder": "Date and time"
+  },
+  "actions": {
+    "view": "View",
+    "clear": "Clear filters",
+    "toggleFilters": "Show or hide filters",
+    "search": "Search",
+    "copyMarkdown": "Copy Markdown"
+  },
+  "detail": {
+    "title": "Mutation log details",
+    "appUrl": "App URL",
+    "gitSha": "Git SHA-1",
+    "payload": "Request payload",
+    "response": "Response",
+    "codeSnippet": "Code snippet",
+    "trace": "Trace"
+  },
+  "messages": {
+    "loadFailed": "Could not load Mutation logs.",
+    "invalidFilters": "Invalid filters.",
+    "suggestFailed": "Could not load suggestions.",
+    "detailFailed": "Could not load log details.",
+    "copyFailed": "Could not copy Markdown.",
+    "copied": "Markdown copied."
+  }
+}
