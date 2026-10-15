@@ -44,7 +44,7 @@
 
       .phone {
         position: relative;
-        width: min(454px, calc((100svh - 74px) * 454 / 956), calc(100vw - 36px));
+        width: min(454px, calc((100svh - 118px) * 454 / 956), calc(100vw - 36px));
         aspect-ratio: 454 / 956;
         padding: calc(12 / 454 * 100%);
         border: 1px solid #363940;
@@ -106,6 +106,35 @@
         border-radius: 0 3px 3px 0;
       }
 
+      .variant-switch {
+        display: inline-flex;
+        gap: 2px;
+        padding: 3px;
+        border: 1px solid #d3d9e3;
+        border-radius: 999px;
+        background: rgb(255 255 255 / 75%);
+        box-shadow: 0 2px 8px rgb(28 36 48 / 8%);
+      }
+
+      .variant-switch a {
+        padding: 6px 14px;
+        border-radius: 999px;
+        color: #3a4659;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .variant-switch a:hover {
+        background: #eef1f6;
+      }
+
+      .variant-switch a[aria-current="page"] {
+        background: #5b5bd6;
+        color: #ffffff;
+      }
+
       .meta {
         display: flex;
         align-items: center;
@@ -130,7 +159,7 @@
         }
 
         .phone {
-          width: min(454px, calc((100svh - 54px) * 454 / 956), calc(100vw - 24px));
+          width: min(454px, calc((100svh - 96px) * 454 / 956), calc(100vw - 24px));
         }
 
         .meta {
@@ -141,6 +170,10 @@
   </head>
   <body>
     <main class="preview">
+      <nav class="variant-switch" aria-label="Chọn phương án giao diện">
+          <a href="/mobile/">Phương án 1</a>
+          <a href="/mobile2/" aria-current="page">Phương án 2</a>
+      </nav>
       <section class="phone" aria-label="Khung xem trước điện thoại 430 x 932">
         <span class="button button--silent" aria-hidden="true"></span>
         <span class="button button--volume-up" aria-hidden="true"></span>
@@ -151,10 +184,6 @@
         </div>
       </section>
       <div class="meta">
-        <strong>Phương án 2</strong>
-        <span aria-hidden="true">·</span>
-        <a href="/mobile/">Xem phương án 1</a>
-        <span aria-hidden="true">·</span>
         <span>Màn hình 430 × 932 · 6.7 inch</span>
         <span aria-hidden="true">·</span>
         <a href="/mobile2/app/" target="_blank" rel="noreferrer">Mở app trực tiếp</a>
