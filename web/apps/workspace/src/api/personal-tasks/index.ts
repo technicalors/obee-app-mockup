@@ -33,6 +33,7 @@ export async function deleteTaskListApi(listId: string) {
 
 export async function createPersonalTaskApi(payload: {
   due_date: null | string;
+  due_time?: null | string;
   notes: null | string;
   parent_id: null | string;
   recurrence: null | PersonalTaskRecurrence;
@@ -52,6 +53,7 @@ export async function updatePersonalTaskApi(
   taskId: string,
   payload: {
     due_date?: null | string;
+    due_time?: null | string;
     notes?: null | string;
     starred?: boolean;
     status?: 'completed' | 'needsAction';

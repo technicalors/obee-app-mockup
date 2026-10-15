@@ -71,6 +71,11 @@ const personalTaskBaseSchema = z
     created_at: timestampSchema,
     deleted_at: z.null(),
     due_date: z.string().date().nullable(),
+    due_time: z
+      .string()
+      .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
+      .nullable()
+      .optional(),
     extension: personalTaskExtensionSchema,
     hidden: z.boolean(),
     id: z.string().uuid(),

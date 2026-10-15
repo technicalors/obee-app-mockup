@@ -505,6 +505,7 @@ async function closeDetail(): Promise<void> {
                   runMutation(() =>
                     addTask({
                       dueDate: isTodayFilterActive ? getTodayLocalDate() : null,
+                      dueTime: isTodayFilterActive ? '17:00' : null,
                       listId,
                       notes: null,
                       recurrence: null,
@@ -512,6 +513,10 @@ async function closeDetail(): Promise<void> {
                       title,
                     }),
                   )
+              "
+              :save-due-date="
+                (taskId, dueDate, dueTime) =>
+                  runMutation(() => updateTask(taskId, { dueDate, dueTime }))
               "
               @toggle-completed="isCompletedExpanded = !isCompletedExpanded"
               @toggle-status="(id) => runMutation(() => toggleTaskStatus(id))"

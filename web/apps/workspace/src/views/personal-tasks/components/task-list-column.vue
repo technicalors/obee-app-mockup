@@ -21,6 +21,11 @@ defineProps<{
   list: PersonalTaskList;
   listsById: Map<string, PersonalTaskList>;
   openTasks: PersonalTask[];
+  saveDueDate?: (
+    taskId: string,
+    dueDate: null | string,
+    dueTime: null | string,
+  ) => Promise<boolean>;
   saveSubtask: (parentId: string, title: string) => Promise<boolean>;
   saveTask: (payload: { listId: string; title: string }) => Promise<boolean>;
   subtasksByParentId: Map<string, PersonalTask[]>;
@@ -84,6 +89,7 @@ const ChevronDownIcon = createIconifyIcon('lucide:chevron-down');
             :key="task.id"
             :task="task"
             :lists-by-id="listsById"
+            :save-due-date="saveDueDate"
             :subtasks="subtasksByParentId.get(task.id)"
             :save-subtask="saveSubtask"
             :show-list="false"
@@ -128,6 +134,7 @@ const ChevronDownIcon = createIconifyIcon('lucide:chevron-down');
               :key="task.id"
               :task="task"
               :lists-by-id="listsById"
+              :save-due-date="saveDueDate"
               :subtasks="subtasksByParentId.get(task.id)"
               :save-subtask="saveSubtask"
               :show-list="false"

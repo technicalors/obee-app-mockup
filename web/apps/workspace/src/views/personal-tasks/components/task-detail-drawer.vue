@@ -16,6 +16,7 @@ import {
   Popconfirm,
   Select,
   Textarea,
+  TimePicker,
 } from 'ant-design-vue';
 
 import { $t } from '#/locales';
@@ -38,6 +39,7 @@ const emit = defineEmits<{
     taskId: string,
     updates: {
       dueDate?: null | string;
+      dueTime?: null | string;
       notes?: null | string;
       starred?: boolean;
       taskListId?: string;
@@ -53,6 +55,7 @@ const fieldId = useId();
 const editableTitle = ref('');
 const editableNotes = ref('');
 const editableDueDate = ref<string>();
+const editableDueTime = ref<string>();
 const editableListId = ref('');
 const newSubtaskTitle = ref('');
 
@@ -64,6 +67,9 @@ watch(
       editableTitle.value = newTask.title;
       editableNotes.value = newTask.notes ?? '';
       editableDueDate.value = newTask.due_date ?? undefined;
+      editableDueTime.value = newTask.due_date
+        ? (newTask.due_time ?? '17:00')
+        : undefined;
       editableListId.value = newTask.task_list_id;
     }
   },
@@ -74,10 +80,19 @@ function handleFieldBlur(): void {
   if (!props.task) return;
   emit('update', props.task.id, {
     dueDate: editableDueDate.value ?? null,
+    dueTime: editableDueDate.value ? (editableDueTime.value ?? '17:00') : null,
     notes: editableNotes.value.trim() || null,
     taskListId: editableListId.value,
     title: editableTitle.value.trim() || props.task.title,
   });
+}
+
+function handleDueDateChange(): void {
+  if (editableDueDate.value && !editableDueTime.value) {
+    editableDueTime.value = '17:00';
+  }
+  if (!editableDueDate.value) editableDueTime.value = undefined;
+  handleFieldBlur();
 }
 
 function handleTitleEnter(event: KeyboardEvent): void {
@@ -98,6 +113,7 @@ function handleSaveAndClose(): void {
   const listId = editableListId.value || props.task.task_list_id;
   emit('update', props.task.id, {
     dueDate: editableDueDate.value ?? null,
+    dueTime: editableDueDate.value ? (editableDueTime.value ?? '17:00') : null,
     notes: editableNotes.value.trim() || null,
     taskListId: listId,
     title,
@@ -110,6 +126,9 @@ function handleCancel(): void {
     editableTitle.value = props.task.title;
     editableNotes.value = props.task.notes ?? '';
     editableDueDate.value = props.task.due_date ?? undefined;
+    editableDueTime.value = props.task.due_date
+      ? (props.task.due_time ?? '17:00')
+      : undefined;
     editableListId.value = props.task.task_list_id;
   }
   emit('close');
@@ -215,7 +234,7 @@ function handleCancel(): void {
         />
       </div>
 
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div class="flex min-w-0 flex-col gap-1.5">
           <label :for="`${fieldId}-list`" class="task-label">
             {{ $t('personalTasks.taskDetail.list') }}
@@ -251,6 +270,23 @@ function handleCancel(): void {
             class="w-full"
             :placeholder="$t('personalTasks.taskDetail.dueDatePlaceholder')"
             data-testid="detail-date-input"
+            @change="handleDueDateChange"
+          />
+        </div>
+        <div class="flex min-w-0 flex-col gap-1.5">
+          <label :for="`${fieldId}-time`" class="task-label">
+            {{ $t('personalTasks.taskDetail.dueTime') }}
+          </label>
+          <TimePicker
+            :id="`${fieldId}-time`"
+            v-model:value="editableDueTime"
+            format="HH:mm"
+            value-format="HH:mm"
+            allow-clear
+            class="w-full"
+            :disabled="!editableDueDate"
+            :placeholder="$t('personalTasks.taskDetail.dueTimePlaceholder')"
+            data-testid="detail-time-input"
             @change="handleFieldBlur"
           />
         </div>

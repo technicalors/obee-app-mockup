@@ -37,6 +37,9 @@ export function compareOpenTasks(a: PersonalTask, b: PersonalTask): number {
     if (b.due_date === null) return -1;
     return a.due_date.localeCompare(b.due_date);
   }
+  if (a.due_date !== null && a.due_time !== b.due_time) {
+    return (a.due_time ?? '17:00').localeCompare(b.due_time ?? '17:00');
+  }
   return a.position - b.position;
 }
 
@@ -217,6 +220,7 @@ export function usePersonalTasks() {
 
   async function addTask(payload: {
     dueDate: null | string;
+    dueTime: null | string;
     listId: string;
     notes: null | string;
     recurrence: null | PersonalTaskRecurrence;
@@ -225,6 +229,7 @@ export function usePersonalTasks() {
   }): Promise<void> {
     await createPersonalTaskApi({
       due_date: payload.dueDate,
+      due_time: payload.dueTime,
       notes: payload.notes,
       parent_id: null,
       recurrence: payload.recurrence,
@@ -241,6 +246,7 @@ export function usePersonalTasks() {
     if (parent) {
       await createPersonalTaskApi({
         due_date: null,
+        due_time: null,
         notes: null,
         parent_id: parent.id,
         recurrence: null,
@@ -257,6 +263,7 @@ export function usePersonalTasks() {
     taskId: string,
     updates: {
       dueDate?: null | string;
+      dueTime?: null | string;
       notes?: null | string;
       starred?: boolean;
       taskListId?: string;
@@ -267,6 +274,7 @@ export function usePersonalTasks() {
     if (Object.keys(content).length > 0) {
       await updatePersonalTaskApi(taskId, {
         ...(content.dueDate === undefined ? {} : { due_date: content.dueDate }),
+        ...(content.dueTime === undefined ? {} : { due_time: content.dueTime }),
         ...(content.notes === undefined ? {} : { notes: content.notes }),
         ...(content.starred === undefined ? {} : { starred: content.starred }),
         ...(content.title === undefined ? {} : { title: content.title }),

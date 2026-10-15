@@ -31,6 +31,7 @@ interface ModalData {
   lists: PersonalTaskList[];
   saveTask: (payload: {
     dueDate: null | string;
+    dueTime: null | string;
     listId: string;
     notes: null | string;
     recurrence: null | PersonalTaskRecurrence;
@@ -53,6 +54,10 @@ const endTypeSchema = z.enum(['never', 'on', 'after']);
 const formFieldsSchema = z.object({
   count: z.unknown(),
   due_date: z.string().date().nullish(),
+  due_time: z
+    .string()
+    .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
+    .nullish(),
   end_type: z.unknown(),
   frequency: z.unknown(),
   interval: z.unknown(),
@@ -191,6 +196,25 @@ const [Form, formApi] = useVbenForm({
       fieldName: 'due_date',
       label: $t('personalTasks.taskDetail.dueDate'),
       rules: markRaw(formFieldsSchema.shape.due_date),
+    },
+    {
+      component: 'TimePicker',
+      componentProps: {
+        'data-testid': 'create-task-time',
+        format: 'HH:mm',
+        placeholder: $t('personalTasks.taskDetail.dueTimePlaceholder'),
+        valueFormat: 'HH:mm',
+      },
+      dependencies: {
+        disabled: (values) => !values.due_date,
+        trigger: (values, form) => {
+          if (!values.due_date) form.setFieldValue('due_time', undefined);
+        },
+        triggerFields: ['due_date'],
+      },
+      fieldName: 'due_time',
+      label: $t('personalTasks.taskDetail.dueTime'),
+      rules: markRaw(formFieldsSchema.shape.due_time),
     },
     {
       component: 'Select',
@@ -413,6 +437,7 @@ const [Modal, modalApi] = useVbenModal({
     await formApi.resetForm();
     await formApi.setValues({
       due_date: getTodayLocalDate(),
+      due_time: '17:00',
       task_list_id: targetList.id,
     });
   },
@@ -441,6 +466,7 @@ async function submit(): Promise<void> {
     try {
       const wasSaved = await modalApi.getData<ModalData>().saveTask({
         dueDate: values.due_date ?? null,
+        dueTime: values.due_date ? (values.due_time ?? '17:00') : null,
         listId: values.task_list_id,
         notes: values.notes?.trim() || null,
         recurrence: values.recurrence,

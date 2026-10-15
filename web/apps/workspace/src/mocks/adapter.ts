@@ -440,6 +440,7 @@ function resolveMockResponse(
       created_at: new Date().toISOString(),
       deleted_at: null,
       due_date: payload.due_date ?? null,
+      due_time: payload.due_time ?? null,
       extension: {
         created_at: new Date().toISOString(),
         recurrence: payload.recurrence ?? null,
@@ -483,6 +484,7 @@ function resolveMockResponse(
       if (payload.title !== undefined) task.title = payload.title;
       if (payload.notes !== undefined) task.notes = payload.notes;
       if (payload.due_date !== undefined) task.due_date = payload.due_date;
+      if (payload.due_time !== undefined) task.due_time = payload.due_time;
       if (payload.starred !== undefined && task.extension)
         task.extension.starred = payload.starred;
       task.updated_at = new Date().toISOString();

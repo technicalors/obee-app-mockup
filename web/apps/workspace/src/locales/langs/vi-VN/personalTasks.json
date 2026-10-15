@@ -106,6 +106,8 @@
     "notesPlaceholder": "Thêm chi tiết hoặc ghi chú...",
     "dueDate": "Ngày hết hạn",
     "dueDatePlaceholder": "Chọn ngày",
+    "dueTime": "Giờ hết hạn",
+    "dueTimePlaceholder": "Chọn giờ",
     "list": "Danh sách",
     "status": "Trạng thái",
     "starred": "Gắn dấu sao",

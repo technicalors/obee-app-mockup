@@ -106,6 +106,8 @@
     "notesPlaceholder": "添加详情或备注...",
     "dueDate": "截止日期",
     "dueDatePlaceholder": "选择日期",
+    "dueTime": "截止时间",
+    "dueTimePlaceholder": "选择时间",
     "list": "列表",
     "status": "状态",
     "starred": "已加星标",

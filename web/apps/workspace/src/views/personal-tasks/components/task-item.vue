@@ -6,19 +6,24 @@ import type {
   PersonalTaskList,
 } from '#/api/contracts/personal-tasks';
 
-import { computed, nextTick, ref } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 
 import { createIconifyIcon } from '@vben/icons';
 
-import { Button, Input, Popconfirm, Tag } from 'ant-design-vue';
+import { Button, DatePicker, Input, Popconfirm, Tag } from 'ant-design-vue';
+
+import dayjs from 'dayjs';
 
 import { $t } from '#/locales';
-
-import { getTodayLocalDate } from '../use-personal-tasks';
 
 const props = defineProps<{
   isSubtask?: boolean;
   listsById: Map<string, PersonalTaskList>;
+  saveDueDate?: (
+    taskId: string,
+    dueDate: null | string,
+    dueTime: null | string,
+  ) => Promise<boolean>;
   saveSubtask: (parentId: string, title: string) => Promise<boolean>;
   showList?: boolean;
   subtasks?: PersonalTask[];
@@ -41,16 +46,46 @@ const XIcon = createIconifyIcon('lucide:x');
 const addSubtaskTriggerRef = ref<HTMLButtonElement | null>(null);
 const subtaskInputRef = ref<InputRef | null>(null);
 const isAddingSubtask = ref(false);
+const isSavingDueDate = ref(false);
 const isSavingSubtask = ref(false);
 const subtaskTitle = ref('');
+const quickDueAt = ref<string>();
 
 const isCompleted = computed(() => props.task.status === 'completed');
 const isStarred = computed(() => props.task.extension.starred);
 const listInfo = computed(() => props.listsById.get(props.task.task_list_id));
 const isOverdue = computed(() => {
   if (props.task.due_date === null || isCompleted.value) return false;
-  return props.task.due_date < getTodayLocalDate();
+  const dueTime = props.task.due_time ?? '17:00';
+  return dayjs(`${props.task.due_date}T${dueTime}:00`).isBefore(dayjs());
 });
+
+watch(
+  () => [props.task.due_date, props.task.due_time] as const,
+  ([dueDate, dueTime]) => {
+    quickDueAt.value = dueDate ? `${dueDate} ${dueTime ?? '17:00'}` : undefined;
+  },
+  { immediate: true },
+);
+
+async function handleQuickDueChange(value: unknown): Promise<void> {
+  if (isSavingDueDate.value) return;
+
+  const nextValue = typeof value === 'string' ? value : null;
+  const [dueDate = null, dueTime = null] = nextValue?.split(' ') ?? [];
+  isSavingDueDate.value = true;
+  try {
+    const wasSaved =
+      (await props.saveDueDate?.(props.task.id, dueDate, dueTime)) ?? false;
+    if (!wasSaved) {
+      quickDueAt.value = props.task.due_date
+        ? `${props.task.due_date} ${props.task.due_time ?? '17:00'}`
+        : undefined;
+    }
+  } finally {
+    isSavingDueDate.value = false;
+  }
+}
 
 async function openSubtaskInput(): Promise<void> {
   isAddingSubtask.value = true;
@@ -131,10 +166,10 @@ function handleSubtaskKeydown(event: KeyboardEvent): void {
           <CheckIcon v-if="isCompleted" class="size-3 stroke-[2.5]" />
         </span>
       </button>
-      <div class="flex min-w-0 flex-1 items-center gap-2">
+      <div class="flex min-w-0 flex-1 flex-col items-start gap-1">
         <button
           type="button"
-          class="task-focus flex min-w-0 flex-1 items-center gap-2 rounded text-left"
+          class="task-focus flex w-full min-w-0 items-center gap-2 rounded text-left"
           :aria-label="
             $t('personalTasks.actions.openDetail', { title: task.title })
           "
@@ -158,28 +193,50 @@ function handleSubtaskKeydown(event: KeyboardEvent): void {
             {{ listInfo.title }}
           </Tag>
         </button>
-        <span
+        <div
           v-if="task.due_date"
-          class="inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium"
-          :class="
-            isOverdue
-              ? 'border-rose-300/80 bg-rose-50 text-rose-600 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-400'
-              : 'border-border/60 bg-muted/60 text-muted-foreground'
-          "
+          class="inline-flex shrink-0 items-center gap-1"
         >
-          <CalendarIcon class="size-3" />
-          <span>{{ task.due_date }}</span>
-          <span v-if="isOverdue">
-            · {{ $t('personalTasks.taskList.overdue') }}
-          </span>
+          <DatePicker
+            v-model:value="quickDueAt"
+            :allow-clear="true"
+            :bordered="false"
+            class="task-quick-due !h-7 !w-[8.5rem] !rounded-full !px-2 text-xs"
+            :class="
+              isOverdue
+                ? '!border !border-rose-300/80 !bg-rose-50 dark:!border-rose-900/60 dark:!bg-rose-950/40 [&_input]:!text-rose-600 dark:[&_input]:!text-rose-400'
+                : '!border !border-border/60 !bg-muted/60 [&_input]:!text-muted-foreground'
+            "
+            :disabled="isSavingDueDate"
+            format="DD/MM HH:mm"
+            value-format="YYYY-MM-DD HH:mm"
+            :show-time="{ format: 'HH:mm' }"
+            :placeholder="$t('personalTasks.taskDetail.dueDatePlaceholder')"
+            :title="
+              isOverdue ? $t('personalTasks.taskList.overdue') : undefined
+            "
+            data-testid="task-quick-due-picker"
+            @change="handleQuickDueChange"
+          >
+            <template #suffixIcon>
+              <CalendarIcon class="size-3" />
+            </template>
+          </DatePicker>
           <RepeatIcon
             v-if="task.extension.recurrence"
-            class="size-3"
+            class="size-3 text-muted-foreground"
             role="img"
             :aria-label="$t('personalTasks.recurrence.label')"
             data-testid="task-recurrence-icon"
           />
-        </span>
+        </div>
+        <RepeatIcon
+          v-else-if="task.extension.recurrence"
+          class="size-3 shrink-0 text-muted-foreground"
+          role="img"
+          :aria-label="$t('personalTasks.recurrence.label')"
+          data-testid="task-recurrence-icon"
+        />
       </div>
       <div class="flex shrink-0 items-center gap-1">
         <Popconfirm

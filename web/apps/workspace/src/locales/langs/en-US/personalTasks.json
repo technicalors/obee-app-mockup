@@ -106,6 +106,8 @@
     "notesPlaceholder": "Add details or notes...",
     "dueDate": "Due date",
     "dueDatePlaceholder": "Select date",
+    "dueTime": "Due time",
+    "dueTimePlaceholder": "Select time",
     "list": "List",
     "status": "Status",
     "starred": "Starred",
