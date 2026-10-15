@@ -1,6 +1,7 @@
 import type { ChatMessageReaction } from '#/store';
 
 import { $t } from '#/locales';
+import { resolveChatUserDisplayName } from '#/store';
 
 export const CHAT_REACTION_EMOJIS = [
   '👍',
@@ -58,7 +59,11 @@ export function formatReactionTooltip(reaction: ChatMessageReaction): string {
   }
 
   for (const u of userList) {
-    const name = u.displayName || u.userId;
+    const name = resolveChatUserDisplayName(
+      u.userId,
+      [u.displayName],
+      $t('chat.unknownUser'),
+    );
     if (reaction.hasReacted && name === $t('chat.you')) {
       continue;
     }

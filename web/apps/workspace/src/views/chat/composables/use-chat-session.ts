@@ -11,7 +11,8 @@ import type { ChatMessageItem } from '#/store';
 
 import { computed, ref, watch } from 'vue';
 
-import { useChatStore } from '#/store';
+import { $t } from '#/locales';
+import { resolveChatUserDisplayName, useChatStore } from '#/store';
 import { getUserAvatarSource } from '#/views/users/avatar';
 
 import { findColleagueByMatrixId } from './use-conversations';
@@ -34,7 +35,18 @@ export function useChatSession(
 
   function startReply(msg: ChatMessageItem): void {
     if (msg.isRedacted) return;
-    replyingTo.value = msg;
+    const colleague = findColleagueByMatrixId(
+      msg.senderId,
+      colleagues?.value ?? [],
+    );
+    replyingTo.value = {
+      ...msg,
+      senderName: resolveChatUserDisplayName(
+        msg.senderId,
+        [colleague?.name, msg.senderName],
+        $t('chat.unknownUser'),
+      ),
+    };
   }
 
   function cancelReply(): void {
@@ -116,12 +128,18 @@ export function useChatSession(
 
   const activeChatTitle = computed(() => {
     if (pendingColleague.value) return pendingColleague.value.name;
-    if (store.activeRoom) return store.activeRoom.name;
     if (store.activeRoomId) {
       const item = allConversations.value.find(
         (c) => c.roomId === store.activeRoomId,
       );
       if (item) return item.name;
+    }
+    if (store.activeRoom) {
+      return resolveChatUserDisplayName(
+        store.activeRoom.directUserId ?? '',
+        [store.activeRoom.name],
+        $t('chat.unknownUser'),
+      );
     }
     return '';
   });
@@ -166,7 +184,11 @@ export function useChatSession(
         const colleague = findColleagueByMatrixId(m.userId, colleagueList);
         return {
           avatarUrl: colleague ? getUserAvatarSource(colleague) : m.avatarUrl,
-          displayName: colleague?.name || m.displayName || m.userId,
+          displayName: resolveChatUserDisplayName(
+            m.userId,
+            [colleague?.name, m.displayName],
+            $t('chat.unknownUser'),
+          ),
           userId: m.userId,
         };
       });

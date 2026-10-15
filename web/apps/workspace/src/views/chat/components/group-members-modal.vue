@@ -19,6 +19,7 @@ import {
 } from 'ant-design-vue';
 
 import { $t } from '#/locales';
+import { resolveChatUserDisplayName } from '#/store';
 import { getUserAvatarSource } from '#/views/users/avatar';
 
 interface Props {
@@ -76,10 +77,11 @@ function getMemberColleague(userId: string): undefined | User {
 
 function getMemberDisplayName(member: ChatRoomMemberInfo): string {
   const colleague = getMemberColleague(member.userId);
-  if (colleague?.name) {
-    return colleague.name;
-  }
-  return member.displayName;
+  return resolveChatUserDisplayName(
+    member.userId,
+    [colleague?.name, member.displayName],
+    $t('chat.unknownUser'),
+  );
 }
 
 function getMemberUsername(member: ChatRoomMemberInfo): string {

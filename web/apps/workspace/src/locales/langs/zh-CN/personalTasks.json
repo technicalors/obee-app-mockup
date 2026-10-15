@@ -22,7 +22,8 @@
     "renameListTitle": "重命名列表",
     "deleteList": "删除 {title}",
     "deleteConfirm": "删除此列表及其中的所有任务？",
-    "noListsHint": "从侧边栏创建列表，然后即可添加任务。"
+    "noListsHint": "从侧边栏创建列表，然后即可添加任务。",
+    "noVisibleListsHint": "请在侧边栏中至少选择一个列表以显示任务。"
   },
   "sidebar": {
     "open": "显示列表",

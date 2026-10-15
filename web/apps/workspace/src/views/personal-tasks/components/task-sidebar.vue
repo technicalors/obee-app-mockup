@@ -11,21 +11,27 @@ import { Button, Input, Modal } from 'ant-design-vue';
 
 import { $t } from '#/locales';
 
-defineProps<{
-  allOpenCount: number;
-  lists: PersonalTaskList[];
-  selectedListId: TaskFilterType;
-  taskCountsByListId: Map<string, number>;
-}>();
+const props = withDefaults(
+  defineProps<{
+    allOpenCount: number;
+    hiddenListIds?: Set<string>;
+    lists: PersonalTaskList[];
+    selectedListId: TaskFilterType;
+    taskCountsByListId: Map<string, number>;
+  }>(),
+  {
+    hiddenListIds: () => new Set<string>(),
+  },
+);
 
 const emit = defineEmits<{
   createList: [title: string];
   createTask: [];
   selectList: [listId: TaskFilterType];
+  toggleListVisibility: [listId: string];
 }>();
 
 const ListIcon = createIconifyIcon('lucide:list-todo');
-const CheckIcon = createIconifyIcon('lucide:check-square');
 const PlusIcon = createIconifyIcon('lucide:plus');
 
 const fieldId = useId();
@@ -44,6 +50,10 @@ function handleCreateList(): void {
 function cancelCreateList(): void {
   newListName.value = '';
   isCreatingList.value = false;
+}
+
+function isListVisible(listId: string): boolean {
+  return !props.hiddenListIds.has(listId);
 }
 </script>
 
@@ -92,32 +102,42 @@ function cancelCreateList(): void {
 
       <div class="my-1 border-t border-border/60"></div>
 
-      <button
+      <div
         v-for="list in lists"
         :key="list.id"
-        type="button"
-        class="flex items-center justify-between rounded-md px-2.5 py-2 text-sm font-medium transition-colors task-focus hover:bg-muted/80 text-left"
+        class="flex items-center rounded-md px-2.5 text-sm font-medium transition-colors hover:bg-muted/80"
         :class="{
           'bg-primary/10 text-primary font-semibold':
             selectedListId === list.id,
           'text-foreground': selectedListId !== list.id,
         }"
-        :aria-current="selectedListId === list.id ? 'page' : undefined"
-        data-testid="task-list-option"
-        :data-list-id="list.id"
-        @click="emit('selectList', list.id)"
       >
-        <span class="flex min-w-0 flex-1 items-center gap-2.5">
-          <CheckIcon class="size-4 shrink-0 text-muted-foreground" />
-          <span class="truncate">{{ list.title }}</span>
-        </span>
-        <span
-          v-if="(taskCountsByListId.get(list.id) ?? 0) > 0"
-          class="shrink-0 rounded bg-muted px-2 py-0.5 text-xs font-semibold text-muted-foreground tabular-nums"
+        <input
+          type="checkbox"
+          class="size-4 shrink-0 cursor-pointer accent-[hsl(var(--primary))]"
+          :checked="isListVisible(list.id)"
+          :aria-label="list.title"
+          data-testid="task-list-visibility-checkbox"
+          :data-list-id="list.id"
+          @change="emit('toggleListVisibility', list.id)"
+        />
+        <button
+          type="button"
+          class="task-focus flex min-w-0 flex-1 items-center justify-between gap-2 rounded-md px-2.5 py-2 text-left"
+          :aria-current="selectedListId === list.id ? 'page' : undefined"
+          data-testid="task-list-option"
+          :data-list-id="list.id"
+          @click="emit('selectList', list.id)"
         >
-          {{ taskCountsByListId.get(list.id) }}
-        </span>
-      </button>
+          <span class="truncate">{{ list.title }}</span>
+          <span
+            v-if="(taskCountsByListId.get(list.id) ?? 0) > 0"
+            class="shrink-0 rounded bg-muted px-2 py-0.5 text-xs font-semibold text-muted-foreground tabular-nums"
+          >
+            {{ taskCountsByListId.get(list.id) }}
+          </span>
+        </button>
+      </div>
 
       <button
         type="button"

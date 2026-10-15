@@ -7,7 +7,12 @@ import type { ChatRoomSummary } from '#/store';
 
 import { computed, ref } from 'vue';
 
-import { getDirectChatAlias, useChatStore } from '#/store';
+import { $t } from '#/locales';
+import {
+  getDirectChatAlias,
+  resolveChatUserDisplayName,
+  useChatStore,
+} from '#/store';
 import { getUserAvatarSource } from '#/views/users/avatar';
 
 export function findColleagueByMatrixId(
@@ -144,7 +149,11 @@ export function useConversations(
               avatarUrl: colleague
                 ? getUserAvatarSource(colleague)
                 : m.avatarUrl,
-              displayName: colleague?.name || m.displayName || m.userId,
+              displayName: resolveChatUserDisplayName(
+                m.userId,
+                [colleague?.name, m.displayName],
+                $t('chat.unknownUser'),
+              ),
               userId: m.userId,
             };
           });
@@ -153,7 +162,11 @@ export function useConversations(
             const colleague = findColleagueByMatrixId(userId, colleagueList);
             return {
               avatarUrl: colleague ? getUserAvatarSource(colleague) : undefined,
-              displayName: colleague?.name || userId,
+              displayName: resolveChatUserDisplayName(
+                userId,
+                [colleague?.name],
+                $t('chat.unknownUser'),
+              ),
               userId,
             };
           });
@@ -168,7 +181,13 @@ export function useConversations(
         lastEventTimestamp: room.lastEventTimestamp,
         lastMessage: room.lastMessage,
         memberCount: room.memberCount,
-        name: room.name,
+        name: room.isDirect
+          ? resolveChatUserDisplayName(
+              room.directUserId ?? '',
+              [roomColleague?.name, room.name],
+              $t('chat.unknownUser'),
+            )
+          : room.name,
         roomId: room.id,
         targetMatrixUserId: roomTargetMatrixUserId,
         unreadCount: room.unreadCount,

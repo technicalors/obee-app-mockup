@@ -18,6 +18,7 @@
   "groupName": "Tên nhóm",
   "groupNamePlaceholder": "Nhập tên nhóm",
   "memberCount": "{count} thành viên",
+  "unknownUser": "Người dùng không xác định",
   "connecting": "Đang kết nối tới hệ thống tin nhắn...",
   "loadingMessages": "Đang tải tin nhắn...",
   "startConversation": "Bắt đầu trò chuyện",

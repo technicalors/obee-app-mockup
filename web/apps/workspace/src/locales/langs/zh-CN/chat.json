@@ -18,6 +18,7 @@
   "groupName": "群组名称",
   "groupNamePlaceholder": "输入群组名称",
   "memberCount": "{count} 位成员",
+  "unknownUser": "未知用户",
   "connecting": "正在连接到聊天服务器...",
   "loadingMessages": "正在加载消息...",
   "startConversation": "开始对话",

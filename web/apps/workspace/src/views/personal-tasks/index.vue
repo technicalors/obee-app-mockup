@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import type { TaskFilterType } from './use-personal-tasks';
 
-import type { PersonalTaskList } from '#/api/contracts/personal-tasks';
+import type {
+  CompletedPersonalTask,
+  PersonalTask,
+  PersonalTaskList,
+} from '#/api/contracts/personal-tasks';
 
 import { computed, nextTick, onMounted, ref, useId, watch } from 'vue';
 
@@ -24,8 +28,7 @@ import { $t } from '#/locales';
 
 import TaskCreateModalComponent from './components/task-create-modal.vue';
 import TaskDetailDrawer from './components/task-detail-drawer.vue';
-import TaskInlineAdd from './components/task-inline-add.vue';
-import TaskItem from './components/task-item.vue';
+import TaskListColumn from './components/task-list-column.vue';
 import TaskSidebar from './components/task-sidebar.vue';
 import { getTodayLocalDate, usePersonalTasks } from './use-personal-tasks';
 
@@ -95,12 +98,18 @@ const [CreateTaskModal, createTaskModalApi] = useVbenModal({
   connectedComponent: TaskCreateModalComponent,
 });
 const isSidebarOpen = ref(!isMobile.value);
+const hiddenListIds = ref(new Set<string>());
 
 watch(isMobile, (mobile) => {
   isSidebarOpen.value = !mobile;
 });
 
 function selectList(listId: TaskFilterType): void {
+  if (listsById.value.has(listId) && hiddenListIds.value.has(listId)) {
+    const nextHiddenListIds = new Set(hiddenListIds.value);
+    nextHiddenListIds.delete(listId);
+    hiddenListIds.value = nextHiddenListIds;
+  }
   selectedListId.value = listId;
   isTodayFilter.value = false;
   isStarredFilter.value = false;
@@ -126,7 +135,6 @@ const CalendarIcon = createIconifyIcon('lucide:calendar');
 const StarIcon = createIconifyIcon('lucide:star');
 const EditIcon = createIconifyIcon('lucide:pencil');
 const TrashIcon = createIconifyIcon('lucide:trash-2');
-const ChevronDownIcon = createIconifyIcon('lucide:chevron-down');
 let detailTrigger: HTMLElement | null = null;
 
 const selectedCustomList = computed<null | PersonalTaskList>(() => {
@@ -134,9 +142,62 @@ const selectedCustomList = computed<null | PersonalTaskList>(() => {
   return listsById.value.get(selectedListId.value) ?? null;
 });
 
-const inlineAddList = computed<PersonalTaskList | undefined>(
-  () => selectedCustomList.value ?? lists.value.find((list) => list.is_default),
+interface PersonalTaskGroup {
+  completedTasks: CompletedPersonalTask[];
+  list: PersonalTaskList;
+  openTasks: PersonalTask[];
+}
+
+const visibleListIds = computed(
+  () =>
+    new Set(
+      lists.value
+        .filter((list) => !hiddenListIds.value.has(list.id))
+        .map((list) => list.id),
+    ),
 );
+const visibleTaskGroups = computed<PersonalTaskGroup[]>(() => {
+  const visibleLists = selectedCustomList.value
+    ? [selectedCustomList.value]
+    : lists.value.filter((list) => visibleListIds.value.has(list.id));
+
+  return visibleLists.map((list) => ({
+    completedTasks: visibleCompletedTasks.value.filter(
+      (task) => task.task_list_id === list.id,
+    ),
+    list,
+    openTasks: visibleOpenTasks.value.filter(
+      (task) => task.task_list_id === list.id,
+    ),
+  }));
+});
+const visibleGroupedOpenCount = computed(() =>
+  visibleTaskGroups.value.reduce(
+    (count, group) => count + group.openTasks.length,
+    0,
+  ),
+);
+const visibleGroupedTaskCount = computed(() =>
+  visibleTaskGroups.value.reduce(
+    (count, group) =>
+      count + group.openTasks.length + group.completedTasks.length,
+    0,
+  ),
+);
+
+function toggleListVisibility(listId: string): void {
+  const nextHiddenListIds = new Set(hiddenListIds.value);
+  if (nextHiddenListIds.has(listId)) {
+    nextHiddenListIds.delete(listId);
+  } else {
+    nextHiddenListIds.add(listId);
+  }
+  hiddenListIds.value = nextHiddenListIds;
+
+  if (nextHiddenListIds.has(listId) && selectedListId.value === listId) {
+    selectList('all');
+  }
+}
 
 const renameFieldId = useId();
 const completedTasksId = useId();
@@ -214,12 +275,14 @@ async function closeDetail(): Promise<void> {
         <div class="h-full w-64">
           <TaskSidebar
             :all-open-count="allOpenCount"
+            :hidden-list-ids="hiddenListIds"
             :lists="lists"
             :selected-list-id="selectedListId"
             :task-counts-by-list-id="taskCountsByListId"
             @create-list="(title) => runMutation(() => createList(title))"
             @create-task="openCreateModal"
             @select-list="selectList"
+            @toggle-list-visibility="toggleListVisibility"
           />
         </div>
       </div>
@@ -235,12 +298,14 @@ async function closeDetail(): Promise<void> {
       >
         <TaskSidebar
           :all-open-count="allOpenCount"
+          :hidden-list-ids="hiddenListIds"
           :lists="lists"
           :selected-list-id="selectedListId"
           :task-counts-by-list-id="taskCountsByListId"
           @create-list="(title) => runMutation(() => createList(title))"
           @create-task="openCreateModal"
           @select-list="selectList"
+          @toggle-list-visibility="toggleListVisibility"
         />
       </Drawer>
       <main
@@ -284,7 +349,7 @@ async function closeDetail(): Promise<void> {
             >
               {{
                 $t('personalTasks.lists.openCount', {
-                  count: visibleOpenTasks.length,
+                  count: visibleGroupedOpenCount,
                 })
               }}
             </span>
@@ -392,13 +457,49 @@ async function closeDetail(): Promise<void> {
             </div>
           </div>
         </header>
-        <div class="min-h-0 flex-1 overflow-y-auto bg-muted p-4">
-          <div class="flex w-full flex-col gap-3">
-            <TaskInlineAdd
-              v-if="inlineAddList"
-              :can-choose-list="selectedCustomList === null"
-              :list-id="inlineAddList.id"
-              :lists="lists"
+        <div
+          class="min-h-0 flex-1 overflow-hidden bg-muted p-4"
+          data-testid="task-board"
+        >
+          <div
+            v-if="isLoadingTasks"
+            class="my-12 text-center text-sm text-muted-foreground"
+            role="status"
+          >
+            {{ $t('personalTasks.taskList.loading') }}
+          </div>
+          <p
+            v-else-if="lists.length === 0"
+            class="m-0 rounded-lg border border-dashed border-border px-4 py-3 text-sm text-muted-foreground"
+          >
+            {{ $t('personalTasks.lists.noListsHint') }}
+          </p>
+          <p
+            v-else-if="visibleTaskGroups.length === 0"
+            class="m-0 rounded-lg border border-dashed border-border bg-card px-4 py-3 text-sm text-muted-foreground"
+            data-testid="task-no-visible-lists"
+          >
+            {{ $t('personalTasks.lists.noVisibleListsHint') }}
+          </p>
+          <div
+            v-else-if="searchQuery.length === 0 || visibleGroupedTaskCount > 0"
+            class="flex h-full min-w-0 snap-x snap-mandatory gap-4 overflow-x-auto overflow-y-hidden pb-2"
+            data-testid="task-list"
+          >
+            <TaskListColumn
+              v-for="group in visibleTaskGroups"
+              :key="group.list.id"
+              :list="group.list"
+              :open-tasks="group.openTasks"
+              :completed-tasks="group.completedTasks"
+              :completed-tasks-id="`${completedTasksId}-${group.list.id}`"
+              :is-completed-expanded="isCompletedExpanded"
+              :lists-by-id="listsById"
+              :subtasks-by-parent-id="subtasksByParentId"
+              :save-subtask="
+                (parentId, title) =>
+                  runMutation(() => addSubtask(parentId, title))
+              "
               :save-task="
                 ({ listId, title }) =>
                   runMutation(() =>
@@ -412,142 +513,28 @@ async function closeDetail(): Promise<void> {
                     }),
                   )
               "
+              @toggle-completed="isCompletedExpanded = !isCompletedExpanded"
+              @toggle-status="(id) => runMutation(() => toggleTaskStatus(id))"
+              @toggle-star="(id) => runMutation(() => toggleStar(id))"
+              @open-detail="openDetail"
+              @delete="(id) => runMutation(() => deleteTask(id))"
             />
-            <p
-              v-if="lists.length === 0 && !isLoadingTasks"
-              class="m-0 rounded-lg border border-dashed border-border px-4 py-3 text-sm text-muted-foreground"
-            >
-              {{ $t('personalTasks.lists.noListsHint') }}
-            </p>
-            <div
-              v-if="isLoadingTasks"
-              class="my-12 text-center text-sm text-muted-foreground"
-              role="status"
-            >
-              {{ $t('personalTasks.taskList.loading') }}
-            </div>
-            <div
-              v-else-if="
-                visibleOpenTasks.length > 0 || visibleCompletedTasks.length > 0
-              "
-              class="flex flex-col gap-3"
-              data-testid="task-list"
-            >
-              <TransitionGroup
-                v-if="visibleOpenTasks.length > 0"
-                name="task-list-anim"
-                tag="div"
-                class="flex flex-col gap-3"
-              >
-                <TaskItem
-                  v-for="task in visibleOpenTasks"
-                  :key="task.id"
-                  :task="task"
-                  :lists-by-id="listsById"
-                  :subtasks="subtasksByParentId.get(task.id)"
-                  :save-subtask="
-                    (parentId, title) =>
-                      runMutation(() => addSubtask(parentId, title))
-                  "
-                  :show-list="
-                    selectedListId === 'all' ||
-                    selectedListId === 'starred' ||
-                    selectedListId === 'today' ||
-                    isTodayFilterActive
-                  "
-                  @toggle-status="
-                    (id) => runMutation(() => toggleTaskStatus(id))
-                  "
-                  @toggle-star="(id) => runMutation(() => toggleStar(id))"
-                  @open-detail="openDetail"
-                  @delete="(id) => runMutation(() => deleteTask(id))"
-                />
-              </TransitionGroup>
-              <section
-                v-if="visibleCompletedTasks.length > 0"
-                class="flex flex-col gap-3"
-              >
-                <button
-                  type="button"
-                  class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted/60"
-                  :aria-controls="completedTasksId"
-                  :aria-expanded="isCompletedExpanded"
-                  data-testid="completed-accordion-toggle"
-                  @click="isCompletedExpanded = !isCompletedExpanded"
-                >
-                  <span>
-                    {{
-                      $t('personalTasks.taskList.completedSection', {
-                        count: visibleCompletedTasks.length,
-                      })
-                    }}
-                  </span>
-                  <ChevronDownIcon
-                    class="size-4 transition-transform"
-                    :class="{ 'rotate-180': isCompletedExpanded }"
-                    aria-hidden="true"
-                  />
-                </button>
-                <div :id="completedTasksId" class="flex flex-col gap-3">
-                  <TransitionGroup
-                    v-if="isCompletedExpanded"
-                    name="task-list-anim"
-                    tag="div"
-                    class="flex flex-col gap-3"
-                  >
-                    <TaskItem
-                      v-for="task in visibleCompletedTasks"
-                      :key="task.id"
-                      :task="task"
-                      :lists-by-id="listsById"
-                      :subtasks="subtasksByParentId.get(task.id)"
-                      :save-subtask="
-                        (parentId, title) =>
-                          runMutation(() => addSubtask(parentId, title))
-                      "
-                      :show-list="
-                        selectedListId === 'all' ||
-                        selectedListId === 'starred' ||
-                        selectedListId === 'today' ||
-                        isTodayFilterActive
-                      "
-                      @toggle-status="
-                        (id) => runMutation(() => toggleTaskStatus(id))
-                      "
-                      @toggle-star="(id) => runMutation(() => toggleStar(id))"
-                      @open-detail="openDetail"
-                      @delete="(id) => runMutation(() => deleteTask(id))"
-                    />
-                  </TransitionGroup>
-                </div>
-              </section>
-            </div>
-            <Empty
-              v-else
-              class="my-16"
-              :image-style="{ height: '160px' }"
-              data-testid="task-empty-state"
-            >
-              <template #description>
-                <span class="text-base text-muted-foreground">
-                  {{
-                    $t(
-                      searchQuery
-                        ? 'personalTasks.taskList.noResultsTitle'
-                        : 'personalTasks.taskList.emptyTitle',
-                    )
-                  }}
-                </span>
-              </template>
-              <Button
-                v-if="searchQuery"
-                data-testid="clear-search-button"
-                @click="searchQuery = ''"
-              >
-                {{ $t('personalTasks.filters.clearSearch') }}
-              </Button>
-            </Empty>
           </div>
+          <Empty
+            v-else
+            class="my-16"
+            :image-style="{ height: '160px' }"
+            data-testid="task-empty-state"
+          >
+            <template #description>
+              <span class="text-base text-muted-foreground">
+                {{ $t('personalTasks.taskList.noResultsTitle') }}
+              </span>
+            </template>
+            <Button data-testid="clear-search-button" @click="searchQuery = ''">
+              {{ $t('personalTasks.filters.clearSearch') }}
+            </Button>
+          </Empty>
         </div>
       </main>
     </div>

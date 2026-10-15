@@ -29,6 +29,29 @@ export function getDirectChatAlias(
   };
 }
 
+export function resolveChatUserDisplayName(
+  userId: string,
+  candidates: Array<null | string | undefined>,
+  fallback: string,
+): string {
+  const normalizedUserId = userId.trim().toLowerCase();
+  const rawMatrixUserIdPattern = /^@[^:\s]+:[^:\s]+$/;
+  const rawUuidPattern =
+    /^[\da-f]{8}-[\da-f]{4}-[1-5][\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}$/i;
+  const displayName = candidates
+    .map((candidate) => candidate?.trim())
+    .find(
+      (candidate): candidate is string =>
+        candidate !== undefined &&
+        candidate.length > 0 &&
+        candidate.toLowerCase() !== normalizedUserId &&
+        !rawMatrixUserIdPattern.test(candidate) &&
+        !rawUuidPattern.test(candidate),
+    );
+
+  return displayName ?? fallback;
+}
+
 export function stripReplyFallback(body: string): string {
   if (!body || !body.startsWith('>')) return body;
   const lines = body.split('\n');

@@ -2,8 +2,11 @@ import type { Schedule } from '#/api/schedules';
 
 import { describe, expect, it } from 'vitest';
 
+import { mockUsers } from '#/mocks/data';
+
 import {
   buildAuthoringPayload,
+  buildDepartmentUserTreeOptions,
   buildMonthGrid,
   buildWeekSegments,
   createDraftFromEvent,
@@ -354,6 +357,26 @@ describe('schedule color classes', () => {
 });
 
 describe('authoring helpers', () => {
+  it('keeps users visible when their parent organizations are not in the user response', () => {
+    const options = buildDepartmentUserTreeOptions(mockUsers);
+    const leaves = options.flatMap(function collectUsers(option): Array<{
+      label: string;
+      value: string;
+    }> {
+      if (option.children === undefined) {
+        return [{ label: option.label, value: option.value }];
+      }
+
+      return option.children.flatMap(collectUsers);
+    });
+
+    expect(leaves).toEqual(
+      expect.arrayContaining(
+        mockUsers.map((user) => ({ label: user.name, value: user.id })),
+      ),
+    );
+  });
+
   it('formats backend UTC datetimes and YYYY-MM-DD strings to authoring dates', () => {
     expect(formatAuthoringDate('2026-06-15T17:00:00.000Z')).toBe('2026-06-16');
     expect(formatAuthoringDate('2026-06-16')).toBe('2026-06-16');

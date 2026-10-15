@@ -301,9 +301,13 @@ export function buildDepartmentUserTreeOptions(
   }
 
   for (const department of departmentsById.values()) {
-    const parentId = department.parent_id;
-    const siblingDepartmentIds =
-      departmentIdsByParentId.get(parentId) ?? [];
+    // User rows only include their directly assigned organization, so a parent
+    // may be absent from this response. Keep that branch visible at the root.
+    const parentId =
+      department.parent_id !== null && departmentsById.has(department.parent_id)
+        ? department.parent_id
+        : null;
+    const siblingDepartmentIds = departmentIdsByParentId.get(parentId) ?? [];
 
     if (siblingDepartmentIds.includes(department.id)) {
       continue;

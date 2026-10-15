@@ -22,7 +22,8 @@
     "renameListTitle": "Đổi tên danh sách",
     "deleteList": "Xóa {title}",
     "deleteConfirm": "Xóa danh sách này cùng toàn bộ công việc bên trong?",
-    "noListsHint": "Tạo danh sách ở thanh bên để bắt đầu thêm công việc."
+    "noListsHint": "Tạo danh sách ở thanh bên để bắt đầu thêm công việc.",
+    "noVisibleListsHint": "Chọn ít nhất một danh sách ở thanh bên để hiển thị công việc."
   },
   "sidebar": {
     "open": "Hiện danh sách",

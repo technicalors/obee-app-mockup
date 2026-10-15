@@ -171,12 +171,36 @@ const authoringPayload = computed(() =>
     : buildAuthoringPayload(authoringDraft.value),
 );
 const canSubmitAuthoringDraft = computed(() => authoringDraft.value !== null);
-const calendarUsersById = computed(
-  () =>
-    new Map(
-      authoringUserOptions.value.map((user) => [String(user.value), user]),
-    ),
-);
+const calendarUsersById = computed(() => {
+  const users = new Map(
+    authoringUserOptions.value.map((user) => [String(user.value), user]),
+  );
+
+  for (const schedule of schedules.value) {
+    for (const user of [
+      ...schedule.event.participants,
+      ...schedule.event.observers,
+    ]) {
+      if (!users.has(user.id)) {
+        users.set(user.id, {
+          avatar: user.avatar,
+          label: user.name,
+          value: user.id,
+        });
+      }
+    }
+  }
+
+  if (authStore.user && !users.has(authStore.user.id)) {
+    users.set(authStore.user.id, {
+      avatar: authStore.user.avatar,
+      label: authStore.user.name,
+      value: authStore.user.id,
+    });
+  }
+
+  return users;
+});
 const isCalendarUserFilterActive = computed(() => {
   if (selectedCalendarUserIds.value.length === 0) {
     return false;
@@ -476,7 +500,8 @@ function buildSectionTabs(
     avatar: calendarUsersById.value.get(userId)?.avatar ?? null,
     canTransfer: userId !== currentUserId.value,
     key: userId,
-    title: calendarUsersById.value.get(userId)?.label ?? userId,
+    title:
+      calendarUsersById.value.get(userId)?.label ?? $t('common.notProvided'),
   }));
 }
 

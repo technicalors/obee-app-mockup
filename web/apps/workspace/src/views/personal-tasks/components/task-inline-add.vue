@@ -16,6 +16,7 @@ const props = defineProps<{
   listId: string;
   lists: PersonalTaskList[];
   saveTask: (payload: { listId: string; title: string }) => Promise<boolean>;
+  showListLabel?: boolean;
 }>();
 
 const PlusIcon = createIconifyIcon('lucide:plus');
@@ -74,7 +75,7 @@ function handleKeydown(event: KeyboardEvent): void {
     data-testid="task-inline-add"
   >
     <Select
-      v-if="canChooseList"
+      v-if="canChooseList && showListLabel !== false"
       v-model:value="chosenListId"
       :bordered="false"
       :popup-match-select-width="false"
@@ -88,7 +89,7 @@ function handleKeydown(event: KeyboardEvent): void {
       </Select.Option>
     </Select>
     <Tag
-      v-else
+      v-else-if="showListLabel !== false"
       class="m-0 max-w-32 shrink-0 truncate rounded-full px-2 py-0 text-xs sm:max-w-48"
       data-testid="task-inline-add-list"
     >

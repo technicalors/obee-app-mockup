@@ -18,6 +18,7 @@
   "groupName": "Group Name",
   "groupNamePlaceholder": "Enter group name",
   "memberCount": "{count} members",
+  "unknownUser": "Unknown user",
   "connecting": "Connecting to chat server...",
   "loadingMessages": "Loading messages...",
   "startConversation": "Start conversation",

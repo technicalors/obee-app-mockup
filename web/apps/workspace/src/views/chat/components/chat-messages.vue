@@ -25,7 +25,7 @@ import dayjs from 'dayjs';
 import { escapeRegExp } from 'lodash';
 
 import { $t } from '#/locales';
-import { useChatStore } from '#/store';
+import { resolveChatUserDisplayName, useChatStore } from '#/store';
 import {
   getUserAvatarSource,
   getUserPlaceholderAvatar,
@@ -345,12 +345,27 @@ function getSenderColleague(senderId: string): undefined | User {
 
 function getSenderDisplayName(msg: ChatMessageItem): string {
   const colleague = getSenderColleague(msg.senderId);
-  if (colleague?.name) {
-    return colleague.name;
-  }
-  return (msg.senderName || msg.senderId)
+  return resolveChatUserDisplayName(
+    msg.senderId,
+    [colleague?.name, msg.senderName],
+    $t('chat.unknownUser'),
+  )
     .replaceAll(/[\p{Emoji}\p{Extended_Pictographic}]/gu, '')
     .trim();
+}
+
+function getReplySenderDisplayName(senderName: string): string {
+  const colleague = getSenderColleague(senderName);
+  return resolveChatUserDisplayName(
+    '',
+    [colleague?.name, senderName],
+    $t('chat.unknownUser'),
+  );
+}
+
+function getPinnedSenderDisplayName(eventId: string): string {
+  const message = pinnedMessagesById.value.get(eventId);
+  return message ? getSenderDisplayName(message) : '...';
 }
 
 function getMemberDisplayName(userId: string, fallbackName?: string): string {
@@ -361,11 +376,24 @@ function getMemberDisplayName(userId: string, fallbackName?: string): string {
   if (colleague?.name) {
     return colleague.name;
   }
-  const rawName = fallbackName || userId;
-  return rawName
+  return resolveChatUserDisplayName(
+    userId,
+    [colleague?.name, fallbackName],
+    $t('chat.unknownUser'),
+  )
     .replaceAll(/[\p{Emoji}\p{Extended_Pictographic}]/gu, '')
     .trim();
 }
+
+const resolvedTypingUsers = computed<ChatTypingUser[]>(() =>
+  props.typingUsers.map((typingUser) => ({
+    ...typingUser,
+    displayName: getMemberDisplayName(
+      typingUser.userId,
+      typingUser.displayName,
+    ),
+  })),
+);
 
 function getSystemEventIcon(msg: ChatMessageItem): string {
   const type = msg.systemEvent?.type;
@@ -846,7 +874,7 @@ defineExpose({
                   v-if="latestPinnedMessage.senderName"
                   class="font-medium text-foreground/90"
                 >
-                  {{ latestPinnedMessage.senderName }}:
+                  {{ getSenderDisplayName(latestPinnedMessage) }}:
                 </span>
                 {{
                   latestPinnedMessage.isRedacted
@@ -923,9 +951,7 @@ defineExpose({
             >
               {{
                 pinnedMessagesById.get(eventId)
-                  ? getSenderInitials(
-                      pinnedMessagesById.get(eventId)?.senderName,
-                    )
+                  ? getSenderInitials(getPinnedSenderDisplayName(eventId))
                   : ''
               }}
             </Avatar>
@@ -935,7 +961,7 @@ defineExpose({
                 class="flex items-center justify-between gap-2 leading-tight"
               >
                 <span class="truncate text-xs font-semibold text-foreground">
-                  {{ pinnedMessagesById.get(eventId)?.senderName || '...' }}
+                  {{ getPinnedSenderDisplayName(eventId) }}
                 </span>
                 <span
                   v-if="pinnedMessagesById.get(eventId)?.timestamp"
@@ -1113,8 +1139,8 @@ defineExpose({
                     class="cursor-pointer overflow-hidden border-0 font-semibold text-xs shadow-none transition-transform hover:scale-105 bg-primary/10 text-primary"
                     @error="() => handleAvatarError(msg)"
                   >
-                    <span v-if="getSenderInitials(msg.senderName)">{{
-                      getSenderInitials(msg.senderName)
+                    <span v-if="getSenderInitials(getSenderDisplayName(msg))">{{
+                      getSenderInitials(getSenderDisplayName(msg))
                     }}</span>
                     <IconifyIcon
                       v-else
@@ -1173,7 +1199,9 @@ defineExpose({
                             class="truncate text-xs font-semibold leading-4"
                             :class="msg.isMe ? 'text-white' : 'text-primary'"
                           >
-                            {{ msg.replyTo.senderName }}
+                            {{
+                              getReplySenderDisplayName(msg.replyTo.senderName)
+                            }}
                           </div>
                           <div
                             class="truncate text-xs leading-4"
@@ -1570,7 +1598,12 @@ defineExpose({
                           msg.readers && msg.readers.length > 0
                             ? $t('chat.seenBy', {
                                 users: msg.readers
-                                  .map((r) => r.displayName)
+                                  .map((r) =>
+                                    getMemberDisplayName(
+                                      r.userId,
+                                      r.displayName,
+                                    ),
+                                  )
                                   .join(', '),
                               })
                             : $t('chat.seen')
@@ -1622,22 +1655,23 @@ defineExpose({
 
         <!-- Typing Indicator at Bottom of Message List -->
         <div
-          v-if="typingUsers && typingUsers.length > 0"
+          v-if="resolvedTypingUsers.length > 0"
           class="flex w-full items-end justify-start transition-opacity duration-200 select-none"
           data-testid="chat-typing-indicator"
           role="status"
           aria-live="polite"
-          :aria-label="formatTypingIndicatorText(typingUsers)"
+          :aria-label="formatTypingIndicatorText(resolvedTypingUsers)"
         >
           <div class="mr-2 flex size-8 shrink-0 items-end justify-center">
             <Avatar
               :size="32"
-              :src="getTypingAvatarSrc(typingUsers[0])"
+              :src="getTypingAvatarSrc(resolvedTypingUsers[0])"
               class="overflow-hidden border-0 bg-primary/10 text-xs font-semibold text-primary shadow-none"
             >
-              <span v-if="getSenderInitials(typingUsers[0]?.displayName)">{{
-                getSenderInitials(typingUsers[0]?.displayName)
-              }}</span>
+              <span
+                v-if="getSenderInitials(resolvedTypingUsers[0]?.displayName)"
+                >{{ getSenderInitials(resolvedTypingUsers[0]?.displayName) }}
+              </span>
               <IconifyIcon
                 v-else
                 icon="lucide:user"

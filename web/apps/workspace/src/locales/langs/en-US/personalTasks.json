@@ -22,7 +22,8 @@
     "renameListTitle": "Rename list",
     "deleteList": "Delete {title}",
     "deleteConfirm": "Delete this list and all tasks inside?",
-    "noListsHint": "Create a list from the sidebar to start adding tasks."
+    "noListsHint": "Create a list from the sidebar to start adding tasks.",
+    "noVisibleListsHint": "Select at least one list in the sidebar to show its tasks."
   },
   "sidebar": {
     "open": "Show lists",

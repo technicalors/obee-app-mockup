@@ -10,7 +10,7 @@ import { useUserStore } from '@vben/stores';
 import { Avatar, Empty, Modal, TabPane, Tabs, Tooltip } from 'ant-design-vue';
 
 import { $t } from '#/locales';
-import { useChatStore } from '#/store';
+import { resolveChatUserDisplayName, useChatStore } from '#/store';
 import { getUserAvatarSource } from '#/views/users/avatar';
 
 import { getTotalReactionsCount } from '../composables/use-chat-reactions';
@@ -124,11 +124,10 @@ function resolveUserDisplayName(userId: string, defaultName?: string): string {
     username === userStore.userInfo?.username?.toLowerCase();
 
   if (isCurrentMe) {
-    return (
-      userStore.userInfo?.realName ||
-      userStore.userInfo?.username ||
-      defaultName ||
-      userId
+    return resolveChatUserDisplayName(
+      userId,
+      [userStore.userInfo?.realName, userStore.userInfo?.username, defaultName],
+      $t('chat.unknownUser'),
     );
   }
 
@@ -137,7 +136,11 @@ function resolveUserDisplayName(userId: string, defaultName?: string): string {
     return colleague.name;
   }
 
-  return defaultName || userId;
+  return resolveChatUserDisplayName(
+    userId,
+    [defaultName],
+    $t('chat.unknownUser'),
+  );
 }
 
 const displayedEntries = computed<ReactionUserEntry[]>(() => {

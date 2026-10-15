@@ -161,6 +161,22 @@
   line-height: 0;
 }
 
+.personal-tasks-ui .task-list-column .task-composer {
+  gap: 8px;
+  padding: 8px 10px;
+  background: hsl(var(--muted) / 45%);
+  border: 1px solid hsl(var(--border) / 80%);
+  box-shadow: none;
+}
+
+.personal-tasks-ui .task-list-column .task-composer-field {
+  border-bottom-color: transparent;
+}
+
+.personal-tasks-ui .task-list-column .task-row {
+  align-items: flex-start;
+}
+
 .personal-tasks-ui textarea.ant-input {
   padding: 8px 12px;
   line-height: 1.5;
