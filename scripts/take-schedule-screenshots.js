@@ -93,6 +93,10 @@ async function main() {
     await page.click('[data-testid="schedule-view-mode-month"]');
     await page.waitForTimeout(500);
 
+    // --- Bổ sung 1a: Nút Lịch tài sản trên thanh công cụ ---
+    console.log(`[${theme}] Bổ sung 1a: Nút Lịch tài sản trên thanh công cụ`);
+    await snap(GROUPS.facility, 'nut-lich-tai-san-toolbar', theme);
+
     // --- 2. Bộ lọc & Chia cột so sánh ---
     console.log(`[${theme}] 5. User Tree Select`);
     const treeSelect = page.locator('[data-testid="calendar-user-tree-select"]');
@@ -158,7 +162,7 @@ async function main() {
       await page.waitForTimeout(500);
     }
 
-    // --- 4. Chỉnh sửa lịch trình & Popover quản lý thành viên ẩn ---
+    // --- 4. Chỉnh sửa lịch trình & Bổ sung 2: Xóa thành viên ẩn ---
     console.log(`[${theme}] 10. Edit Drawer`);
     const editBtn = page.locator('.ant-drawer button:has-text("Chỉnh sửa")').first();
     if (await editBtn.isVisible()) {
@@ -166,14 +170,13 @@ async function main() {
       await page.waitForTimeout(800);
       await snap(GROUPS.forms, 'edit-drawer', theme);
 
-      // Popover quản lý thành viên ẩn (+N...)
-      console.log(`[${theme}] 10b. Overflow Members Management Popover`);
+      // Bổ sung 2: Popover xem và xóa tùy ý thành viên trong nhóm ẩn (+N...)
+      console.log(`[${theme}] Bổ sung 2: Xóa thành viên ẩn tùy ý (+N...)`);
       const overflowTag = page.locator('[data-testid="schedule-form-participants-overflow-tag"]');
       if (await overflowTag.isVisible()) {
         await overflowTag.click();
         await page.waitForTimeout(600);
-        await snap(GROUPS.forms, 'overflow-members-popover', theme);
-        // Press Escape to close popover
+        await snap(GROUPS.forms, 'xoa-thanh-vien-an-popover', theme);
         await page.keyboard.press('Escape');
         await page.waitForTimeout(400);
       }
@@ -183,31 +186,40 @@ async function main() {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
 
-    // --- 5. Tạo mới & Timeline phòng họp/thiết bị từ thanh công cụ ---
+    // --- 5. Biểu mẫu tạo mới ---
     console.log(`[${theme}] 11. Create Drawer`);
     const createBtn = page.locator('[data-testid="schedule-create-day"]').first();
     await createBtn.click();
     await page.waitForTimeout(800);
     await snap(GROUPS.forms, 'create-drawer', theme);
 
-    // Close create drawer
     const createClose = page.locator('.ant-drawer-header .ant-drawer-close').last();
     if (await createClose.isVisible()) {
       await createClose.click();
       await page.waitForTimeout(500);
     }
 
-    console.log(`[${theme}] 12. Facility & Equipment Timeline Modal (from Toolbar)`);
+    // --- Bổ sung 1b: Modal Timeline Lịch tài sản & Tạo lịch nhanh ---
+    console.log(`[${theme}] Bổ sung 1b: Timeline Lịch tài sản (Modal)`);
     const facilityToolbarBtn = page.locator('[data-testid="schedule-facility-schedule-btn"]');
     await facilityToolbarBtn.click();
     await page.waitForTimeout(800);
     await snap(GROUPS.facility, 'facility-timeline', theme);
 
-    // Close modal
-    const modalClose = page.locator('.ant-modal-close').first();
-    if (await modalClose.isVisible()) {
-      await modalClose.click();
-      await page.waitForTimeout(500);
+    console.log(`[${theme}] Bổ sung 1c: Tạo lịch nhanh khi chọn ô giờ trống`);
+    const emptySlots = page.locator('.facility-schedule-modal .cursor-pointer');
+    const slotCount = await emptySlots.count();
+    if (slotCount > 5) {
+      await emptySlots.nth(5).click();
+      await page.waitForTimeout(800);
+      await snap(GROUPS.facility, 'tao-lich-nhanh-tu-timeline', theme);
+
+      // Close create drawer
+      const quickCreateClose = page.locator('.ant-drawer-header .ant-drawer-close').last();
+      if (await quickCreateClose.isVisible()) {
+        await quickCreateClose.click();
+        await page.waitForTimeout(500);
+      }
     }
 
     console.log(`Completed theme: ${theme}`);
@@ -217,7 +229,7 @@ async function main() {
   await page.waitForLoadState('networkidle');
   await ensureTheme('light');
 
-  console.log('\nAll screenshots organized into functional groups successfully!');
+  console.log('\nAll Personal Scheduler screenshots organized successfully!');
   await browser.close();
 }
 
