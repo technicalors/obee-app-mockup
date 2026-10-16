@@ -253,9 +253,18 @@ const conflictedEquipments = computed(() => {
   return conflicts;
 });
 
-function handleSelectFacilitySlot(eqId: string, start: string, end: string): void {
+function handleSelectFacilitySlot(
+  eqId: string,
+  start: string,
+  end: string,
+  date?: string,
+): void {
   props.onUpdateAuthoringTime('start_time', start);
   props.onUpdateAuthoringTime('end_time', end);
+  if (date && props.draft && props.draft.start_date !== date) {
+    props.onUpdateAuthoringDate('start_date', date);
+    props.onUpdateAuthoringDate('end_date', date);
+  }
   if (props.draft && !props.draft.equipment_ids.includes(eqId)) {
     equipmentIdsValue.value = [...props.draft.equipment_ids, eqId];
   }

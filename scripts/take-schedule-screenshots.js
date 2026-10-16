@@ -171,19 +171,31 @@ async function main() {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
 
-    // --- 5. Tạo mới & Timeline phòng họp/thiết bị ---
+    // --- 5. Tạo mới & Timeline phòng họp/thiết bị từ thanh công cụ ---
     console.log(`[${theme}] 11. Create Drawer`);
     const createBtn = page.locator('[data-testid="schedule-create-day"]').first();
     await createBtn.click();
     await page.waitForTimeout(800);
     await snap(GROUPS.forms, 'create-drawer', theme);
 
-    console.log(`[${theme}] 12. Facility & Equipment Timeline Modal`);
-    const facilityBtn = page.locator('button:has-text("Xem lịch sử dụng")');
-    if (await facilityBtn.isVisible()) {
-      await facilityBtn.click();
-      await page.waitForTimeout(800);
-      await snap(GROUPS.facility, 'facility-timeline', theme);
+    // Close create drawer
+    const createClose = page.locator('.ant-drawer-header .ant-drawer-close').last();
+    if (await createClose.isVisible()) {
+      await createClose.click();
+      await page.waitForTimeout(500);
+    }
+
+    console.log(`[${theme}] 12. Facility & Equipment Timeline Modal (from Toolbar)`);
+    const facilityToolbarBtn = page.locator('[data-testid="schedule-facility-schedule-btn"]');
+    await facilityToolbarBtn.click();
+    await page.waitForTimeout(800);
+    await snap(GROUPS.facility, 'facility-timeline', theme);
+
+    // Close modal
+    const modalClose = page.locator('.ant-modal-close').first();
+    if (await modalClose.isVisible()) {
+      await modalClose.click();
+      await page.waitForTimeout(500);
     }
 
     console.log(`Completed theme: ${theme}`);

@@ -35,6 +35,7 @@ import { getUserAvatarSource } from '#/views/users/avatar';
 
 import type { ScheduleViewMode } from './components/ScheduleInteractionBar.vue';
 
+import FacilityScheduleModal from './components/FacilityScheduleModal.vue';
 import ScheduleCalendarSection from './components/ScheduleCalendarSection.vue';
 import ScheduleDetailDrawer from './components/ScheduleDetailDrawer.vue';
 import ScheduleFormDrawer from './components/ScheduleFormDrawer.vue';
@@ -91,6 +92,45 @@ const viewMode = ref<ScheduleViewMode>('month');
 const weekAnchorDate = ref(today);
 const dayAnchorDate = ref(today);
 const selectedYear = ref<number>(new Date().getFullYear());
+const standaloneFacilityModalOpen = ref(false);
+const standaloneFacilityDate = ref(today);
+
+function openStandaloneFacilityModal(): void {
+  if (viewMode.value === 'day') {
+    standaloneFacilityDate.value = dayAnchorDate.value;
+  } else if (viewMode.value === 'week') {
+    standaloneFacilityDate.value = weekAnchorDate.value;
+  } else {
+    const currentMonthPrefix = formatMonthValue(new Date());
+    if (selectedMonthValue.value === currentMonthPrefix) {
+      standaloneFacilityDate.value = today;
+    } else {
+      standaloneFacilityDate.value = `${selectedMonthValue.value}-01`;
+    }
+  }
+  standaloneFacilityModalOpen.value = true;
+}
+
+function handleStandaloneFacilitySlotSelect(
+  equipmentId: string,
+  start: string,
+  end: string,
+  date?: string,
+): void {
+  const targetDate = date || standaloneFacilityDate.value;
+  standaloneFacilityModalOpen.value = false;
+  authoringDraft.value = createScheduleDraftForDate(
+    targetDate,
+    currentUserId.value,
+    {
+      end_date: targetDate,
+      end_time: end,
+      equipment_ids: [equipmentId],
+      start_date: targetDate,
+      start_time: start,
+    },
+  );
+}
 
 const weekDates = computed(() => getWeekDates(weekAnchorDate.value));
 const dayDates = computed(() => [dayAnchorDate.value]);
@@ -1238,6 +1278,7 @@ function isScheduleObserver(schedule: Schedule): boolean {
         :current-month-label="currentMonthLabel"
         :is-current-month-selected="isCurrentPeriodSelected"
         :navigation-label="navigationLabel"
+        :on-open-facility-schedule="openStandaloneFacilityModal"
         :on-select-current-month="selectCurrentMonth"
         :on-shift-period="shiftPeriod"
         :on-update-selected-calendar-users="updateSelectedCalendarUsers"
@@ -1414,6 +1455,16 @@ function isScheduleObserver(schedule: Schedule): boolean {
       :open="authoringDrawerOpen"
       :schedules="schedules"
       :title="authoringDrawerTitle"
+    />
+
+    <!-- Standalone Facility Availability Timeline Modal -->
+    <FacilityScheduleModal
+      :open="standaloneFacilityModalOpen"
+      :date="standaloneFacilityDate"
+      :schedules="schedules"
+      :selected-equipment-ids="[]"
+      @close="standaloneFacilityModalOpen = false"
+      @select-time-and-equipment="handleStandaloneFacilitySlotSelect"
     />
   </Page>
 </template>

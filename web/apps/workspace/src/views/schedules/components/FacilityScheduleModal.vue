@@ -19,7 +19,12 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   close: [];
-  selectTimeAndEquipment: [equipmentId: string, start: string, end: string];
+  selectTimeAndEquipment: [
+    equipmentId: string,
+    start: string,
+    end: string,
+    date?: string,
+  ];
 }>();
 
 const CalendarIcon = createIconifyIcon('lucide:calendar');
@@ -231,7 +236,7 @@ function formatHour(h: number): string {
 function handleSlotClick(eqId: string, hour: number): void {
   const start = `${String(hour).padStart(2, '0')}:00`;
   const end = `${String(hour + 1).padStart(2, '0')}:00`;
-  emit('selectTimeAndEquipment', eqId, start, end);
+  emit('selectTimeAndEquipment', eqId, start, end, selectedDate.value);
 }
 </script>
 
@@ -370,7 +375,7 @@ function handleSlotClick(eqId: string, hour: number): void {
                   v-for="hour in hours"
                   :key="hour"
                   class="h-full flex-1 border-r border-border/30 transition-colors hover:bg-primary/10 cursor-pointer"
-                  :title="`Nhấp để chọn ${formatHour(hour)}`"
+                  :title="`Nhấp để tạo lịch nhanh cho ${eq.name} lúc ${formatHour(hour)} - ${formatHour(hour + 1)}`"
                   @click="handleSlotClick(eq.id, hour)"
                 />
 
@@ -438,7 +443,7 @@ function handleSlotClick(eqId: string, hour: number): void {
           </div>
         </div>
         <div class="text-[11px] text-primary italic font-medium">
-          💡 Mẹo: Nhấp vào bất kỳ ô giờ trống nào trên timeline để tự động chọn phòng và giờ họp
+          💡 Mẹo: Nhấp vào bất kỳ ô giờ trống nào trên timeline để chọn phòng và tạo lịch nhanh cho khung giờ đó
         </div>
       </div>
     </div>

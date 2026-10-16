@@ -94,6 +94,7 @@ export function parseMonthParts(value: string): {
 export function createScheduleDraftForDate(
   date: string,
   currentUserId: null | string,
+  defaults?: Partial<ScheduleAuthoringDraft>,
 ): ScheduleAuthoringDraft {
   return {
     company_name: null,
@@ -123,6 +124,7 @@ export function createScheduleDraftForDate(
     start_time: '08:00',
     title: '',
     type: 'meeting',
+    ...defaults,
   };
 }
 

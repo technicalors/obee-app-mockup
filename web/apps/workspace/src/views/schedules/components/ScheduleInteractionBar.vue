@@ -6,7 +6,7 @@ import type { ScheduleUserTreeOption } from '../schedule-page';
 import type { ScheduleVisibility } from '#/api/schedules';
 
 import { VbenButton } from '@vben/common-ui';
-import { ChevronLeft, ChevronRight } from '@vben/icons';
+import { ChevronLeft, ChevronRight, createIconifyIcon } from '@vben/icons';
 
 import { DatePicker, Select, TreeSelect } from 'ant-design-vue';
 
@@ -14,12 +14,15 @@ import { $t } from '#/locales';
 
 export type ScheduleViewMode = 'day' | 'month' | 'week' | 'year';
 
+const BuildingIcon = createIconifyIcon('lucide:building-2');
+
 const props = defineProps<{
   calendarUsersLoading: boolean;
   calendarUserTreeOptions: ScheduleUserTreeOption[];
   currentMonthLabel: string;
   isCurrentMonthSelected: boolean;
   navigationLabel: string;
+  onOpenFacilitySchedule?: () => void;
   onSelectCurrentMonth: () => void;
   onShiftPeriod: (offset: number) => void;
   onUpdateSelectedCalendarUsers: (value: string[] | undefined) => void;
@@ -130,6 +133,17 @@ function handleViewModeChange(value: unknown): void {
             {{ $t(`page.schedules.viewMode.${option.label}`) }}
           </button>
         </div>
+
+        <!-- Facility / Asset Schedule button -->
+        <button
+          type="button"
+          class="ml-2 inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent hover:text-primary hover:border-primary/50 shadow-xs cursor-pointer shrink-0"
+          data-testid="schedule-facility-schedule-btn"
+          @click="props.onOpenFacilitySchedule?.()"
+        >
+          <BuildingIcon class="size-3.5 text-primary shrink-0" />
+          <span>{{ $t('page.schedules.actions.facilitySchedule') }}</span>
+        </button>
       </span>
       <div
         v-if="showCalendarUsersFilter"
