@@ -141,7 +141,7 @@ async function main() {
 
     // --- 3. Chi tiết lịch trình & Xác nhận xóa ---
     console.log(`[${theme}] 8. Detail Drawer`);
-    const eventCard = page.locator('button[aria-label="Hội nghị Khách hàng & Đối tác Doanh nghiệp"], button[aria-label="Họp Kế hoạch & Chiến lược Sản phẩm Q4"]').first();
+    const eventCard = page.locator('button[aria-label*="Town Hall"], button[aria-label="Hội nghị Khách hàng & Đối tác Doanh nghiệp"]').first();
     await eventCard.click();
     await page.waitForTimeout(800);
     await snap(GROUPS.details, 'detail-drawer', theme);
@@ -158,13 +158,25 @@ async function main() {
       await page.waitForTimeout(500);
     }
 
-    // --- 4. Chỉnh sửa lịch trình ---
+    // --- 4. Chỉnh sửa lịch trình & Popover quản lý thành viên ẩn ---
     console.log(`[${theme}] 10. Edit Drawer`);
     const editBtn = page.locator('.ant-drawer button:has-text("Chỉnh sửa")').first();
     if (await editBtn.isVisible()) {
       await editBtn.click();
       await page.waitForTimeout(800);
       await snap(GROUPS.forms, 'edit-drawer', theme);
+
+      // Popover quản lý thành viên ẩn (+N...)
+      console.log(`[${theme}] 10b. Overflow Members Management Popover`);
+      const overflowTag = page.locator('[data-testid="schedule-form-participants-overflow-tag"]');
+      if (await overflowTag.isVisible()) {
+        await overflowTag.click();
+        await page.waitForTimeout(600);
+        await snap(GROUPS.forms, 'overflow-members-popover', theme);
+        // Press Escape to close popover
+        await page.keyboard.press('Escape');
+        await page.waitForTimeout(400);
+      }
     }
 
     await page.goto('http://localhost:5666/schedules');

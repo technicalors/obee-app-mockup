@@ -19,6 +19,7 @@ import {
   DatePicker,
   Drawer,
   Input,
+  Popover,
   Radio,
   Select,
   Switch,
@@ -163,8 +164,90 @@ const MapPinIcon = createIconifyIcon('lucide:map-pin');
 const LayersIcon = createIconifyIcon('lucide:layers');
 const CalendarDaysIcon = createIconifyIcon('lucide:calendar-days');
 const AlertTriangleIcon = createIconifyIcon('lucide:alert-triangle');
+const UsersIcon = createIconifyIcon('lucide:users');
+const XIcon = createIconifyIcon('lucide:x');
 
 const facilityModalOpen = ref(false);
+const participantOmittedSearch = ref('');
+const observerOmittedSearch = ref('');
+
+const userMap = computed(() => {
+  const map = new Map<string, { label: string; value: string }>();
+  function traverse(nodes: ScheduleUserTreeOption[]) {
+    for (const node of nodes) {
+      if (node.children && node.children.length > 0) {
+        traverse(node.children);
+      } else {
+        map.set(String(node.value), {
+          label: String(node.label),
+          value: String(node.value),
+        });
+      }
+    }
+  }
+  if (props.authoringUserTreeOptions) {
+    traverse(props.authoringUserTreeOptions);
+  }
+  return map;
+});
+
+function resolveUserName(item: { label?: any; value?: any } | string): string {
+  const val =
+    typeof item === 'object' && item !== null
+      ? String(item.value ?? '')
+      : String(item);
+  const found = userMap.value.get(val);
+  if (found) return found.label;
+  if (
+    typeof item === 'object' &&
+    item !== null &&
+    typeof item.label === 'string'
+  ) {
+    return item.label;
+  }
+  return val;
+}
+
+function filterOmittedUsers(
+  items: Array<{ label?: any; value?: any }>,
+  searchQuery: string,
+): Array<{ label?: any; value?: any }> {
+  if (!searchQuery.trim()) return items;
+  const q = searchQuery.toLowerCase().trim();
+  return items.filter((item) =>
+    resolveUserName(item).toLowerCase().includes(q),
+  );
+}
+
+function removeParticipant(userId: string): void {
+  participantsValue.value = participantsValue.value.filter(
+    (id) => String(id) !== String(userId),
+  );
+}
+
+function removeObserver(userId: string): void {
+  observersValue.value = observersValue.value.filter(
+    (id) => String(id) !== String(userId),
+  );
+}
+
+function clearOmittedParticipants(
+  omitted: Array<{ label?: any; value?: any }>,
+): void {
+  const omittedIds = new Set(omitted.map((i) => String(i.value)));
+  participantsValue.value = participantsValue.value.filter(
+    (id) => !omittedIds.has(String(id)),
+  );
+}
+
+function clearOmittedObservers(
+  omitted: Array<{ label?: any; value?: any }>,
+): void {
+  const omittedIds = new Set(omitted.map((i) => String(i.value)));
+  observersValue.value = observersValue.value.filter(
+    (id) => !omittedIds.has(String(id)),
+  );
+}
 
 const equipmentOptions = computed(() =>
   mockEquipments.map((eq) => ({
@@ -545,7 +628,94 @@ const isCreateBlocked = computed(
                 :show-checked-strategy="TreeSelect.SHOW_CHILD"
                 tree-node-filter-prop="label"
                 max-tag-count="responsive"
-              />
+              >
+                <template #maxTagPlaceholder="omittedValues">
+                  <Popover
+                    trigger="click"
+                    placement="bottom"
+                    :arrow="true"
+                    destroy-tooltip-on-hide
+                    :z-index="2500"
+                    :overlay-style="{ zIndex: 2500 }"
+                    overlay-class-name="schedule-overflow-user-popover"
+                  >
+                    <template #title>
+                      <div class="flex items-center justify-between gap-2 border-b border-border/60 pb-1.5 pt-0.5">
+                        <span class="flex items-center gap-1.5 text-xs font-bold text-foreground">
+                          <UsersIcon class="size-3.5 text-primary" />
+                          <span>Người tham gia ẩn ({{ omittedValues.length }})</span>
+                        </span>
+                        <button
+                          type="button"
+                          class="text-[11px] font-medium text-destructive hover:underline cursor-pointer"
+                          @click.stop="clearOmittedParticipants(omittedValues)"
+                        >
+                          Xóa tất cả
+                        </button>
+                      </div>
+                    </template>
+
+                    <template #content>
+                      <div class="w-68 py-1 space-y-1">
+                        <div v-if="omittedValues.length >= 3" class="px-1 pb-1">
+                          <Input
+                            v-model:value="participantOmittedSearch"
+                            placeholder="Tìm người cần xóa..."
+                            size="small"
+                            allow-clear
+                            @click.stop
+                          />
+                        </div>
+
+                        <div class="max-h-56 overflow-y-auto space-y-0.5 divide-y divide-border/30 pr-0.5">
+                          <div
+                            v-for="item in filterOmittedUsers(omittedValues, participantOmittedSearch)"
+                            :key="item.value"
+                            class="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-xs transition-colors hover:bg-muted/60"
+                          >
+                            <div class="flex items-center gap-2 min-w-0">
+                              <span
+                                class="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary"
+                              >
+                                {{ resolveUserName(item).charAt(0).toUpperCase() }}
+                              </span>
+                              <span class="truncate font-medium text-foreground text-xs" :title="resolveUserName(item)">
+                                {{ resolveUserName(item) }}
+                              </span>
+                            </div>
+
+                            <button
+                              type="button"
+                              class="flex size-5 shrink-0 items-center justify-center rounded text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors cursor-pointer"
+                              title="Xóa người này khỏi danh sách"
+                              @click.stop="removeParticipant(String(item.value))"
+                            >
+                              <XIcon class="size-3.5" />
+                            </button>
+                          </div>
+
+                          <div
+                            v-if="filterOmittedUsers(omittedValues, participantOmittedSearch).length === 0"
+                            class="py-3 text-center text-xs text-muted-foreground italic"
+                          >
+                            Không tìm thấy thành viên phù hợp
+                          </div>
+                        </div>
+                      </div>
+                    </template>
+
+                    <span
+                      class="inline-flex items-center gap-0.5 cursor-pointer rounded bg-primary/15 px-1.5 py-0.5 text-xs font-bold text-primary hover:bg-primary/25 transition-colors shadow-2xs select-none"
+                      title="Nhấp để xem và xóa người trong danh sách ẩn"
+                      data-testid="schedule-form-participants-overflow-tag"
+                      @mousedown.stop
+                      @click.stop
+                    >
+                      +{{ omittedValues.length }}...
+                    </span>
+                  </Popover>
+                </template>
+              </TreeSelect>
             </label>
 
             <label class="grid gap-1">
@@ -561,7 +731,94 @@ const isCreateBlocked = computed(
                 :show-checked-strategy="TreeSelect.SHOW_CHILD"
                 tree-node-filter-prop="label"
                 max-tag-count="responsive"
-              />
+              >
+                <template #maxTagPlaceholder="omittedValues">
+                  <Popover
+                    trigger="click"
+                    placement="bottom"
+                    :arrow="true"
+                    destroy-tooltip-on-hide
+                    :z-index="2500"
+                    :overlay-style="{ zIndex: 2500 }"
+                    overlay-class-name="schedule-overflow-user-popover"
+                  >
+                    <template #title>
+                      <div class="flex items-center justify-between gap-2 border-b border-border/60 pb-1.5 pt-0.5">
+                        <span class="flex items-center gap-1.5 text-xs font-bold text-foreground">
+                          <UsersIcon class="size-3.5 text-primary" />
+                          <span>Người theo dõi ẩn ({{ omittedValues.length }})</span>
+                        </span>
+                        <button
+                          type="button"
+                          class="text-[11px] font-medium text-destructive hover:underline cursor-pointer"
+                          @click.stop="clearOmittedObservers(omittedValues)"
+                        >
+                          Xóa tất cả
+                        </button>
+                      </div>
+                    </template>
+
+                    <template #content>
+                      <div class="w-68 py-1 space-y-1">
+                        <div v-if="omittedValues.length >= 3" class="px-1 pb-1">
+                          <Input
+                            v-model:value="observerOmittedSearch"
+                            placeholder="Tìm người cần xóa..."
+                            size="small"
+                            allow-clear
+                            @click.stop
+                          />
+                        </div>
+
+                        <div class="max-h-56 overflow-y-auto space-y-0.5 divide-y divide-border/30 pr-0.5">
+                          <div
+                            v-for="item in filterOmittedUsers(omittedValues, observerOmittedSearch)"
+                            :key="item.value"
+                            class="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-xs transition-colors hover:bg-muted/60"
+                          >
+                            <div class="flex items-center gap-2 min-w-0">
+                              <span
+                                class="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary"
+                              >
+                                {{ resolveUserName(item).charAt(0).toUpperCase() }}
+                              </span>
+                              <span class="truncate font-medium text-foreground text-xs" :title="resolveUserName(item)">
+                                {{ resolveUserName(item) }}
+                              </span>
+                            </div>
+
+                            <button
+                              type="button"
+                              class="flex size-5 shrink-0 items-center justify-center rounded text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors cursor-pointer"
+                              title="Xóa người này khỏi danh sách"
+                              @click.stop="removeObserver(String(item.value))"
+                            >
+                              <XIcon class="size-3.5" />
+                            </button>
+                          </div>
+
+                          <div
+                            v-if="filterOmittedUsers(omittedValues, observerOmittedSearch).length === 0"
+                            class="py-3 text-center text-xs text-muted-foreground italic"
+                          >
+                            Không tìm thấy thành viên phù hợp
+                          </div>
+                        </div>
+                      </div>
+                    </template>
+
+                    <span
+                      class="inline-flex items-center gap-0.5 cursor-pointer rounded bg-primary/15 px-1.5 py-0.5 text-xs font-bold text-primary hover:bg-primary/25 transition-colors shadow-2xs select-none"
+                      title="Nhấp để xem và xóa người trong danh sách ẩn"
+                      data-testid="schedule-form-observers-overflow-tag"
+                      @mousedown.stop
+                      @click.stop
+                    >
+                      +{{ omittedValues.length }}...
+                    </span>
+                  </Popover>
+                </template>
+              </TreeSelect>
             </label>
 
             <label class="grid gap-1">
