@@ -322,7 +322,7 @@ describe('schedule color classes', () => {
           },
         }),
       ),
-    ).toContain('bg-[#3182dc]');
+    ).toContain('bg-[#4478b8]');
   });
 
   it('returns solid type colors for multi-day schedule bars', () => {
@@ -336,7 +336,7 @@ describe('schedule color classes', () => {
     });
     const classes = getScheduleCardClass(multiDaySchedule);
 
-    expect(classes).toContain('bg-[#ef9201]');
+    expect(classes).toContain('bg-[#d47f2e]');
     expect(classes).toContain('text-white');
   });
 
@@ -351,7 +351,7 @@ describe('schedule color classes', () => {
     const repeatClasses = getScheduleCardClass(repeatSchedule);
 
     expect(repeatClasses).not.toContain('border-dashed');
-    expect(repeatClasses).not.toContain('border-');
+    expect(repeatClasses).not.toContain('border-black');
     expect(repeatClasses).toBe(getScheduleCardClass(schedule));
   });
 });
@@ -392,12 +392,11 @@ describe('authoring helpers', () => {
       makeSchedule({
         event: {
           ...makeSchedule().event,
-          end_date: '2026-06-16',
-          end_time: '10:30',
+          has_reminder: true,
+          end_date: '2026-06-16T10:30:00+07:00',
           remind_range: 'minute',
           remind_value: 15,
-          start_date: '2026-06-16',
-          start_time: '09:00',
+          start_date: '2026-06-16T09:00:00+07:00',
         },
       }),
       'edit',
@@ -407,15 +406,13 @@ describe('authoring helpers', () => {
     expect(draft.start_time).toBe('09:00');
     expect(draft.end_time).toBe('10:30');
     expect(buildAuthoringPayload(draft)).toMatchObject({
-      end_date: '2026-06-16',
-      end_time: '10:30',
+      end_date: '2026-06-16T10:30',
       remind_range: 'minute',
       remind_value: 15,
       repeat_pattern: null,
       repeat_type: null,
       schedule_type: 'ordinary',
-      start_date: '2026-06-16',
-      start_time: '09:00',
+      start_date: '2026-06-16T09:00',
     });
   });
 });

@@ -11,6 +11,7 @@ import {
   formatDayKeyInTimeZone,
   getScheduleShape,
   getScheduleTypeClass,
+  getScheduleWeekBlockClass,
 } from '../schedule-page';
 
 const props = defineProps<{
@@ -525,9 +526,9 @@ function handleResizeMouseDown(
               <div
                 v-for="event in (columnEvents[date] ?? [])"
                 :key="`event-${date}-${event.schedule.id}`"
-                class="group absolute z-10 flex flex-col overflow-hidden rounded-md border-l-[3px] px-2 py-1 text-left shadow-sm transition hover:shadow-md cursor-grab active:cursor-grabbing select-none"
+                class="group absolute z-10 flex flex-col overflow-hidden rounded-md border-l-[3.5px] px-2 py-1 text-left shadow-xs transition hover:shadow-md cursor-grab active:cursor-grabbing select-none"
                 :class="[
-                  getScheduleTypeClass(event.schedule),
+                  getScheduleWeekBlockClass(event.schedule),
                   activeDrag?.schedule.id === event.schedule.id ? 'opacity-30 pointer-events-none' : '',
                 ]"
                 :style="{
@@ -555,7 +556,7 @@ function handleResizeMouseDown(
                 </div>
                 <span
                   v-if="getEventHeight(event.startMinute, event.endMinute) > 34"
-                  class="truncate text-[10px] opacity-90 font-medium"
+                  class="truncate text-[10px] opacity-80 font-medium"
                 >
                   {{
                     activeResize?.schedule.id === event.schedule.id
@@ -565,7 +566,7 @@ function handleResizeMouseDown(
                 </span>
                 <span
                   v-if="getEventHeight(event.startMinute, event.endMinute) > 50"
-                  class="truncate text-[9px] opacity-75"
+                  class="truncate text-[9px] opacity-70"
                 >
                   {{ getScheduleTypeLabel(event.schedule) }}
                 </span>

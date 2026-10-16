@@ -1718,11 +1718,11 @@ describe('schedules workspace', () => {
     expect(
       element.querySelector('[data-testid="schedule-detail-type-badge"]')
         ?.className,
-    ).toContain('bg-[#3182dc]');
+    ).toContain('bg-[#4478b8]');
     expect(
       element.querySelector('[data-testid="schedule-detail-type-badge"]')
         ?.className,
-    ).toContain('border-[#3182dc]');
+    ).toContain('border-[#4478b8]');
     expect(element.textContent).toContain(
       '18/06/2026 16:00 - 21/06/2026 00:00',
     );

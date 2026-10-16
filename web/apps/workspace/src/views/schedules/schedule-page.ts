@@ -584,20 +584,45 @@ export function buildWeekSegments(
 }
 
 const scheduleTypeClasses = {
-  business_trip: 'border-[#b99976] bg-[#b99976]',
-  holiday: 'border-[#b592d8] bg-[#b592d8]',
-  interview: 'border-[#ef9201] bg-[#ef9201]',
-  meeting: 'border-[#f194a7] bg-[#f194a7]',
-  meetup: 'border-[#f44848] bg-[#f44848]',
-  seminar: 'border-[#57b3ed] bg-[#57b3ed]',
-  training: 'border-[#3182dc] bg-[#3182dc]',
-  default: 'border-[#6b7280] bg-[#6b7280]',
+  business_trip: 'border-[#8f755a] bg-[#8f755a]',
+  default: 'border-[#64748b] bg-[#64748b]',
+  holiday: 'border-[#8d6db3] bg-[#8d6db3]',
+  interview: 'border-[#d47f2e] bg-[#d47f2e]',
+  meeting: 'border-[#d97085] bg-[#d97085]',
+  meetup: 'border-[#d66161] bg-[#d66161]',
+  seminar: 'border-[#3c96ab] bg-[#3c96ab]',
+  training: 'border-[#4478b8] bg-[#4478b8]',
 };
+
+const scheduleTypeWeekBlockClasses = {
+  business_trip:
+    'border-l-[#8f755a] bg-[#8f755a]/12 dark:bg-[#8f755a]/22 border-t border-r border-b border-[#8f755a]/25 text-foreground',
+  default:
+    'border-l-[#64748b] bg-[#64748b]/12 dark:bg-[#64748b]/22 border-t border-r border-b border-[#64748b]/25 text-foreground',
+  holiday:
+    'border-l-[#8d6db3] bg-[#8d6db3]/12 dark:bg-[#8d6db3]/22 border-t border-r border-b border-[#8d6db3]/25 text-foreground',
+  interview:
+    'border-l-[#d47f2e] bg-[#d47f2e]/12 dark:bg-[#d47f2e]/22 border-t border-r border-b border-[#d47f2e]/25 text-foreground',
+  meeting:
+    'border-l-[#d97085] bg-[#d97085]/12 dark:bg-[#d97085]/22 border-t border-r border-b border-[#d97085]/25 text-foreground',
+  meetup:
+    'border-l-[#d66161] bg-[#d66161]/12 dark:bg-[#d66161]/22 border-t border-r border-b border-[#d66161]/25 text-foreground',
+  seminar:
+    'border-l-[#3c96ab] bg-[#3c96ab]/12 dark:bg-[#3c96ab]/22 border-t border-r border-b border-[#3c96ab]/25 text-foreground',
+  training:
+    'border-l-[#4478b8] bg-[#4478b8]/12 dark:bg-[#4478b8]/22 border-t border-r border-b border-[#4478b8]/25 text-foreground',
+};
+
+export function getScheduleWeekBlockClass(schedule: Schedule): string {
+  const type = schedule.event.type as keyof typeof scheduleTypeWeekBlockClasses;
+  return scheduleTypeWeekBlockClasses[type] ?? scheduleTypeWeekBlockClasses.default;
+}
 
 export function getScheduleTypeClass(schedule: Schedule): string {
   const generalClasses = 'border text-white';
+  const type = schedule.event.type as keyof typeof scheduleTypeClasses;
   const targetColorClass =
-    scheduleTypeClasses[schedule.event.type] ?? scheduleTypeClasses.default;
+    scheduleTypeClasses[type] ?? scheduleTypeClasses.default;
 
   return `${generalClasses} ${targetColorClass}`;
 }
@@ -612,7 +637,7 @@ export function getScheduleCardClass(schedule: Schedule): string {
     }
 
     case 'repeat': {
-      return 'rounded-md border border-dashed border-black/30 bg-accent/70 text-foreground';
+      return 'rounded-md border border-transparent bg-accent/70 text-foreground';
     }
     default: {
       return 'rounded-md border border-transparent bg-accent/70 text-foreground';
