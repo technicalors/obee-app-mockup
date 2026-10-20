@@ -6,7 +6,7 @@ import { computed } from 'vue';
 import { IconifyIcon } from '@vben/icons';
 import { preferences } from '@vben/preferences';
 
-import { Button } from 'ant-design-vue';
+import { Button, Tooltip } from 'ant-design-vue';
 import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
@@ -118,82 +118,89 @@ function formatReasonPreview(reason: null | string): string {
 
         <!-- Inline Actions -->
         <div
-          v-if="canReview || canEdit || canDelete"
-          class="flex flex-nowrap shrink-0 items-center justify-end gap-1.5 pt-2 sm:pt-0 border-t sm:border-t-0 border-border min-w-0"
+          class="flex flex-nowrap shrink-0 items-center justify-end gap-1 pt-2 sm:pt-0 border-t sm:border-t-0 border-border min-w-0"
           @click.stop
         >
           <!-- Reviewer Actions -->
-          <template v-if="canReview">
-            <Button
-              type="primary"
-              size="small"
-              :loading="isActionLoading"
-              class="flex shrink-0 whitespace-nowrap items-center gap-1 text-xs"
-              @click.stop="emit('approve', request)"
-            >
-              <template #icon>
-                <IconifyIcon icon="lucide:check" class="size-3.5" />
-              </template>
-              {{ $t('absenceRequests.actions.approve') }}
-            </Button>
-            <Button
-              size="small"
-              :disabled="isActionLoading"
-              class="flex shrink-0 whitespace-nowrap items-center gap-1 text-xs"
-              @click.stop="emit('reject', request)"
-            >
-              <template #icon>
-                <IconifyIcon
-                  icon="lucide:x"
-                  class="size-3.5 text-destructive"
-                />
-              </template>
-              {{ $t('absenceRequests.actions.reject') }}
-            </Button>
-            <Button
-              size="small"
-              :disabled="isActionLoading"
-              class="flex shrink-0 whitespace-nowrap items-center gap-1 text-xs"
-              @click.stop="emit('return', request)"
-            >
-              <template #icon>
-                <IconifyIcon
-                  icon="lucide:rotate-ccw"
-                  class="size-3.5 text-amber-500"
-                />
-              </template>
-              {{ $t('absenceRequests.detail.actions.return') }}
-            </Button>
+          <template v-if="hasReviewPermission">
+            <Tooltip :title="$t('absenceRequests.actions.approve')">
+              <Button
+                type="primary"
+                size="small"
+                :disabled="!canReview || isActionLoading"
+                :loading="isActionLoading"
+                class="inline-flex size-7 items-center justify-center p-0"
+                @click.stop="canReview && emit('approve', request)"
+              >
+                <template #icon>
+                  <IconifyIcon icon="lucide:check" class="size-4" />
+                </template>
+              </Button>
+            </Tooltip>
+
+            <Tooltip :title="$t('absenceRequests.actions.reject')">
+              <Button
+                size="small"
+                danger
+                :disabled="!canReview || isActionLoading"
+                class="inline-flex size-7 items-center justify-center p-0"
+                @click.stop="canReview && emit('reject', request)"
+              >
+                <template #icon>
+                  <IconifyIcon
+                    icon="lucide:x"
+                    class="size-4 text-destructive"
+                  />
+                </template>
+              </Button>
+            </Tooltip>
+
+            <Tooltip :title="$t('absenceRequests.detail.actions.return')">
+              <Button
+                size="small"
+                :disabled="!canReview || isActionLoading"
+                class="inline-flex size-7 items-center justify-center p-0"
+                @click.stop="canReview && emit('return', request)"
+              >
+                <template #icon>
+                  <IconifyIcon
+                    icon="lucide:rotate-ccw"
+                    class="size-4 text-amber-500"
+                  />
+                </template>
+              </Button>
+            </Tooltip>
           </template>
 
           <!-- Requester Edit Action -->
-          <Button
-            v-if="canEdit"
-            size="small"
-            :disabled="isActionLoading"
-            class="flex shrink-0 whitespace-nowrap items-center gap-1 text-xs"
-            @click.stop="emit('edit', request)"
-          >
-            <template #icon>
-              <IconifyIcon icon="lucide:edit-3" class="size-3.5" />
-            </template>
-            {{ $t('absenceRequests.detail.actions.edit') }}
-          </Button>
+          <Tooltip :title="$t('absenceRequests.detail.actions.edit')">
+            <Button
+              size="small"
+              :disabled="!canEdit || isActionLoading"
+              class="inline-flex size-7 items-center justify-center p-0 text-muted-foreground hover:text-foreground"
+              @click.stop="canEdit && emit('edit', request)"
+            >
+              <template #icon>
+                <IconifyIcon icon="lucide:edit-3" class="size-4" />
+              </template>
+            </Button>
+          </Tooltip>
 
           <!-- Requester Delete Action -->
-          <Button
-            v-if="canDelete"
-            size="small"
-            danger
-            :loading="isActionLoading"
-            class="flex shrink-0 whitespace-nowrap items-center gap-1 text-xs"
-            @click.stop="emit('delete', request)"
-          >
-            <template #icon>
-              <IconifyIcon icon="lucide:trash-2" class="size-3.5" />
-            </template>
-            {{ $t('absenceRequests.actions.delete') }}
-          </Button>
+          <Tooltip :title="$t('absenceRequests.actions.delete')">
+            <Button
+              size="small"
+              danger
+              :disabled="!canDelete || isActionLoading"
+              :loading="isActionLoading"
+              class="inline-flex size-7 items-center justify-center p-0"
+              @click.stop="canDelete && emit('delete', request)"
+            >
+              <template #icon>
+                <IconifyIcon icon="lucide:trash-2" class="size-4" />
+              </template>
+            </Button>
+          </Tooltip>
         </div>
       </div>
 

@@ -156,8 +156,10 @@ setupVbenVxeTable({
           'div',
           { class: 'flex items-center justify-center gap-1.5' },
           options
-            .filter((option) => (option.visible ? option.visible(row) : true))
             .map((option) => {
+              const isAllowed = option.visible ? option.visible(row) : true;
+              const isDisabled = !isAllowed;
+
               const button = h(
                 Button,
                 {
@@ -165,7 +167,8 @@ setupVbenVxeTable({
                   class: option.icon
                     ? 'inline-flex size-7 items-center justify-center p-0'
                     : undefined,
-                  danger: option.danger,
+                  danger: option.danger && !isDisabled,
+                  disabled: isDisabled,
                   icon: option.icon
                     ? h(IconifyIcon, {
                         class: 'size-4',
@@ -173,7 +176,7 @@ setupVbenVxeTable({
                       })
                     : undefined,
                   key: option.code,
-                  onClick: () => attrs.onClick(option.code, row),
+                  onClick: isDisabled ? undefined : () => attrs.onClick(option.code, row),
                   size: 'small',
                   type: option.type ?? 'link',
                 },

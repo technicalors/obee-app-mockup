@@ -719,6 +719,20 @@
       "selectVisibility": "可见性",
       "participated": "已参与",
       "observed": "已关注"
+    },
+    "viewMode": {
+      "day": "日",
+      "week": "周",
+      "month": "月",
+      "year": "年"
+    },
+    "weekView": {
+      "allDay": "全天"
+    },
+    "yearView": {
+      "eventsCount": "{count} 个事件",
+      "clickToView": "点击查看此日期",
+      "clickMonthToView": "查看月份"
     }
   },
   "attendance": {

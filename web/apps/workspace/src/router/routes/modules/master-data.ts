@@ -112,6 +112,15 @@ const routes: RouteRecordRaw[] = [
         name: 'MasterDataAttendanceLocationsView',
         path: 'attendance-locations/:id',
       },
+      {
+        component: () => import('#/views/cash-fund/master-data/index.vue'),
+        meta: {
+          icon: 'lucide:wallet',
+          title: $t('masterData.cashFund.routeTitle'),
+        },
+        name: 'MasterDataCashFund',
+        path: 'cash-fund',
+      },
     ],
   },
 ];

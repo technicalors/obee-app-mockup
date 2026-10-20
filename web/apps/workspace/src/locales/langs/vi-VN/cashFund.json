@@ -1,0 +1,170 @@
+{
+  "routeTitle": "Quỹ tiền mặt",
+  "proposals": {
+    "title": "Quản lý đề xuất",
+    "description": "Tạo, theo dõi và quản lý các yêu cầu tạm ứng, thu tiền, thanh toán và hoàn ứng của nhân viên",
+    "createNew": "Tạo đề xuất mới",
+    "code": "Mã đề xuất",
+    "type": "Loại đề xuất",
+    "applicant": "Người đề nghị",
+    "department": "Bộ phận",
+    "titleCol": "Nội dung đề xuất",
+    "totalAmount": "Tổng tiền",
+    "currency": "Loại tiền",
+    "createdAt": "Thời gian tạo",
+    "status": "Trạng thái",
+    "actions": "Thao tác",
+    "viewDetail": "Xem chi tiết",
+    "edit": "Chỉnh sửa",
+    "cancel": "Hủy yêu cầu",
+    "filter": {
+      "keyword": "Tìm theo mã, nội dung...",
+      "allTypes": "Tất cả loại đề xuất",
+      "allStatus": "Tất cả trạng thái",
+      "dateRange": "Khoảng thời gian",
+      "reset": "Làm mới",
+      "search": "Tìm kiếm"
+    },
+    "types": {
+      "advance": "Tạm ứng",
+      "payment": "Thanh toán khoản chi",
+      "receipt": "Thu tiền",
+      "settlement": "Hoàn ứng"
+    },
+    "statusLabels": {
+      "draft": "Nháp",
+      "pending_dept": "Chờ Trưởng BP",
+      "pending_accountant": "Chờ Kế toán",
+      "pending_cfo": "Chờ CFO",
+      "pending_ceo": "Chờ CEO",
+      "approved": "Đã duyệt",
+      "voucher_issued": "Đã phát hành phiếu",
+      "pending_sign": "Chờ ký",
+      "completed": "Hoàn thành",
+      "return_edit": "Yêu cầu chỉnh sửa",
+      "rejected": "Từ chối",
+      "canceled": "Đã hủy"
+    },
+    "modal": {
+      "createTitle": "Tạo đề xuất quỹ tiền mặt",
+      "editTitle": "Chỉnh sửa đề xuất",
+      "returnEditTitle": "Cập nhật đề xuất bị trả về (Yêu cầu chỉnh sửa)",
+      "detailTitle": "Chi tiết đề xuất quỹ tiền mặt",
+      "generalInfo": "Thông tin chung",
+      "itemDetails": "Danh sách khoản mục",
+      "approvalHistory": "Lịch sử phê duyệt",
+      "advanceRef": "Mã tạm ứng gốc cần hoàn",
+      "advanceRefPlaceholder": "Chọn đề xuất tạm ứng đã giải ngân...",
+      "originalAdvanceAmount": "Số tiền đã tạm ứng",
+      "actualExpense": "Tổng chi phí thực tế",
+      "difference": "Chênh lệch (Thực tế - Tạm ứng)",
+      "refundAdvice": "Cần nộp lại quỹ (Sinh Phiếu Thu)",
+      "additionalAdvice": "Cần chi thêm cho nhân viên (Sinh Phiếu Chi)",
+      "balancedAdvice": "Quyết toán vừa đủ (Không phát sinh chênh lệch)",
+      "addItem": "Thêm khoản mục",
+      "category": "Khoản thu / chi",
+      "reason": "Lý do / Diễn giải",
+      "expectedDate": "Thời gian mong muốn",
+      "amount": "Số tiền đề nghị",
+      "actualAmount": "Tiền thực tế",
+      "exchangeRate": "Tỷ giá",
+      "attachment": "Chứng từ đính kèm",
+      "uploadFile": "Đính kèm tệp",
+      "saveDraft": "Lưu nháp",
+      "submit": "Gửi phê duyệt",
+      "resubmit": "Gửi lại phê duyệt (Duyệt từ đầu)",
+      "close": "Đóng"
+    }
+  },
+  "approvals": {
+    "title": "Phê duyệt đề xuất",
+    "description": "Thẩm tra, theo dõi số liệu chờ duyệt và thực hiện phê duyệt / trả về / từ chối hồ sơ",
+    "kpi": {
+      "pendingTotal": "Tổng yêu cầu chờ duyệt",
+      "pendingValue": "Tổng giá trị chờ duyệt",
+      "departmentsCount": "Số phòng ban phát sinh",
+      "averageValue": "Giá trị trung bình / phiếu"
+    },
+    "approvalProcess": "Xử lý phê duyệt",
+    "approve": "Duyệt hồ sơ",
+    "returnEdit": "Yêu cầu chỉnh sửa",
+    "reject": "Từ chối",
+    "commentPlaceholder": "Nhập ý kiến phê duyệt hoặc lý do yêu cầu sửa / từ chối (bắt buộc khi trả về hoặc từ chối)...",
+    "confirmRejectTitle": "Xác nhận từ chối đề xuất",
+    "confirmReturnTitle": "Xác nhận yêu cầu chỉnh sửa",
+    "confirmApproveTitle": "Xác nhận duyệt đề xuất"
+  },
+  "transactions": {
+    "title": "Bút toán Thu - Chi",
+    "description": "Quản lý phiếu thu, phiếu chi phát sinh từ đề xuất và xác nhận thanh toán tiền mặt",
+    "code": "Mã bút toán",
+    "refProposal": "Mã đề xuất liên kết",
+    "type": "Loại bút toán",
+    "counterpart": "Người nộp / nhận",
+    "fundSource": "Nguồn tiền quỹ",
+    "amount": "Tổng tiền",
+    "issuedDate": "Ngày phát sinh",
+    "status": "Trạng thái",
+    "types": {
+      "receipt": "Phiếu thu",
+      "expense": "Phiếu chi"
+    },
+    "statusLabels": {
+      "pending": "Chờ thực hiện",
+      "completed": "Đã thực hiện",
+      "canceled": "Đã hủy"
+    },
+    "confirm": "Xác nhận thực hiện (Thủ quỹ)",
+    "detailTitle": "Chi tiết bút toán tiền mặt",
+    "confirmTitle": "Xác nhận thực hiện thu / chi thực tế"
+  },
+  "adjustments": {
+    "title": "Điều chỉnh quỹ",
+    "description": "Điều chuyển số dư giữa hai nguồn tiền trong cùng quỹ tiền mặt",
+    "create": "Tạo điều chỉnh quỹ",
+    "code": "Mã điều chỉnh",
+    "fromSource": "Nguồn chuyển (Nguồn đi)",
+    "toSource": "Nguồn nhận (Nguồn đến)",
+    "fromCompany": "Công ty chuyển",
+    "toCompany": "Công ty nhận",
+    "amount": "Số tiền điều chuyển",
+    "effectiveDate": "Thời gian hiệu lực",
+    "reason": "Lý do điều chuyển",
+    "status": "Trạng thái",
+    "actions": "Thao tác",
+    "processApproval": "Xử lý phê duyệt",
+    "viewDetail": "Chi tiết điều chỉnh"
+  },
+  "reports": {
+    "title": "Báo cáo & Theo dõi",
+    "description": "Phân tích số liệu quỹ tổng hợp, thống kê chi tiết thu chi, sổ chi tiết khoản mục và sổ quỹ",
+    "tabs": {
+      "overview": "Tổng hợp quỹ",
+      "analytics": "Thống kê Thu - Chi & Tần suất",
+      "itemLedger": "Sổ chi tiết khoản Thu - Chi",
+      "cashBook": "Sổ quỹ tiền mặt"
+    },
+    "kpi": {
+      "openingBalance": "Tồn đầu kỳ",
+      "totalReceipt": "Tổng thu trong kỳ",
+      "totalExpense": "Tổng chi trong kỳ",
+      "closingBalance": "Dư cuối kỳ (Tồn đầu + Thu - Chi)"
+    },
+    "exportExcel": "Xuất Excel",
+    "print": "In sổ quỹ"
+  },
+  "masterData": {
+    "title": "Danh mục dùng chung",
+    "description": "Quản lý khoản thu/chi, nguồn tiền quỹ, loại tiền tệ và quy trình duyệt",
+    "tabs": {
+      "categories": "Khoản thu / Khoản chi",
+      "fundSources": "Nguồn tiền quỹ",
+      "currencies": "Loại tiền tệ",
+      "workflows": "Tuyến phê duyệt"
+    },
+    "addCategory": "Thêm khoản mục",
+    "addFundSource": "Thêm nguồn tiền",
+    "active": "Đang sử dụng",
+    "inactive": "Ngưng sử dụng"
+  }
+}

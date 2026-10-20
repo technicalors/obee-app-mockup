@@ -1,0 +1,170 @@
+{
+  "routeTitle": "现金基金",
+  "proposals": {
+    "title": "提案管理",
+    "description": "创建、跟踪和管理员工的借款、收款、费用报销和核销申请",
+    "createNew": "创建新提案",
+    "code": "提案编号",
+    "type": "提案类型",
+    "applicant": "申请人",
+    "department": "部门",
+    "titleCol": "提案内容",
+    "totalAmount": "总金额",
+    "currency": "币种",
+    "createdAt": "创建时间",
+    "status": "状态",
+    "actions": "操作",
+    "viewDetail": "查看详情",
+    "edit": "编辑",
+    "cancel": "取消申请",
+    "filter": {
+      "keyword": "按编号、内容搜索...",
+      "allTypes": "所有提案类型",
+      "allStatus": "所有状态",
+      "dateRange": "时间范围",
+      "reset": "重置",
+      "search": "搜索"
+    },
+    "types": {
+      "advance": "借款预支",
+      "payment": "费用报销",
+      "receipt": "现金收款",
+      "settlement": "借款核销"
+    },
+    "statusLabels": {
+      "draft": "草稿",
+      "pending_dept": "待部门主管审批",
+      "pending_accountant": "待财务会计审批",
+      "pending_cfo": "待CFO审批",
+      "pending_ceo": "待CEO审批",
+      "approved": "已批准",
+      "voucher_issued": "已生成凭证",
+      "pending_sign": "待出纳签字",
+      "completed": "已完成",
+      "return_edit": "退回修改",
+      "rejected": "已拒绝",
+      "canceled": "已取消"
+    },
+    "modal": {
+      "createTitle": "创建现金基金提案",
+      "editTitle": "编辑提案",
+      "returnEditTitle": "修改退回提案（重新提交审批）",
+      "detailTitle": "现金基金提案详情",
+      "generalInfo": "基本信息",
+      "itemDetails": "明细款项",
+      "approvalHistory": "审批历史",
+      "advanceRef": "关联原借款提案",
+      "advanceRefPlaceholder": "选择已支出的借款提案...",
+      "originalAdvanceAmount": "原借款金额",
+      "actualExpense": "实际支出总额",
+      "difference": "差额（实际 - 借款）",
+      "refundAdvice": "需退回收款（生成收款凭证）",
+      "additionalAdvice": "需补付差额（生成付款凭证）",
+      "balancedAdvice": "借贷相抵（无差额）",
+      "addItem": "添加款项",
+      "category": "收支科目",
+      "reason": "原因/事由",
+      "expectedDate": "期望日期",
+      "amount": "申请金额",
+      "actualAmount": "实际金额",
+      "exchangeRate": "汇率",
+      "attachment": "附件凭证",
+      "uploadFile": "上传文件",
+      "saveDraft": "保存草稿",
+      "submit": "提交审批",
+      "resubmit": "重新提交（重新从头审批）",
+      "close": "关闭"
+    }
+  },
+  "approvals": {
+    "title": "提案审批",
+    "description": "审核待处理申请，执行批准、退回修改或拒绝操作",
+    "kpi": {
+      "pendingTotal": "待审批总数",
+      "pendingValue": "待审批总额",
+      "departmentsCount": "申请部门数",
+      "averageValue": "平均单笔金额"
+    },
+    "approvalProcess": "审批处理",
+    "approve": "批准",
+    "returnEdit": "退回修改",
+    "reject": "拒绝",
+    "commentPlaceholder": "输入审批意见或退回/拒绝原因（退回或拒绝时必填）...",
+    "confirmRejectTitle": "确认拒绝提案",
+    "confirmReturnTitle": "确认退回修改",
+    "confirmApproveTitle": "确认批准提案"
+  },
+  "transactions": {
+    "title": "收支凭证",
+    "description": "管理提案生成的收款单、付款单并确认实际现金收付",
+    "code": "凭证编号",
+    "refProposal": "关联提案编号",
+    "type": "凭证类型",
+    "counterpart": "缴款/领款人",
+    "fundSource": "基金账户",
+    "amount": "总金额",
+    "issuedDate": "开具日期",
+    "status": "状态",
+    "types": {
+      "receipt": "收款单",
+      "expense": "付款单"
+    },
+    "statusLabels": {
+      "pending": "待执行",
+      "completed": "已执行",
+      "canceled": "已取消"
+    },
+    "confirm": "确认执行（出纳）",
+    "detailTitle": "现金凭证详情",
+    "confirmTitle": "确认实际收付款"
+  },
+  "adjustments": {
+    "title": "基金调拨",
+    "description": "在同一现金基金的不同账户来源之间调拨余额",
+    "create": "创建基金调拨",
+    "code": "调拨编号",
+    "fromSource": "调出账户",
+    "toSource": "调入账户",
+    "fromCompany": "调出公司",
+    "toCompany": "调入公司",
+    "amount": "调拨金额",
+    "effectiveDate": "生效日期",
+    "reason": "调拨原因",
+    "status": "状态",
+    "actions": "操作",
+    "processApproval": "审批处理",
+    "viewDetail": "调拨详情"
+  },
+  "reports": {
+    "title": "报表与监控",
+    "description": "现金基金汇总看板、收支统计、明细账簿与现金日记账",
+    "tabs": {
+      "overview": "基金汇总",
+      "analytics": "收支统计与频次分析",
+      "itemLedger": "科目明细账",
+      "cashBook": "现金日记账"
+    },
+    "kpi": {
+      "openingBalance": "期初余额",
+      "totalReceipt": "本期总收入",
+      "totalExpense": "本期总支出",
+      "closingBalance": "期末余额（期初 + 收入 - 支出）"
+    },
+    "exportExcel": "导出Excel",
+    "print": "打印日记账"
+  },
+  "masterData": {
+    "title": "共享基础数据",
+    "description": "管理收支科目、资金来源、币种及审批流",
+    "tabs": {
+      "categories": "收支科目",
+      "fundSources": "资金账户",
+      "currencies": "币种",
+      "workflows": "审批流程"
+    },
+    "addCategory": "添加科目",
+    "addFundSource": "添加账户",
+    "active": "启用",
+    "inactive": "停用"
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "routeTitle": "Cash Fund",
+  "proposals": {
+    "title": "Cash Proposals",
+    "description": "Create, track, and manage cash advance, payment, receipt, and settlement requests",
+    "createNew": "Create New Proposal",
+    "code": "Proposal Code",
+    "type": "Proposal Type",
+    "applicant": "Applicant",
+    "department": "Department",
+    "titleCol": "Proposal Title / Purpose",
+    "totalAmount": "Total Amount",
+    "currency": "Currency",
+    "createdAt": "Created At",
+    "status": "Status",
+    "actions": "Actions",
+    "viewDetail": "View Details",
+    "edit": "Edit",
+    "cancel": "Cancel Request",
+    "filter": {
+      "keyword": "Search by code, purpose...",
+      "allTypes": "All Proposal Types",
+      "allStatus": "All Statuses",
+      "dateRange": "Date Range",
+      "reset": "Reset",
+      "search": "Search"
+    },
+    "types": {
+      "advance": "Cash Advance",
+      "payment": "Expense Payment",
+      "receipt": "Cash Receipt",
+      "settlement": "Settlement"
+    },
+    "statusLabels": {
+      "draft": "Draft",
+      "pending_dept": "Pending Dept Head",
+      "pending_accountant": "Pending Accountant",
+      "pending_cfo": "Pending CFO",
+      "pending_ceo": "Pending CEO",
+      "approved": "Approved",
+      "voucher_issued": "Voucher Issued",
+      "pending_sign": "Pending Signature",
+      "completed": "Completed",
+      "return_edit": "Revision Requested",
+      "rejected": "Rejected",
+      "canceled": "Canceled"
+    },
+    "modal": {
+      "createTitle": "Create Cash Proposal",
+      "editTitle": "Edit Proposal",
+      "returnEditTitle": "Update Returned Proposal (Revision Requested)",
+      "detailTitle": "Cash Proposal Details",
+      "generalInfo": "General Information",
+      "itemDetails": "Line Items",
+      "approvalHistory": "Approval History",
+      "advanceRef": "Original Advance Reference",
+      "advanceRefPlaceholder": "Select disbursed advance proposal...",
+      "originalAdvanceAmount": "Original Advance Amount",
+      "actualExpense": "Total Actual Expenses",
+      "difference": "Variance (Actual - Advance)",
+      "refundAdvice": "Must refund to fund (Receipt Voucher)",
+      "additionalAdvice": "Must disburse additional payment (Payment Voucher)",
+      "balancedAdvice": "Even settlement (No difference)",
+      "addItem": "Add Line Item",
+      "category": "Revenue / Expense Item",
+      "reason": "Reason / Note",
+      "expectedDate": "Target Date",
+      "amount": "Requested Amount",
+      "actualAmount": "Actual Amount",
+      "exchangeRate": "Exchange Rate",
+      "attachment": "Supporting Document",
+      "uploadFile": "Attach File",
+      "saveDraft": "Save Draft",
+      "submit": "Submit for Approval",
+      "resubmit": "Resubmit (Restart Workflow)",
+      "close": "Close"
+    }
+  },
+  "approvals": {
+    "title": "Proposal Approvals",
+    "description": "Review, monitor pending requests, and approve / return / reject proposals",
+    "kpi": {
+      "pendingTotal": "Total Pending Requests",
+      "pendingValue": "Total Pending Amount",
+      "departmentsCount": "Requesting Departments",
+      "averageValue": "Average Request Value"
+    },
+    "approvalProcess": "Process Approval",
+    "approve": "Approve Proposal",
+    "returnEdit": "Request Revision",
+    "reject": "Reject",
+    "commentPlaceholder": "Enter approval remarks or revision/rejection reason (required for revision or rejection)...",
+    "confirmRejectTitle": "Confirm Proposal Rejection",
+    "confirmReturnTitle": "Confirm Revision Request",
+    "confirmApproveTitle": "Confirm Proposal Approval"
+  },
+  "transactions": {
+    "title": "Cash Vouchers",
+    "description": "Track cash receipts and disbursements, and confirm cash fund transactions",
+    "code": "Voucher Code",
+    "refProposal": "Linked Proposal Code",
+    "type": "Voucher Type",
+    "counterpart": "Payer / Payee",
+    "fundSource": "Cash Fund Source",
+    "amount": "Total Amount",
+    "issuedDate": "Issue Date",
+    "status": "Status",
+    "types": {
+      "receipt": "Cash Receipt",
+      "expense": "Cash Disbursement"
+    },
+    "statusLabels": {
+      "pending": "Pending Execution",
+      "completed": "Executed",
+      "canceled": "Canceled"
+    },
+    "confirm": "Confirm Execution (Cashier)",
+    "detailTitle": "Cash Voucher Details",
+    "confirmTitle": "Confirm Actual Cash Transaction"
+  },
+  "adjustments": {
+    "title": "Fund Adjustments",
+    "description": "Internal balance adjustments between cash fund sources",
+    "create": "Create Fund Adjustment",
+    "code": "Adjustment Code",
+    "fromSource": "From Source (Origin)",
+    "toSource": "To Source (Destination)",
+    "fromCompany": "Origin Company",
+    "toCompany": "Destination Company",
+    "amount": "Transfer Amount",
+    "effectiveDate": "Effective Date",
+    "reason": "Transfer Reason",
+    "status": "Status",
+    "actions": "Actions",
+    "processApproval": "Process Approval",
+    "viewDetail": "Adjustment Details"
+  },
+  "reports": {
+    "title": "Reports & Analytics",
+    "description": "Overview of cash funds, itemized ledger, frequency analysis, and cash book",
+    "tabs": {
+      "overview": "Fund Overview",
+      "analytics": "Revenue & Expense Analytics",
+      "itemLedger": "Itemized Ledger",
+      "cashBook": "Cash Book"
+    },
+    "kpi": {
+      "openingBalance": "Opening Balance",
+      "totalReceipt": "Total Receipts",
+      "totalExpense": "Total Disbursements",
+      "closingBalance": "Closing Balance (Opening + In - Out)"
+    },
+    "exportExcel": "Export Excel",
+    "print": "Print Cash Book"
+  },
+  "masterData": {
+    "title": "Shared Master Data",
+    "description": "Manage revenue/expense categories, cash sources, currencies, and approval workflows",
+    "tabs": {
+      "categories": "Revenue / Expense Categories",
+      "fundSources": "Cash Fund Sources",
+      "currencies": "Currencies",
+      "workflows": "Approval Workflows"
+    },
+    "addCategory": "Add Category",
+    "addFundSource": "Add Fund Source",
+    "active": "Active",
+    "inactive": "Inactive"
+  }
+}
