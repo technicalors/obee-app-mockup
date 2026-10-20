@@ -3,7 +3,6 @@ import type { Proposal, ProposalStatus, ProposalType } from '../types';
 
 import { computed, ref } from 'vue';
 
-import { Page } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 
 import {
@@ -22,6 +21,7 @@ import {
   MIN_SIDEBAR_WIDTH,
   useResizableFilterSidebar,
 } from '#/shared/filter-sidebar/use-resizable-filter-sidebar';
+import { ResourceListPage } from '#/shared/resource-table';
 
 import { useCashFund } from '../store';
 import ProposalDetailModal from './components/ProposalDetailModal.vue';
@@ -110,21 +110,6 @@ const filteredProposals = computed(() => {
   });
 });
 
-// Summary KPI metrics
-const totalCount = computed(() => proposals.value.length);
-const pendingCount = computed(
-  () =>
-    proposals.value.filter((p) =>
-      p.status.startsWith('pending_') || p.status === 'approved' || p.status === 'voucher_issued',
-    ).length,
-);
-const returnEditCount = computed(
-  () => proposals.value.filter((p) => p.status === 'return_edit').length,
-);
-const completedCount = computed(
-  () => proposals.value.filter((p) => p.status === 'completed').length,
-);
-
 function openDetail(record: Proposal) {
   selectedProposal.value = record;
   isDetailModalOpen.value = true;
@@ -198,6 +183,13 @@ function getStatusBadge(status: ProposalStatus) {
 
 const columns = [
   {
+    title: 'STT',
+    key: 'sequence',
+    width: 55,
+    align: 'center' as const,
+    customRender: ({ index }: { index: number }) => index + 1,
+  },
+  {
     title: $t('cashFund.proposals.code'),
     dataIndex: 'code',
     key: 'code',
@@ -208,7 +200,7 @@ const columns = [
     title: $t('cashFund.proposals.type'),
     dataIndex: 'type',
     key: 'type',
-    width: 140,
+    width: 135,
   },
   {
     title: $t('cashFund.proposals.titleCol'),
@@ -232,7 +224,7 @@ const columns = [
     title: $t('cashFund.proposals.totalAmount'),
     dataIndex: 'totalAmount',
     key: 'totalAmount',
-    width: 160,
+    width: 155,
     align: 'right' as const,
   },
   {
@@ -245,19 +237,20 @@ const columns = [
     title: $t('cashFund.proposals.status'),
     dataIndex: 'status',
     key: 'status',
-    width: 160,
+    width: 150,
   },
   {
     title: $t('cashFund.proposals.actions'),
     key: 'actions',
-    width: 130,
+    width: 110,
+    align: 'center' as const,
     fixed: 'right' as const,
   },
 ];
 </script>
 
 <template>
-  <Page auto-content-height content-class="overflow-hidden p-4 md:p-6">
+  <ResourceListPage>
     <div
       ref="content"
       class="flex h-full min-h-0 min-w-0 flex-1 items-stretch"
@@ -267,7 +260,7 @@ const columns = [
       <aside
         v-if="!compact || filtersOpen"
         id="proposals-filter-panel"
-        class="flex h-full min-h-0 shrink-0 flex-col overflow-hidden rounded-lg border border-border bg-background shadow-xs"
+        class="flex h-full min-h-0 shrink-0 flex-col overflow-hidden rounded border border-border bg-background"
         :class="compact ? 'max-h-[55%] w-full' : ''"
         :style="compact ? undefined : { width: `${filterWidth}px` }"
       >
@@ -303,17 +296,17 @@ const columns = [
         />
       </div>
 
-      <!-- Right Main Content Area -->
+      <!-- Main Table Container (Theme matching Masterdata Users Grid) -->
       <div
-        class="flex h-full min-h-0 min-w-0 flex-1 flex-col gap-4 overflow-y-auto rounded-lg border border-border bg-background p-4 shadow-xs"
+        class="flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded border border-border bg-background"
       >
-        <!-- Page Header & Action -->
-        <div class="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h1 class="text-xl font-bold tracking-tight text-foreground md:text-2xl m-0">
+        <!-- Table Toolbar matching Masterdata Users -->
+        <div class="flex shrink-0 items-center justify-between border-b border-border px-4 py-3">
+          <div class="flex min-w-0 flex-col gap-0.5">
+            <h2 class="m-0 text-base font-semibold leading-6 text-foreground">
               {{ $t('cashFund.proposals.title') }}
-            </h1>
-            <p class="text-xs text-muted-foreground mt-1 mb-0">
+            </h2>
+            <p class="m-0 text-xs text-muted-foreground">
               {{ $t('cashFund.proposals.description') }}
             </p>
           </div>
@@ -327,53 +320,37 @@ const columns = [
                 @click="filtersOpen = true"
               >
                 <template #icon>
-                  <IconifyIcon icon="lucide:list-filter" class="size-4" />
+                  <IconifyIcon aria-hidden="true" icon="lucide:list-filter" />
                 </template>
                 Bộ lọc
               </Button>
             </Badge>
 
-            <Button type="primary" size="middle" @click="isCreateModalOpen = true">
+            <Button type="primary" @click="isCreateModalOpen = true">
               <template #icon>
-                <IconifyIcon icon="lucide:plus" class="size-4" />
+                <IconifyIcon aria-hidden="true" icon="lucide:plus" class="size-4" />
               </template>
               {{ $t('cashFund.proposals.createNew') }}
             </Button>
           </div>
         </div>
 
-        <!-- KPI Summary Cards -->
-        <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <div class="rounded-lg border border-border bg-card p-3 shadow-2xs">
-            <span class="text-[11px] text-muted-foreground font-medium block">Tổng đề xuất</span>
-            <div class="mt-1 text-xl font-semibold text-foreground">{{ totalCount }}</div>
-          </div>
-
-          <div class="rounded-lg border border-border bg-card p-3 shadow-2xs">
-            <span class="text-[11px] text-muted-foreground font-medium block">Chờ phê duyệt</span>
-            <div class="mt-1 text-xl font-semibold text-foreground">{{ pendingCount }}</div>
-          </div>
-
-          <div class="rounded-lg border border-border bg-card p-3 shadow-2xs">
-            <span class="text-[11px] text-muted-foreground font-medium block">Cần chỉnh sửa</span>
-            <div class="mt-1 text-xl font-semibold text-foreground">{{ returnEditCount }}</div>
-          </div>
-
-          <div class="rounded-lg border border-border bg-card p-3 shadow-2xs">
-            <span class="text-[11px] text-muted-foreground font-medium block">Đã hoàn thành</span>
-            <div class="mt-1 text-xl font-semibold text-foreground">{{ completedCount }}</div>
-          </div>
-        </div>
-
-        <!-- Main Proposals Data Table -->
-        <div class="rounded-lg border border-border bg-card shadow-xs overflow-hidden">
+        <!-- Table matching Masterdata Users Grid -->
+        <div class="min-h-0 flex-1 overflow-auto">
           <Table
             :data-source="filteredProposals"
             :columns="columns"
-            :scroll="{ x: 1200 }"
-            :pagination="{ pageSize: 10, showSizeChanger: true }"
+            :scroll="{ x: 1200, y: 'calc(100vh - 275px)' }"
+            :pagination="{
+              pageSize: 10,
+              showSizeChanger: true,
+              pageSizeOptions: ['10', '20', '30', '50'],
+              showTotal: (total: number) => `Tổng ${total} bản ghi`,
+              class: '!px-4 !py-2.5 !m-0 border-t border-border',
+            }"
             row-key="id"
-            size="middle"
+            size="small"
+            bordered
           >
             <template #bodyCell="{ column, record }">
               <template v-if="column.key === 'code'">
@@ -392,26 +369,18 @@ const columns = [
               </template>
 
               <template v-else-if="column.key === 'title'">
-                <div class="flex flex-col">
-                  <span
-                    class="font-medium text-foreground text-sm cursor-pointer hover:text-primary"
-                    @click="openDetail(record as Proposal)"
-                  >
-                    {{ record.title }}
-                  </span>
-                  <span
-                    v-if="record.type === 'settlement' && record.advanceProposalId"
-                    class="text-xs text-muted-foreground font-mono mt-0.5"
-                  >
-                    Quyết toán tạm ứng
-                  </span>
-                </div>
+                <span
+                  class="font-medium text-foreground text-xs cursor-pointer hover:text-primary"
+                  @click="openDetail(record as Proposal)"
+                >
+                  {{ record.title }}
+                </span>
               </template>
 
               <template v-else-if="column.key === 'totalAmount'">
-                <span class="font-semibold text-foreground">
+                <span class="font-semibold text-foreground text-xs">
                   {{ record.totalAmount.toLocaleString() }}
-                  <span class="text-xs font-normal text-muted-foreground">{{ record.currency }}</span>
+                  <span class="text-[11px] font-normal text-muted-foreground">{{ record.currency }}</span>
                 </span>
               </template>
 
@@ -421,13 +390,6 @@ const columns = [
                     :status="getStatusBadge(record.status).status as any"
                     :text="getStatusBadge(record.status).text"
                   />
-                  <span
-                    v-if="record.currentApprover"
-                    class="text-[11px] text-muted-foreground truncate max-w-[140px]"
-                    :title="record.currentApprover"
-                  >
-                    {{ record.currentApprover }}
-                  </span>
                 </div>
               </template>
 
@@ -533,5 +495,5 @@ const columns = [
       v-model:open="isReturnEditModalOpen"
       :proposal="selectedProposal"
     />
-  </Page>
+  </ResourceListPage>
 </template>

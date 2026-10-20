@@ -3,7 +3,6 @@ import type { FundSource, MasterCategory } from '../types';
 
 import { ref } from 'vue';
 
-import { Page } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 
 import {
@@ -16,6 +15,7 @@ import {
 } from 'ant-design-vue';
 
 import { $t } from '#/locales';
+import { ResourceListPage } from '#/shared/resource-table';
 
 import { useCashFund } from '../store';
 import CategoryFormModal from './components/CategoryFormModal.vue';
@@ -86,16 +86,30 @@ const workflowRules = [
 ];
 
 const categoryColumns = [
+  {
+    title: 'STT',
+    key: 'sequence',
+    width: 55,
+    align: 'center' as const,
+    customRender: ({ index }: { index: number }) => index + 1,
+  },
   { title: 'Mã', dataIndex: 'code', key: 'code', width: 110, fixed: 'left' as const },
   { title: 'Tên khoản mục', dataIndex: 'name', key: 'name', width: 220 },
   { title: 'Loại', dataIndex: 'type', key: 'type', width: 120 },
   { title: 'Nhóm phân loại', dataIndex: 'group', key: 'group', width: 180 },
   { title: 'Mô tả', dataIndex: 'description', key: 'description' },
   { title: 'Trạng thái', dataIndex: 'status', key: 'status', width: 140 },
-  { title: 'Thao tác', key: 'actions', width: 140, fixed: 'right' as const },
+  { title: 'Thao tác', key: 'actions', width: 110, align: 'center' as const, fixed: 'right' as const },
 ];
 
 const fundSourceColumns = [
+  {
+    title: 'STT',
+    key: 'sequence',
+    width: 55,
+    align: 'center' as const,
+    customRender: ({ index }: { index: number }) => index + 1,
+  },
   { title: 'Mã nguồn', dataIndex: 'code', key: 'code', width: 120 },
   { title: 'Tên nguồn tiền quỹ', dataIndex: 'name', key: 'name', width: 240 },
   { title: 'Đơn vị sở hữu', dataIndex: 'company', key: 'company' },
@@ -103,10 +117,17 @@ const fundSourceColumns = [
   { title: 'Hạn mức ban đầu', dataIndex: 'initialBalance', key: 'initialBalance', width: 160, align: 'right' as const },
   { title: 'Số dư hiện tại', dataIndex: 'currentBalance', key: 'currentBalance', width: 160, align: 'right' as const },
   { title: 'Trạng thái', dataIndex: 'status', key: 'status', width: 130 },
-  { title: 'Thao tác', key: 'actions', width: 100, fixed: 'right' as const },
+  { title: 'Thao tác', key: 'actions', width: 80, align: 'center' as const, fixed: 'right' as const },
 ];
 
 const currencyColumns = [
+  {
+    title: 'STT',
+    key: 'sequence',
+    width: 55,
+    align: 'center' as const,
+    customRender: ({ index }: { index: number }) => index + 1,
+  },
   { title: 'Mã tiền tệ', dataIndex: 'code', key: 'code', width: 120 },
   { title: 'Tên loại tiền', dataIndex: 'name', key: 'name', width: 220 },
   { title: 'Ký hiệu', dataIndex: 'symbol', key: 'symbol', width: 100 },
@@ -117,22 +138,22 @@ const currencyColumns = [
 </script>
 
 <template>
-  <Page>
-    <div class="flex flex-col gap-5 p-4 md:p-6">
-      <!-- Header -->
-      <div class="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 class="text-xl font-bold tracking-tight text-foreground md:text-2xl m-0">
+  <ResourceListPage>
+    <div class="flex h-full min-h-0 flex-col overflow-hidden rounded border border-border bg-background">
+      <!-- Toolbar matching Masterdata Users -->
+      <div class="flex shrink-0 items-center justify-between border-b border-border px-4 py-3">
+        <div class="flex min-w-0 flex-col gap-0.5">
+          <h2 class="m-0 text-base font-semibold leading-6 text-foreground">
             {{ $t('cashFund.masterData.title') }}
-          </h1>
-          <p class="text-xs text-muted-foreground mt-1 mb-0">
+          </h2>
+          <p class="m-0 text-xs text-muted-foreground">
             {{ $t('cashFund.masterData.description') }}
           </p>
         </div>
       </div>
 
-      <!-- Main Tabs Container -->
-      <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
+      <!-- Main Content Tabs Container -->
+      <div class="flex-1 min-h-0 overflow-auto p-4">
         <Tabs v-model:activeKey="activeTab">
           <!-- TAB 1: Khoản thu / chi -->
           <Tabs.TabPane key="categories">
@@ -143,7 +164,7 @@ const currencyColumns = [
               </span>
             </template>
 
-            <div class="flex flex-col gap-4 pt-2">
+            <div class="flex flex-col gap-3 pt-1">
               <div class="flex justify-between items-center">
                 <span class="text-xs text-muted-foreground">
                   Khoản thu/chi chuẩn hóa phục vụ nhập liệu cho các đề xuất tiền mặt
@@ -159,8 +180,9 @@ const currencyColumns = [
               <Table
                 :data-source="categories"
                 :columns="categoryColumns"
-                :pagination="{ pageSize: 10 }"
-                size="middle"
+                :pagination="{ pageSize: 10, showSizeChanger: true }"
+                size="small"
+                bordered
                 row-key="id"
               >
                 <template #bodyCell="{ column, record }">
@@ -225,7 +247,7 @@ const currencyColumns = [
               </span>
             </template>
 
-            <div class="flex flex-col gap-4 pt-2">
+            <div class="flex flex-col gap-3 pt-1">
               <div class="flex justify-between items-center">
                 <span class="text-xs text-muted-foreground">
                   Các quỹ tiền mặt và tài khoản tiền mặt tại trụ sở và các chi nhánh
@@ -242,7 +264,8 @@ const currencyColumns = [
                 :data-source="fundSources"
                 :columns="fundSourceColumns"
                 :pagination="false"
-                size="middle"
+                size="small"
+                bordered
                 row-key="id"
               >
                 <template #bodyCell="{ column, record }">
@@ -255,7 +278,7 @@ const currencyColumns = [
                   </template>
 
                   <template v-else-if="column.key === 'currentBalance'">
-                    <span class="font-bold text-primary">
+                    <span class="font-semibold text-foreground">
                       {{ record.currentBalance.toLocaleString() }} {{ record.currency }}
                     </span>
                   </template>
@@ -297,7 +320,7 @@ const currencyColumns = [
               </span>
             </template>
 
-            <div class="flex flex-col gap-4 pt-2">
+            <div class="flex flex-col gap-3 pt-1">
               <span class="text-xs text-muted-foreground">
                 Đồng tiền giao dịch hợp lệ và bảng tỷ giá quy đổi tham chiếu
               </span>
@@ -306,7 +329,8 @@ const currencyColumns = [
                 :data-source="currencies"
                 :columns="currencyColumns"
                 :pagination="false"
-                size="middle"
+                size="small"
+                bordered
                 row-key="code"
               >
                 <template #bodyCell="{ column, record }">
@@ -317,7 +341,7 @@ const currencyColumns = [
                     <span class="font-mono font-medium">{{ record.exchangeRate.toLocaleString() }}</span>
                   </template>
                   <template v-else-if="column.key === 'isDefault'">
-                    <Tag v-if="record.isDefault" color="blue">Mặc định</Tag>
+                    <Tag v-if="record.isDefault">Mặc định</Tag>
                     <span v-else class="text-muted-foreground">-</span>
                   </template>
                   <template v-else-if="column.key === 'status'">
@@ -337,7 +361,7 @@ const currencyColumns = [
               </span>
             </template>
 
-            <div class="flex flex-col gap-3 pt-2">
+            <div class="flex flex-col gap-3 pt-1">
               <span class="text-xs text-muted-foreground">
                 Cấu hình phân cấp các bước phê duyệt theo từng nghiệp vụ quỹ tiền mặt
               </span>
@@ -346,7 +370,7 @@ const currencyColumns = [
                 <div
                   v-for="(wf, idx) in workflowRules"
                   :key="idx"
-                  class="rounded-xl border border-border bg-card p-4 flex flex-col gap-2"
+                  class="rounded-lg border border-border bg-card p-3.5 flex flex-col gap-2"
                 >
                   <div class="flex items-center justify-between">
                     <span class="font-medium text-sm text-foreground">{{ wf.type }}</span>
@@ -364,17 +388,17 @@ const currencyColumns = [
           </Tabs.TabPane>
         </Tabs>
       </div>
-
-      <!-- Modals -->
-      <CategoryFormModal
-        v-model:open="isCategoryModalOpen"
-        :category="selectedCategory"
-      />
-
-      <FundSourceFormModal
-        v-model:open="isFundSourceModalOpen"
-        :fund-source="selectedFundSource"
-      />
     </div>
-  </Page>
+
+    <!-- Modals -->
+    <CategoryFormModal
+      v-model:open="isCategoryModalOpen"
+      :category="selectedCategory"
+    />
+
+    <FundSourceFormModal
+      v-model:open="isFundSourceModalOpen"
+      :fund-source="selectedFundSource"
+    />
+  </ResourceListPage>
 </template>

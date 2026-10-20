@@ -3,13 +3,11 @@ import type { Proposal, ProposalType } from '../types';
 
 import { computed, ref } from 'vue';
 
-import { Page } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 
 import {
   Badge,
   Button,
-  Progress,
   Table,
   Tag,
   Tooltip,
@@ -21,6 +19,7 @@ import {
   MIN_SIDEBAR_WIDTH,
   useResizableFilterSidebar,
 } from '#/shared/filter-sidebar/use-resizable-filter-sidebar';
+import { ResourceListPage } from '#/shared/resource-table';
 
 import { useCashFund } from '../store';
 import ProposalDetailModal from '../proposals/components/ProposalDetailModal.vue';
@@ -115,34 +114,6 @@ const pendingProposals = computed(() => {
   });
 });
 
-// STATS-PC metrics
-const totalPendingCount = computed(() => pendingProposals.value.length);
-const totalPendingValue = computed(() =>
-  pendingProposals.value.reduce((sum, p) => sum + p.totalAmount, 0),
-);
-const departmentsCount = computed(() => {
-  const depts = new Set(pendingProposals.value.map((p) => p.department));
-  return depts.size;
-});
-const averageValue = computed(() => {
-  if (totalPendingCount.value === 0) return 0;
-  return Math.round(totalPendingValue.value / totalPendingCount.value);
-});
-
-// Category breakdown for pending
-const advanceCount = computed(
-  () => pendingProposals.value.filter((p) => p.type === 'advance').length,
-);
-const paymentCount = computed(
-  () => pendingProposals.value.filter((p) => p.type === 'payment').length,
-);
-const receiptCount = computed(
-  () => pendingProposals.value.filter((p) => p.type === 'receipt').length,
-);
-const settlementCount = computed(
-  () => pendingProposals.value.filter((p) => p.type === 'settlement').length,
-);
-
 const allDepartments = computed(() => {
   return Array.from(new Set(proposals.value.map((p) => p.department)));
 });
@@ -178,6 +149,13 @@ function getTypeTag(type: ProposalType) {
 }
 
 const columns = [
+  {
+    title: 'STT',
+    key: 'sequence',
+    width: 55,
+    align: 'center' as const,
+    customRender: ({ index }: { index: number }) => index + 1,
+  },
   {
     title: $t('cashFund.proposals.code'),
     dataIndex: 'code',
@@ -217,22 +195,23 @@ const columns = [
     align: 'right' as const,
   },
   {
-    title: 'Bước duyệt hiện tại',
+    title: 'Cấp duyệt hiện tại',
     dataIndex: 'currentApprover',
     key: 'currentApprover',
-    width: 190,
+    width: 180,
   },
   {
     title: $t('cashFund.proposals.actions'),
     key: 'actions',
-    width: 110,
+    width: 100,
+    align: 'center' as const,
     fixed: 'right' as const,
   },
 ];
 </script>
 
 <template>
-  <Page auto-content-height content-class="overflow-hidden p-4 md:p-6">
+  <ResourceListPage>
     <div
       ref="content"
       class="flex h-full min-h-0 min-w-0 flex-1 items-stretch"
@@ -242,7 +221,7 @@ const columns = [
       <aside
         v-if="!compact || filtersOpen"
         id="approvals-filter-panel"
-        class="flex h-full min-h-0 shrink-0 flex-col overflow-hidden rounded-lg border border-border bg-background shadow-xs"
+        class="flex h-full min-h-0 shrink-0 flex-col overflow-hidden rounded border border-border bg-background"
         :class="compact ? 'max-h-[55%] w-full' : ''"
         :style="compact ? undefined : { width: `${filterWidth}px` }"
       >
@@ -279,17 +258,17 @@ const columns = [
         />
       </div>
 
-      <!-- Right Main Content Area -->
+      <!-- Main Table Container (matching Masterdata Users Grid) -->
       <div
-        class="flex h-full min-h-0 min-w-0 flex-1 flex-col gap-4 overflow-y-auto rounded-lg border border-border bg-background p-4 shadow-xs"
+        class="flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded border border-border bg-background"
       >
-        <!-- Page Header -->
-        <div class="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h1 class="text-xl font-bold tracking-tight text-foreground md:text-2xl m-0">
+        <!-- Table Toolbar matching Masterdata Users -->
+        <div class="flex shrink-0 items-center justify-between border-b border-border px-4 py-3">
+          <div class="flex min-w-0 flex-col gap-0.5">
+            <h2 class="m-0 text-base font-semibold leading-6 text-foreground">
               {{ $t('cashFund.approvals.title') }}
-            </h1>
-            <p class="text-xs text-muted-foreground mt-1 mb-0">
+            </h2>
+            <p class="m-0 text-xs text-muted-foreground">
               {{ $t('cashFund.approvals.description') }}
             </p>
           </div>
@@ -303,7 +282,7 @@ const columns = [
                 @click="filtersOpen = true"
               >
                 <template #icon>
-                  <IconifyIcon icon="lucide:list-filter" class="size-4" />
+                  <IconifyIcon aria-hidden="true" icon="lucide:list-filter" />
                 </template>
                 Bộ lọc
               </Button>
@@ -311,94 +290,22 @@ const columns = [
           </div>
         </div>
 
-        <!-- STATS-PC: 4 KPI Cards -->
-        <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <div class="rounded-lg border border-border bg-card p-3 shadow-2xs">
-            <span class="text-[11px] text-muted-foreground font-medium block">
-              {{ $t('cashFund.approvals.kpi.pendingTotal') }}
-            </span>
-            <div class="mt-1 text-xl font-semibold text-foreground">{{ totalPendingCount }}</div>
-            <span class="text-[10px] text-muted-foreground">Yêu cầu cần duyệt</span>
-          </div>
-
-          <div class="rounded-lg border border-border bg-card p-3 shadow-2xs">
-            <span class="text-[11px] text-muted-foreground font-medium block">
-              {{ $t('cashFund.approvals.kpi.pendingValue') }}
-            </span>
-            <div class="mt-1 text-xl font-semibold text-foreground">
-              {{ totalPendingValue.toLocaleString() }} <span class="text-[11px] font-normal">VND</span>
-            </div>
-            <span class="text-[10px] text-muted-foreground">Tổng dòng tiền</span>
-          </div>
-
-          <div class="rounded-lg border border-border bg-card p-3 shadow-2xs">
-            <span class="text-[11px] text-muted-foreground font-medium block">
-              {{ $t('cashFund.approvals.kpi.departmentsCount') }}
-            </span>
-            <div class="mt-1 text-xl font-semibold text-foreground">{{ departmentsCount }}</div>
-            <span class="text-[10px] text-muted-foreground">Bộ phận đề xuất</span>
-          </div>
-
-          <div class="rounded-lg border border-border bg-card p-3 shadow-2xs">
-            <span class="text-[11px] text-muted-foreground font-medium block">
-              {{ $t('cashFund.approvals.kpi.averageValue') }}
-            </span>
-            <div class="mt-1 text-xl font-semibold text-foreground">
-              {{ averageValue.toLocaleString() }} <span class="text-[11px] font-normal">VND</span>
-            </div>
-            <span class="text-[10px] text-muted-foreground">Trung bình / yêu cầu</span>
-          </div>
-        </div>
-
-        <!-- Breakdown Bars -->
-        <div class="rounded-lg border border-border bg-card p-3.5 shadow-2xs">
-          <div class="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-            Phân bố yêu cầu chờ duyệt theo loại nghiệp vụ
-          </div>
-          <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <div class="rounded border border-border bg-muted/20 p-2">
-              <div class="flex items-center justify-between text-xs">
-                <span class="font-medium text-foreground">Tạm ứng</span>
-                <span class="font-semibold">{{ advanceCount }}</span>
-              </div>
-              <Progress :percent="totalPendingCount ? Math.round((advanceCount / totalPendingCount) * 100) : 0" size="small" />
-            </div>
-
-            <div class="rounded border border-border bg-muted/20 p-2">
-              <div class="flex items-center justify-between text-xs">
-                <span class="font-medium text-foreground">Thanh toán</span>
-                <span class="font-semibold">{{ paymentCount }}</span>
-              </div>
-              <Progress :percent="totalPendingCount ? Math.round((paymentCount / totalPendingCount) * 100) : 0" size="small" />
-            </div>
-
-            <div class="rounded border border-border bg-muted/20 p-2">
-              <div class="flex items-center justify-between text-xs">
-                <span class="font-medium text-foreground">Thu tiền</span>
-                <span class="font-semibold">{{ receiptCount }}</span>
-              </div>
-              <Progress :percent="totalPendingCount ? Math.round((receiptCount / totalPendingCount) * 100) : 0" size="small" />
-            </div>
-
-            <div class="rounded border border-border bg-muted/20 p-2">
-              <div class="flex items-center justify-between text-xs">
-                <span class="font-medium text-foreground">Hoàn ứng</span>
-                <span class="font-semibold">{{ settlementCount }}</span>
-              </div>
-              <Progress :percent="totalPendingCount ? Math.round((settlementCount / totalPendingCount) * 100) : 0" size="small" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Approvals Table -->
-        <div class="rounded-lg border border-border bg-card shadow-xs overflow-hidden">
+        <!-- Approvals Table matching Masterdata Users Grid -->
+        <div class="min-h-0 flex-1 overflow-auto">
           <Table
             :data-source="pendingProposals"
             :columns="columns"
-            :scroll="{ x: 1200 }"
-            :pagination="{ pageSize: 10, showSizeChanger: true }"
+            :scroll="{ x: 1200, y: 'calc(100vh - 275px)' }"
+            :pagination="{
+              pageSize: 10,
+              showSizeChanger: true,
+              pageSizeOptions: ['10', '20', '30', '50'],
+              showTotal: (total: number) => `Tổng ${total} bản ghi`,
+              class: '!px-4 !py-2.5 !m-0 border-t border-border',
+            }"
             row-key="id"
-            size="middle"
+            size="small"
+            bordered
           >
             <template #bodyCell="{ column, record }">
               <template v-if="column.key === 'code'">
@@ -418,7 +325,7 @@ const columns = [
 
               <template v-else-if="column.key === 'title'">
                 <span
-                  class="font-medium text-foreground text-sm cursor-pointer hover:text-primary"
+                  class="font-medium text-foreground text-xs cursor-pointer hover:text-primary"
                   @click="openViewModal(record as Proposal)"
                 >
                   {{ record.title }}
@@ -426,9 +333,9 @@ const columns = [
               </template>
 
               <template v-else-if="column.key === 'totalAmount'">
-                <span class="font-bold text-foreground">
+                <span class="font-semibold text-foreground text-xs">
                   {{ record.totalAmount.toLocaleString() }}
-                  <span class="text-xs font-normal text-muted-foreground">{{ record.currency }}</span>
+                  <span class="text-[11px] font-normal text-muted-foreground">{{ record.currency }}</span>
                 </span>
               </template>
 
@@ -499,5 +406,5 @@ const columns = [
       v-model:open="isApprovalModalOpen"
       :proposal="selectedProposal"
     />
-  </Page>
+  </ResourceListPage>
 </template>
