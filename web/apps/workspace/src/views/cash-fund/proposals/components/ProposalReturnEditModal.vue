@@ -70,6 +70,22 @@ const currentTotalAmount = computed(() => {
   return formItems.value.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
 });
 
+const currentConvertedTotal = computed(() => {
+  return formItems.value.reduce((sum, item) => {
+    const amt = Number(item.amount) || 0;
+    const rate = item.currency === 'VND' ? 1 : Number(item.exchangeRate) || 1;
+    return sum + amt * rate;
+  }, 0);
+});
+
+const returnMainCurrencyDisplay = computed(() => {
+  const hasFx = formItems.value.some((item) => item.currency && item.currency !== 'VND');
+  if (hasFx) {
+    return 'VND (quy đổi)';
+  }
+  return formItems.value[0]?.currency || props.proposal?.currency || 'VND';
+});
+
 function handleCategoryChange(item: ProposalItem, catId: string) {
   const cat = categories.value.find((c) => c.id === catId);
   if (cat) {
@@ -314,10 +330,16 @@ function handleResubmit() {
                 <tfoot class="bg-muted/40 font-semibold border-t border-border">
                   <tr>
                     <td colspan="4" class="p-2.5 text-right">
-                      Tổng tiền mới:
+                      Tổng cộng:
                     </td>
-                    <td class="p-2.5 text-right text-sm text-primary font-bold">
-                      {{ currentTotalAmount.toLocaleString() }} {{ proposal.currency }}
+                    <td class="p-2.5 text-right text-sm font-semibold text-foreground">
+                      {{ currentConvertedTotal.toLocaleString() }}
+                    </td>
+                    <td class="p-2.5 font-medium text-xs text-foreground">
+                      {{ returnMainCurrencyDisplay }}
+                    </td>
+                    <td class="p-2.5 text-right text-xs text-muted-foreground">
+                      -
                     </td>
                     <td colspan="2" />
                   </tr>

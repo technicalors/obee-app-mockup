@@ -167,10 +167,20 @@ const itemColumns = computed(() => {
       width: 110,
     },
     {
-      title: 'Số tiền & Loại tiền',
-      key: 'amountWithCurrency',
-      width: 155,
+      title: 'Số tiền',
+      dataIndex: 'amount',
+      key: 'amount',
+      width: 120,
       align: 'right' as const,
+      customRender: ({ text }: any) => text?.toLocaleString(),
+    },
+    {
+      title: 'Loại tiền',
+      dataIndex: 'currency',
+      key: 'currency',
+      width: 80,
+      align: 'center' as const,
+      customRender: ({ text, record }: any) => text || record.currency || props.proposal?.currency || 'VND',
     },
   ];
 
@@ -285,15 +295,7 @@ const itemColumns = computed(() => {
           row-key="id"
         >
           <template #bodyCell="{ column, record }">
-            <template v-if="column.key === 'amountWithCurrency'">
-              <span class="font-medium text-foreground">
-                {{ record.amount.toLocaleString() }}
-                <Tag class="ml-1 text-[11px]">
-                  {{ record.currency || proposal.currency }}
-                </Tag>
-              </span>
-            </template>
-            <template v-else-if="column.key === 'attachment'">
+            <template v-if="column.key === 'attachment'">
               <div v-if="record.attachmentName" class="flex items-center gap-1 text-xs text-primary cursor-pointer hover:underline">
                 <IconifyIcon icon="lucide:file-text" class="size-3.5 shrink-0" />
                 <span class="truncate max-w-[110px]" :title="record.attachmentName">

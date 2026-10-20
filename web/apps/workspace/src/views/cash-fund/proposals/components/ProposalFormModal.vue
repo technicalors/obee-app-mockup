@@ -74,19 +74,7 @@ const selectedAdvanceProposal = computed(() => {
   return proposals.value.find((p) => p.id === selectedAdvanceProposalId.value) ?? null;
 });
 
-// Total amounts breakdown per currency
-const totalBreakdown = computed(() => {
-  const map = new Map<string, number>();
-  formItems.value.forEach((item) => {
-    const curr = item.currency || 'VND';
-    const amt = Number(item.amount) || 0;
-    map.set(curr, (map.get(curr) || 0) + amt);
-  });
-  return Array.from(map.entries())
-    .map(([curr, total]) => `${total.toLocaleString()} ${curr}`)
-    .join(' + ');
-});
-
+// Check if multiple or foreign currencies exist
 const hasForeignCurrency = computed(() => {
   return formItems.value.some((item) => item.currency && item.currency !== 'VND');
 });
@@ -97,6 +85,13 @@ const totalConvertedVND = computed(() => {
     const rate = item.currency === 'VND' ? 1 : Number(item.exchangeRate) || 1;
     return sum + amt * rate;
   }, 0);
+});
+
+const mainCurrencyDisplay = computed(() => {
+  if (hasForeignCurrency.value) {
+    return 'VND (quy đổi)';
+  }
+  return formItems.value[0]?.currency || 'VND';
 });
 
 // Calculate total actual expense for settlement
@@ -532,15 +527,18 @@ function handleSubmit(asDraft = false) {
             <tfoot class="bg-muted/40 font-semibold border-t border-border">
               <tr>
                 <td colspan="4" class="p-2.5 text-right">
-                  Tổng theo loại tiền:
+                  Tổng cộng:
                 </td>
-                <td colspan="3" class="p-2.5 text-sm font-bold text-foreground">
-                  {{ totalBreakdown }}
-                  <span v-if="hasForeignCurrency" class="block text-xs font-normal text-muted-foreground mt-0.5">
-                    ≈ {{ totalConvertedVND.toLocaleString() }} VND (quy đổi)
-                  </span>
+                <td class="p-2.5 text-right text-sm font-semibold text-foreground">
+                  {{ totalConvertedVND.toLocaleString() }}
                 </td>
-                <td v-if="formType === 'settlement'" class="p-2.5 text-right text-sm text-primary font-bold">
+                <td class="p-2.5 font-medium text-xs text-foreground">
+                  {{ mainCurrencyDisplay }}
+                </td>
+                <td class="p-2.5 text-right text-xs text-muted-foreground">
+                  -
+                </td>
+                <td v-if="formType === 'settlement'" class="p-2.5 text-right text-sm font-semibold text-foreground">
                   {{ totalActualAmount.toLocaleString() }}
                 </td>
                 <td colspan="2" />

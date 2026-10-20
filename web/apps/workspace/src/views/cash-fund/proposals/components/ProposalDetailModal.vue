@@ -119,10 +119,20 @@ const itemColumns = computed(() => {
       width: 120,
     },
     {
-      title: 'Số tiền & Loại tiền',
-      key: 'amountWithCurrency',
-      width: 155,
+      title: 'Số tiền',
+      dataIndex: 'amount',
+      key: 'amount',
+      width: 130,
       align: 'right' as const,
+      customRender: ({ text }: any) => text?.toLocaleString(),
+    },
+    {
+      title: 'Loại tiền',
+      dataIndex: 'currency',
+      key: 'currency',
+      width: 85,
+      align: 'center' as const,
+      customRender: ({ text, record }: any) => text || record.currency || props.proposal?.currency || 'VND',
     },
   ];
 
@@ -296,22 +306,14 @@ function handlePrint() {
           row-key="id"
         >
           <template #bodyCell="{ column, record }">
-            <template v-if="column.key === 'amountWithCurrency'">
-              <span class="font-medium text-foreground">
-                {{ record.amount.toLocaleString() }}
-                <Tag class="ml-1 text-[11px]">
-                  {{ record.currency || proposal.currency }}
-                </Tag>
-              </span>
-            </template>
-            <template v-else-if="column.key === 'exchangeRate'">
+            <template v-if="column.key === 'exchangeRate'">
               <span v-if="record.currency && record.currency !== 'VND' && record.exchangeRate" class="font-mono text-xs">
                 {{ record.exchangeRate.toLocaleString() }}
               </span>
               <span v-else class="text-muted-foreground text-xs">-</span>
             </template>
             <template v-else-if="column.key === 'actualAmount'">
-              <span class="font-medium text-primary">
+              <span class="font-medium text-foreground">
                 {{ record.actualAmount !== undefined ? record.actualAmount.toLocaleString() : '-' }}
               </span>
             </template>
@@ -329,25 +331,32 @@ function handlePrint() {
           <template #summary>
             <Table.Summary fixed>
               <Table.Summary.Row class="bg-muted/30 font-semibold">
-                <Table.Summary.Cell :index="0" :col-span="4">
-                  Tổng cộng
+                <Table.Summary.Cell :index="0" :col-span="4" align="right">
+                  Tổng cộng:
                 </Table.Summary.Cell>
                 <Table.Summary.Cell :index="1" align="right">
                   <span class="text-foreground">
-                    {{ proposal.totalAmount.toLocaleString() }} {{ proposal.currency }}
+                    {{ proposal.totalAmount.toLocaleString() }}
                   </span>
                 </Table.Summary.Cell>
-                <Table.Summary.Cell :index="2" align="right">
-                  <span v-if="proposal.type === 'settlement'" class="text-primary font-bold">
+                <Table.Summary.Cell :index="2" align="center">
+                  <span class="text-foreground">
+                    {{ proposal.currency }}
+                  </span>
+                </Table.Summary.Cell>
+                <Table.Summary.Cell v-if="hasForeignCurrency" :index="3" align="right">
+                  -
+                </Table.Summary.Cell>
+                <Table.Summary.Cell v-if="proposal.type === 'settlement'" :index="4" align="right">
+                  <span class="text-foreground font-semibold">
                     {{
                       proposal.items
                         .reduce((acc: number, i: any) => acc + (i.actualAmount ?? i.amount), 0)
                         .toLocaleString()
-                    }} {{ proposal.currency }}
+                    }}
                   </span>
-                  <span v-else>-</span>
                 </Table.Summary.Cell>
-                <Table.Summary.Cell :index="3" />
+                <Table.Summary.Cell :index="5" />
               </Table.Summary.Row>
             </Table.Summary>
           </template>
