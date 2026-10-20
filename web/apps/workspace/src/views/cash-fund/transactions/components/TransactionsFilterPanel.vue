@@ -126,11 +126,15 @@ const filters = defineModel<FilterModel>('filters', {
         </div>
       </div>
 
-      <footer class="mt-auto shrink-0 border-t border-border p-3.5 flex gap-2">
-        <Button class="flex-1" @click="emit('reset')">
-          Đặt lại
-        </Button>
-        <Button class="flex-1" html-type="submit" type="primary">
+      <footer class="mt-auto shrink-0 border-t border-border p-4">
+        <Button
+          block
+          html-type="submit"
+          type="primary"
+        >
+          <template #icon>
+            <IconifyIcon icon="lucide:search" class="size-4" />
+          </template>
           Áp dụng
         </Button>
       </footer>
