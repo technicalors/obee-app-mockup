@@ -275,7 +275,7 @@ function handleSubmit(asDraft = false) {
   <Modal
     v-model:open="visible"
     :title="$t('cashFund.proposals.modal.createTitle')"
-    width="1120px"
+    width="1180px"
     destroy-on-close
     :footer="null"
   >
@@ -402,12 +402,12 @@ function handleSubmit(asDraft = false) {
         </div>
 
         <div class="overflow-x-auto rounded-lg border border-border">
-          <table class="w-full text-left text-xs border-collapse">
+          <table class="min-w-[1100px] w-full text-left text-xs border-collapse">
             <thead class="bg-muted/50 border-b border-border text-muted-foreground uppercase font-semibold">
               <tr>
                 <th class="p-2.5 w-10 text-center">#</th>
                 <th class="p-2.5 w-40">Khoản mục</th>
-                <th class="p-2.5">Lý do / Diễn giải</th>
+                <th class="p-2.5 min-w-[320px]">Lý do / Diễn giải</th>
                 <th class="p-2.5 w-32">Ngày mong muốn</th>
                 <th class="p-2.5 w-32 text-right">Số tiền</th>
                 <th class="p-2.5 w-24">Loại tiền</th>
@@ -434,11 +434,12 @@ function handleSubmit(asDraft = false) {
                     </Select.Option>
                   </Select>
                 </td>
-                <td class="p-2.5">
+                <td class="p-2.5 min-w-[320px]">
                   <Input
                     v-model:value="item.reason"
                     placeholder="Diễn giải chi tiết..."
                     size="small"
+                    class="w-full"
                   />
                 </td>
                 <td class="p-2.5">

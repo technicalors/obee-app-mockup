@@ -152,7 +152,7 @@ function handleResubmit() {
   <Modal
     v-model:open="visible"
     :title="$t('cashFund.proposals.modal.returnEditTitle')"
-    width="1000px"
+    width="1180px"
     destroy-on-close
     :footer="null"
   >
@@ -200,17 +200,17 @@ function handleResubmit() {
             </div>
 
             <div class="overflow-x-auto rounded-lg border border-border">
-              <table class="w-full text-left text-xs border-collapse">
+              <table class="min-w-[1080px] w-full text-left text-xs border-collapse">
                 <thead class="bg-muted/50 border-b border-border text-muted-foreground uppercase font-semibold">
                   <tr>
                     <th class="p-2.5 w-10 text-center">#</th>
                     <th class="p-2.5 w-40">Khoản mục</th>
-                    <th class="p-2.5">Lý do / Diễn giải</th>
+                    <th class="p-2.5 min-w-[320px]">Lý do / Diễn giải</th>
                     <th class="p-2.5 w-32">Ngày mong muốn</th>
                     <th class="p-2.5 w-32 text-right">Số tiền</th>
                     <th class="p-2.5 w-24">Loại tiền</th>
-                    <th class="p-2.5 w-28 text-right">Tỷ giá</th>
-                    <th class="p-2.5 w-32">Chứng từ</th>
+                    <th class="p-2.5 w-24 text-right">Tỷ giá</th>
+                    <th class="p-2.5 w-28">Chứng từ</th>
                     <th class="p-2.5 w-10 text-center">Xóa</th>
                   </tr>
                 </thead>
@@ -231,8 +231,13 @@ function handleResubmit() {
                         </Select.Option>
                       </Select>
                     </td>
-                    <td class="p-2.5">
-                      <Input v-model:value="item.reason" size="small" />
+                    <td class="p-2.5 min-w-[320px]">
+                      <Input
+                        v-model:value="item.reason"
+                        placeholder="Nhập lý do / diễn giải chi tiết..."
+                        size="small"
+                        class="w-full"
+                      />
                     </td>
                     <td class="p-2.5">
                       <input
