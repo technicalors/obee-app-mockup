@@ -2,6 +2,7 @@ export type ProposalType = 'advance' | 'payment' | 'receipt' | 'settlement';
 
 export type ProposalStatus =
   | 'draft'
+  | 'pending'
   | 'pending_dept'
   | 'pending_accountant'
   | 'pending_cfo'
@@ -100,6 +101,7 @@ export interface CashTransaction {
 export type AdjustmentStatus =
   | 'approved'
   | 'completed'
+  | 'pending'
   | 'pending_accountant'
   | 'pending_cfo'
   | 'pending_final_ceo'

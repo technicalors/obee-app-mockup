@@ -93,8 +93,14 @@ const filteredProposals = computed(() => {
     if (appliedFilters.value.type !== 'all' && p.type !== appliedFilters.value.type) {
       return false;
     }
-    if (appliedFilters.value.status !== 'all' && p.status !== appliedFilters.value.status) {
-      return false;
+    if (appliedFilters.value.status !== 'all') {
+      if (appliedFilters.value.status === 'pending') {
+        if (!p.status.startsWith('pending_') && p.status !== 'pending') {
+          return false;
+        }
+      } else if (p.status !== appliedFilters.value.status) {
+        return false;
+      }
     }
     if (appliedFilters.value.keyword.trim()) {
       const q = appliedFilters.value.keyword.toLowerCase().trim();
@@ -150,6 +156,9 @@ function getTypeTag(type: ProposalType) {
 }
 
 function getStatusTag(status: ProposalStatus) {
+  if (status.startsWith('pending_') || status === 'pending') {
+    return { color: 'processing', text: 'Chờ phê duyệt' };
+  }
   switch (status) {
     case 'completed': {
       return { color: 'success', text: $t('cashFund.proposals.statusLabels.completed') };
@@ -175,7 +184,7 @@ function getStatusTag(status: ProposalStatus) {
     default: {
       return {
         color: 'processing',
-        text: $t(`cashFund.proposals.statusLabels.${status}`) || status,
+        text: 'Chờ phê duyệt',
       };
     }
   }

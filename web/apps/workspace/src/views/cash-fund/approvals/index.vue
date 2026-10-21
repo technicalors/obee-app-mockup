@@ -98,8 +98,14 @@ const pendingProposals = computed(() => {
       return false;
     }
 
-    if (appliedFilters.value.status !== 'all' && p.status !== appliedFilters.value.status) {
-      return false;
+    if (appliedFilters.value.status !== 'all') {
+      if (appliedFilters.value.status === 'pending') {
+        if (!p.status.startsWith('pending_') && p.status !== 'pending') {
+          return false;
+        }
+      } else if (p.status !== appliedFilters.value.status) {
+        return false;
+      }
     }
 
     if (appliedFilters.value.keyword.trim()) {

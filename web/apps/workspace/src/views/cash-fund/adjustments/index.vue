@@ -85,8 +85,14 @@ function closeFilters() {
 
 const filteredAdjustments = computed(() => {
   return adjustments.value.filter((adj) => {
-    if (appliedFilters.value.status !== 'all' && adj.status !== appliedFilters.value.status) {
-      return false;
+    if (appliedFilters.value.status !== 'all') {
+      if (appliedFilters.value.status === 'pending') {
+        if (!adj.status.startsWith('pending_') && adj.status !== 'pending') {
+          return false;
+        }
+      } else if (adj.status !== appliedFilters.value.status) {
+        return false;
+      }
     }
 
     if (appliedFilters.value.keyword.trim()) {

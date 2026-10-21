@@ -123,9 +123,7 @@ const filters = defineModel<FilterModel>('filters', {
             <Select.Option value="all">
               {{ $t('cashFund.proposals.filter.allStatus') }}
             </Select.Option>
-            <Select.Option value="pending_dept">Chờ Trưởng BP</Select.Option>
-            <Select.Option value="pending_accountant">Chờ Kế toán</Select.Option>
-            <Select.Option value="pending_cfo">Chờ CFO</Select.Option>
+            <Select.Option value="pending">Chờ phê duyệt</Select.Option>
             <Select.Option value="voucher_issued">Đã phát hành phiếu</Select.Option>
             <Select.Option value="completed">Hoàn thành</Select.Option>
             <Select.Option value="return_edit">Yêu cầu chỉnh sửa</Select.Option>

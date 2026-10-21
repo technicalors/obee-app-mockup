@@ -92,9 +92,7 @@ const filters = defineModel<FilterModel>('filters', {
           </label>
           <Select v-model:value="filters.status" class="w-full">
             <Select.Option value="all">Tất cả trạng thái</Select.Option>
-            <Select.Option value="pending_accountant">Chờ Kế toán trưởng</Select.Option>
-            <Select.Option value="pending_cfo">Chờ CFO</Select.Option>
-            <Select.Option value="pending_source_ceo">Chờ TGĐ nguồn</Select.Option>
+            <Select.Option value="pending">Chờ phê duyệt</Select.Option>
             <Select.Option value="completed">Đã hoàn thành</Select.Option>
             <Select.Option value="rejected">Từ chối</Select.Option>
           </Select>

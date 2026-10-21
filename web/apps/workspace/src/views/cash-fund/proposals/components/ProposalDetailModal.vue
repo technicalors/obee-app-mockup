@@ -32,6 +32,9 @@ const visible = computed({
 });
 
 function getStatusTag(status: string) {
+  if (status.startsWith('pending_') || status === 'pending') {
+    return { color: 'processing', text: 'Chờ phê duyệt' };
+  }
   switch (status) {
     case 'completed': {
       return { color: 'success', text: $t('cashFund.proposals.statusLabels.completed') };
@@ -57,7 +60,7 @@ function getStatusTag(status: string) {
     default: {
       return {
         color: 'processing',
-        text: $t(`cashFund.proposals.statusLabels.${status}`) || status,
+        text: 'Chờ phê duyệt',
       };
     }
   }
