@@ -6,7 +6,6 @@ import { ref } from 'vue';
 import { IconifyIcon } from '@vben/icons';
 
 import {
-  Badge,
   Button,
   Table,
   Tabs,
@@ -64,7 +63,7 @@ const workflowRules = [
     note: 'Áp dụng cho mọi khoản chi công tác, mua sắm trước giải ngân.',
   },
   {
-    type: 'Thanh toán khoản chi',
+    type: 'Thanh toán',
     steps: 'Người lập → Trưởng BP → Kế toán thanh toán → CFO → Thủ quỹ',
     note: 'Bắt buộc hóa đơn, chứng từ hợp lệ trước khi thanh toán.',
   },
@@ -197,10 +196,12 @@ const currencyColumns = [
                   </template>
 
                   <template v-else-if="column.key === 'status'">
-                    <Badge
-                      :status="record.status === 'active' ? 'success' : 'default'"
-                      :text="record.status === 'active' ? $t('cashFund.masterData.active') : $t('cashFund.masterData.inactive')"
-                    />
+                    <Tag
+                      :color="record.status === 'active' ? 'success' : 'default'"
+                      class="m-0 font-normal"
+                    >
+                      {{ record.status === 'active' ? $t('cashFund.masterData.active') : $t('cashFund.masterData.inactive') }}
+                    </Tag>
                   </template>
 
                   <template v-else-if="column.key === 'actions'">
@@ -284,10 +285,12 @@ const currencyColumns = [
                   </template>
 
                   <template v-else-if="column.key === 'status'">
-                    <Badge
-                      :status="record.status === 'active' ? 'success' : record.status === 'locked' ? 'warning' : 'default'"
-                      :text="record.status === 'active' ? 'Hoạt động' : record.status === 'locked' ? 'Tạm khóa' : 'Ngưng dùng'"
-                    />
+                    <Tag
+                      :color="record.status === 'active' ? 'success' : record.status === 'locked' ? 'warning' : 'default'"
+                      class="m-0 font-normal"
+                    >
+                      {{ record.status === 'active' ? 'Hoạt động' : record.status === 'locked' ? 'Tạm khóa' : 'Ngưng dùng' }}
+                    </Tag>
                   </template>
 
                   <template v-else-if="column.key === 'actions'">
@@ -345,7 +348,7 @@ const currencyColumns = [
                     <span v-else class="text-muted-foreground">-</span>
                   </template>
                   <template v-else-if="column.key === 'status'">
-                    <Badge status="success" text="Đang sử dụng" />
+                    <Tag color="success" class="m-0 font-normal">Đang sử dụng</Tag>
                   </template>
                 </template>
               </Table>

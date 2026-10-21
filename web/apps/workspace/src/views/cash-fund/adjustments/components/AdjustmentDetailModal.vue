@@ -6,7 +6,6 @@ import { computed } from 'vue';
 import { IconifyIcon } from '@vben/icons';
 
 import {
-  Badge,
   Button,
   Card,
   Descriptions,
@@ -31,19 +30,19 @@ const visible = computed({
   set: (val) => emit('update:open', val),
 });
 
-function getStatusBadge(status: string) {
+function getStatusTag(status: string) {
   switch (status) {
     case 'completed': {
-      return { status: 'success', text: 'Hoàn thành' };
+      return { color: 'success', text: 'Hoàn thành' };
     }
     case 'rejected': {
-      return { status: 'error', text: 'Từ chối' };
+      return { color: 'error', text: 'Từ chối' };
     }
     case 'return_edit': {
-      return { status: 'warning', text: 'Yêu cầu sửa' };
+      return { color: 'warning', text: 'Yêu cầu sửa' };
     }
     default: {
-      return { status: 'processing', text: 'Chờ phê duyệt' };
+      return { color: 'processing', text: 'Chờ phê duyệt' };
     }
   }
 }
@@ -63,10 +62,12 @@ function getStatusBadge(status: string) {
         <div>
           <span class="font-mono text-base font-bold text-foreground">{{ adjustment.code }}</span>
           <div class="mt-1">
-            <Badge
-              :status="getStatusBadge(adjustment.status).status as any"
-              :text="getStatusBadge(adjustment.status).text"
-            />
+            <Tag
+              :color="getStatusTag(adjustment.status).color"
+              class="m-0 font-normal"
+            >
+              {{ getStatusTag(adjustment.status).text }}
+            </Tag>
           </div>
         </div>
 

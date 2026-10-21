@@ -6,7 +6,6 @@ import { computed } from 'vue';
 import { IconifyIcon } from '@vben/icons';
 
 import {
-  Badge,
   Button,
   Card,
   Descriptions,
@@ -32,32 +31,32 @@ const visible = computed({
   set: (val) => emit('update:open', val),
 });
 
-function getStatusBadge(status: string) {
+function getStatusTag(status: string) {
   switch (status) {
     case 'completed': {
-      return { status: 'success', text: $t('cashFund.proposals.statusLabels.completed') };
+      return { color: 'success', text: $t('cashFund.proposals.statusLabels.completed') };
     }
     case 'approved': {
-      return { status: 'processing', text: $t('cashFund.proposals.statusLabels.approved') };
+      return { color: 'processing', text: $t('cashFund.proposals.statusLabels.approved') };
     }
     case 'voucher_issued': {
-      return { status: 'processing', text: $t('cashFund.proposals.statusLabels.voucher_issued') };
+      return { color: 'cyan', text: $t('cashFund.proposals.statusLabels.voucher_issued') };
     }
     case 'return_edit': {
-      return { status: 'warning', text: $t('cashFund.proposals.statusLabels.return_edit') };
+      return { color: 'warning', text: $t('cashFund.proposals.statusLabels.return_edit') };
     }
     case 'rejected': {
-      return { status: 'error', text: $t('cashFund.proposals.statusLabels.rejected') };
+      return { color: 'error', text: $t('cashFund.proposals.statusLabels.rejected') };
     }
     case 'canceled': {
-      return { status: 'default', text: $t('cashFund.proposals.statusLabels.canceled') };
+      return { color: 'default', text: $t('cashFund.proposals.statusLabels.canceled') };
     }
     case 'draft': {
-      return { status: 'default', text: $t('cashFund.proposals.statusLabels.draft') };
+      return { color: 'default', text: $t('cashFund.proposals.statusLabels.draft') };
     }
     default: {
       return {
-        status: 'processing',
+        color: 'processing',
         text: $t(`cashFund.proposals.statusLabels.${status}`) || status,
       };
     }
@@ -200,10 +199,9 @@ function handlePrint() {
         </div>
 
         <div class="flex flex-col items-end gap-1">
-          <Badge
-            :status="getStatusBadge(proposal.status).status as any"
-            :text="getStatusBadge(proposal.status).text"
-          />
+          <Tag :color="getStatusTag(proposal.status).color" class="m-0 font-normal">
+            {{ getStatusTag(proposal.status).text }}
+          </Tag>
           <div class="text-xl font-bold text-primary">
             {{ proposal.totalAmount.toLocaleString() }} {{ proposal.currency }}
           </div>

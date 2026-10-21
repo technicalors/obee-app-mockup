@@ -55,6 +55,10 @@ watch(
   { immediate: true },
 );
 
+function getTypeTag(type: string) {
+  return $t(`cashFund.proposals.types.${type}`) || type;
+}
+
 const rowSelection = computed(() => ({
   selectedRowKeys: selectedRowKeys.value,
   onChange: (keys: (number | string)[]) => {
@@ -222,7 +226,7 @@ const itemColumns = computed(() => {
             <span class="text-xs font-semibold text-muted-foreground uppercase tracking-wider font-mono">
               {{ proposal.code }}
             </span>
-            <Tag color="blue">{{ proposal.type }}</Tag>
+            <Tag class="font-normal">{{ getTypeTag(proposal.type) }}</Tag>
             <span class="text-xs text-muted-foreground">Người lập: <strong>{{ proposal.applicantName }}</strong> ({{ proposal.department }})</span>
           </div>
           <h3 class="m-0 text-base font-semibold text-foreground">

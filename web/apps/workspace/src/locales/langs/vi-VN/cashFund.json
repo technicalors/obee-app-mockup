@@ -27,7 +27,7 @@
     },
     "types": {
       "advance": "Tạm ứng",
-      "payment": "Thanh toán khoản chi",
+      "payment": "Thanh toán",
       "receipt": "Thu tiền",
       "settlement": "Hoàn ứng"
     },

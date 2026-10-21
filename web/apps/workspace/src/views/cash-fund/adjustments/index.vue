@@ -9,6 +9,7 @@ import {
   Badge,
   Button,
   Table,
+  Tag,
   Tooltip,
 } from 'ant-design-vue';
 
@@ -111,19 +112,19 @@ function openApproval(record: FundAdjustment) {
   isApprovalModalOpen.value = true;
 }
 
-function getStatusBadge(status: string) {
+function getStatusTag(status: string) {
   switch (status) {
     case 'completed': {
-      return { status: 'success', text: 'Hoàn thành' };
+      return { color: 'success', text: 'Hoàn thành' };
     }
     case 'rejected': {
-      return { status: 'error', text: 'Từ chối' };
+      return { color: 'error', text: 'Từ chối' };
     }
     case 'return_edit': {
-      return { status: 'warning', text: 'Yêu cầu sửa' };
+      return { color: 'warning', text: 'Yêu cầu sửa' };
     }
     default: {
-      return { status: 'processing', text: 'Chờ phê duyệt' };
+      return { color: 'processing', text: 'Chờ phê duyệt' };
     }
   }
 }
@@ -325,12 +326,9 @@ const columns = [
               </template>
 
               <template v-else-if="column.key === 'status'">
-                <div class="flex flex-col gap-0.5">
-                  <Badge
-                    :status="getStatusBadge(record.status).status as any"
-                    :text="getStatusBadge(record.status).text"
-                  />
-                </div>
+                <Tag :color="getStatusTag(record.status).color" class="m-0 font-normal">
+                  {{ getStatusTag(record.status).text }}
+                </Tag>
               </template>
 
               <template v-else-if="column.key === 'actions'">

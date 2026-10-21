@@ -317,10 +317,12 @@ const columns = [
               </template>
 
               <template v-else-if="column.key === 'status'">
-                <Badge
-                  :status="record.status === 'completed' ? 'success' : record.status === 'pending' ? 'processing' : 'default'"
-                  :text="record.status === 'completed' ? 'Đã thực hiện' : record.status === 'pending' ? 'Chờ thực hiện' : 'Đã hủy'"
-                />
+                <Tag
+                  :color="record.status === 'completed' ? 'success' : record.status === 'pending' ? 'processing' : 'default'"
+                  class="m-0 font-normal"
+                >
+                  {{ record.status === 'completed' ? 'Đã thực hiện' : record.status === 'pending' ? 'Chờ thực hiện' : 'Đã hủy' }}
+                </Tag>
               </template>
 
               <template v-else-if="column.key === 'actions'">

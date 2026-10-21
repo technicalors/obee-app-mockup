@@ -4,7 +4,6 @@ import type { CashTransaction } from '../../types';
 import { computed } from 'vue';
 
 import {
-  Badge,
   Button,
   Descriptions,
   Modal,
@@ -101,10 +100,12 @@ const itemColumns = [
           {{ transaction.issuedDate }}
         </Descriptions.Item>
         <Descriptions.Item label="Trạng thái">
-          <Badge
-            :status="transaction.status === 'completed' ? 'success' : transaction.status === 'pending' ? 'processing' : 'default'"
-            :text="transaction.status === 'completed' ? 'Đã thực hiện' : transaction.status === 'pending' ? 'Chờ thực hiện' : 'Đã hủy'"
-          />
+          <Tag
+            :color="transaction.status === 'completed' ? 'success' : transaction.status === 'pending' ? 'processing' : 'default'"
+            class="m-0 font-normal"
+          >
+            {{ transaction.status === 'completed' ? 'Đã thực hiện' : transaction.status === 'pending' ? 'Chờ thực hiện' : 'Đã hủy' }}
+          </Tag>
         </Descriptions.Item>
         <Descriptions.Item label="Phương thức">
           {{ transaction.paymentMethod === 'cash' ? 'Tiền mặt' : 'Chuyển khoản nội bộ quỹ' }}

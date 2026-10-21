@@ -149,32 +149,32 @@ function getTypeTag(type: ProposalType) {
   }
 }
 
-function getStatusBadge(status: ProposalStatus) {
+function getStatusTag(status: ProposalStatus) {
   switch (status) {
     case 'completed': {
-      return { status: 'success', text: $t('cashFund.proposals.statusLabels.completed') };
+      return { color: 'success', text: $t('cashFund.proposals.statusLabels.completed') };
     }
     case 'approved': {
-      return { status: 'processing', text: $t('cashFund.proposals.statusLabels.approved') };
+      return { color: 'processing', text: $t('cashFund.proposals.statusLabels.approved') };
     }
     case 'voucher_issued': {
-      return { status: 'processing', text: $t('cashFund.proposals.statusLabels.voucher_issued') };
+      return { color: 'cyan', text: $t('cashFund.proposals.statusLabels.voucher_issued') };
     }
     case 'return_edit': {
-      return { status: 'warning', text: $t('cashFund.proposals.statusLabels.return_edit') };
+      return { color: 'warning', text: $t('cashFund.proposals.statusLabels.return_edit') };
     }
     case 'rejected': {
-      return { status: 'error', text: $t('cashFund.proposals.statusLabels.rejected') };
+      return { color: 'error', text: $t('cashFund.proposals.statusLabels.rejected') };
     }
     case 'canceled': {
-      return { status: 'default', text: $t('cashFund.proposals.statusLabels.canceled') };
+      return { color: 'default', text: $t('cashFund.proposals.statusLabels.canceled') };
     }
     case 'draft': {
-      return { status: 'default', text: $t('cashFund.proposals.statusLabels.draft') };
+      return { color: 'default', text: $t('cashFund.proposals.statusLabels.draft') };
     }
     default: {
       return {
-        status: 'processing',
+        color: 'processing',
         text: $t(`cashFund.proposals.statusLabels.${status}`) || status,
       };
     }
@@ -385,12 +385,9 @@ const columns = [
               </template>
 
               <template v-else-if="column.key === 'status'">
-                <div class="flex flex-col gap-0.5">
-                  <Badge
-                    :status="getStatusBadge(record.status).status as any"
-                    :text="getStatusBadge(record.status).text"
-                  />
-                </div>
+                <Tag :color="getStatusTag(record.status).color" class="m-0 font-normal">
+                  {{ getStatusTag(record.status).text }}
+                </Tag>
               </template>
 
               <template v-else-if="column.key === 'actions'">
