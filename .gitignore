@@ -8,3 +8,4 @@ dist/
 /lefthook.yml
 web/node_modules/
 web/apps/workspace/dist/
+*.zip
