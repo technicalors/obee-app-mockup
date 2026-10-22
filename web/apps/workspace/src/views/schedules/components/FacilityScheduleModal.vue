@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type { Schedule } from '#/api/schedules';
 
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 import { ChevronLeft, ChevronRight, createIconifyIcon } from '@vben/icons';
 
-import { DatePicker, Modal, Radio, Tag, Tooltip } from 'ant-design-vue';
+import { DatePicker, message, Modal, Radio, Tag, Tooltip } from 'ant-design-vue';
 
 import { mockEquipments } from '#/mocks/data';
 
@@ -43,8 +43,23 @@ watch(
 );
 
 // Time window filter
-type TimeWindow = 'afternoon' | 'all' | 'morning';
+type TimeWindow = '24h' | 'afternoon' | 'all' | 'morning';
 const timeWindow = ref<TimeWindow>('all');
+
+// Automatically switch to 24h view if current range is outside 07:00 - 20:00
+watch(
+  () => props.currentTimeRange,
+  (range) => {
+    if (range?.start && range?.end) {
+      const [sh] = range.start.split(':').map(Number) as [number];
+      const [eh] = range.end.split(':').map(Number) as [number];
+      if (sh < 7 || eh > 20) {
+        timeWindow.value = '24h';
+      }
+    }
+  },
+  { immediate: true },
+);
 
 const timeWindowConfig = computed(() => {
   switch (timeWindow.value) {
@@ -53,6 +68,9 @@ const timeWindowConfig = computed(() => {
     }
     case 'afternoon': {
       return { endHour: 19, startHour: 12 };
+    }
+    case '24h': {
+      return { endHour: 24, startHour: 0 };
     }
     default: {
       return { endHour: 20, startHour: 7 };
@@ -66,6 +84,36 @@ const totalHours = computed(() => endHour.value - startHour.value);
 const hours = computed(() =>
   Array.from({ length: totalHours.value }, (_, i) => startHour.value + i),
 );
+
+// Planned event boundaries (when opened from schedule authoring drawer)
+const boundaryMinutes = computed(() => {
+  if (!props.currentTimeRange?.start || !props.currentTimeRange?.end) {
+    return null;
+  }
+  const [sh, sm] = props.currentTimeRange.start
+    .split(':')
+    .map(Number) as [number, number];
+  const [eh, em] = props.currentTimeRange.end
+    .split(':')
+    .map(Number) as [number, number];
+
+  return {
+    end: eh * 60 + em,
+    endText: props.currentTimeRange.end,
+    start: sh * 60 + sm,
+    startText: props.currentTimeRange.start,
+  };
+});
+
+function isSlotOutsideBoundary(hour: number): boolean {
+  if (!boundaryMinutes.value) return false;
+  const slotStart = hour * 60;
+  const slotEnd = (hour + 1) * 60;
+  return (
+    slotEnd <= boundaryMinutes.value.start ||
+    slotStart >= boundaryMinutes.value.end
+  );
+}
 
 function shiftDate(offset: number): void {
   const d = new Date(`${selectedDate.value}T00:00:00Z`);
@@ -124,7 +172,9 @@ const equipmentBookings = computed(() => {
       const startMin = getMinuteOfDay(schedule.start);
       const endMin = getMinuteOfDay(schedule.end);
 
-      const durationHours = ((endMin - startMin) / 60).toFixed(1).replace('.0', '');
+      const durationHours = ((endMin - startMin) / 60)
+        .toFixed(1)
+        .replace('.0', '');
       const sh = Math.floor(startMin / 60);
       const sm = startMin % 60;
       const eh = Math.floor(endMin / 60);
@@ -195,8 +245,12 @@ const currentRangePosition = computed(() => {
   if (!props.currentTimeRange?.start || !props.currentTimeRange?.end) {
     return null;
   }
-  const [sh, sm] = props.currentTimeRange.start.split(':').map(Number) as [number, number];
-  const [eh, em] = props.currentTimeRange.end.split(':').map(Number) as [number, number];
+  const [sh, sm] = props.currentTimeRange.start
+    .split(':')
+    .map(Number) as [number, number];
+  const [eh, em] = props.currentTimeRange.end
+    .split(':')
+    .map(Number) as [number, number];
   const startMin = sh * 60 + sm;
   const endMin = eh * 60 + em;
 
@@ -208,7 +262,10 @@ const currentRangePosition = computed(() => {
     return null;
   }
 
-  const left = Math.max(0, ((startMin - windowStartMin) / windowTotalMin) * 100);
+  const left = Math.max(
+    0,
+    ((startMin - windowStartMin) / windowTotalMin) * 100,
+  );
   const width = Math.max(2, ((endMin - startMin) / windowTotalMin) * 100);
 
   return {
@@ -219,13 +276,34 @@ const currentRangePosition = computed(() => {
   };
 });
 
-function hasConflict(equipmentId: string): boolean {
-  if (!currentRangePosition.value) return false;
+function hasConflict(
+  equipmentId: string,
+  customRange?: { endMin: number; startMin: number },
+): boolean {
+  const range =
+    customRange ??
+    (boundaryMinutes.value
+      ? {
+          endMin: boundaryMinutes.value.end,
+          startMin: boundaryMinutes.value.start,
+        }
+      : null);
+  if (!range) return false;
   const bookings = equipmentBookings.value.get(equipmentId) ?? [];
-  const { endMin, startMin } = currentRangePosition.value;
 
   return bookings.some(
-    (b) => Math.max(b.startMinute, startMin) < Math.min(b.endMinute, endMin),
+    (b) =>
+      Math.max(b.startMinute, range.startMin) <
+      Math.min(b.endMinute, range.endMin),
+  );
+}
+
+function isSlotBooked(equipmentId: string, hour: number): boolean {
+  const slotStart = hour * 60;
+  const slotEnd = (hour + 1) * 60;
+  const bookings = equipmentBookings.value.get(equipmentId) ?? [];
+  return bookings.some(
+    (b) => Math.max(b.startMinute, slotStart) < Math.min(b.endMinute, slotEnd),
   );
 }
 
@@ -233,17 +311,133 @@ function formatHour(h: number): string {
   return `${String(h).padStart(2, '0')}:00`;
 }
 
-function handleSlotClick(eqId: string, hour: number): void {
-  const start = `${String(hour).padStart(2, '0')}:00`;
-  const end = `${String(hour + 1).padStart(2, '0')}:00`;
-  emit('selectTimeAndEquipment', eqId, start, end, selectedDate.value);
+// Drag to select range functionality
+interface DragSelection {
+  currentHour: number;
+  equipmentId: string;
+  startHour: number;
+}
+
+const activeDrag = ref<DragSelection | null>(null);
+
+const activeDragNormalized = computed(() => {
+  if (!activeDrag.value) return null;
+  const { currentHour, equipmentId, startHour: sH } = activeDrag.value;
+  let minH = Math.min(sH, currentHour);
+  let maxH = Math.max(sH, currentHour) + 1;
+
+  if (boundaryMinutes.value) {
+    const boundMinH = Math.floor(boundaryMinutes.value.start / 60);
+    const boundMaxH = Math.ceil(boundaryMinutes.value.end / 60);
+    minH = Math.max(minH, boundMinH);
+    maxH = Math.min(maxH, boundMaxH);
+  }
+
+  const startMinute = minH * 60;
+  const endMinute = maxH * 60;
+  const conflicted = hasConflict(equipmentId, {
+    endMin: endMinute,
+    startMin: startMinute,
+  });
+
+  return {
+    conflicted,
+    durationHours: maxH - minH,
+    endHour: maxH,
+    endMinute,
+    endTimeText: `${String(maxH).padStart(2, '0')}:00`,
+    equipmentId,
+    startHour: minH,
+    startMinute,
+    startTimeText: `${String(minH).padStart(2, '0')}:00`,
+  };
+});
+
+function handleMouseDown(eqId: string, hour: number, event: MouseEvent): void {
+  if (event.button !== 0) return;
+
+  if (isSlotOutsideBoundary(hour)) {
+    if (boundaryMinutes.value) {
+      message.warning(
+        `Chỉ được chọn trong khung giờ dự kiến (${boundaryMinutes.value.startText} - ${boundaryMinutes.value.endText})`,
+      );
+    }
+    return;
+  }
+
+  if (isSlotBooked(eqId, hour)) {
+    message.warning('Khung giờ này đã có lịch đặt, vui lòng chọn ô khác');
+    return;
+  }
+
+  activeDrag.value = {
+    currentHour: hour,
+    equipmentId: eqId,
+    startHour: hour,
+  };
+}
+
+function handleMouseEnter(eqId: string, hour: number): void {
+  if (!activeDrag.value || activeDrag.value.equipmentId !== eqId) return;
+  if (isSlotOutsideBoundary(hour)) return;
+
+  activeDrag.value.currentHour = hour;
+}
+
+function handleGlobalMouseUp(): void {
+  if (!activeDrag.value || !activeDragNormalized.value) {
+    activeDrag.value = null;
+    return;
+  }
+
+  const drag = activeDragNormalized.value;
+  activeDrag.value = null;
+
+  if (drag.conflicted) {
+    message.error(
+      'Khung giờ bạn chọn bị trùng với lịch đặt khác, vui lòng chọn lại!',
+    );
+    return;
+  }
+
+  emit(
+    'selectTimeAndEquipment',
+    drag.equipmentId,
+    drag.startTimeText,
+    drag.endTimeText,
+    selectedDate.value,
+  );
+}
+
+onMounted(() => {
+  window.addEventListener('mouseup', handleGlobalMouseUp);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('mouseup', handleGlobalMouseUp);
+});
+
+function handleQuickSelectEntireRange(equipmentId: string): void {
+  if (!props.currentTimeRange?.start || !props.currentTimeRange?.end) return;
+  if (hasConflict(equipmentId)) {
+    message.error('Thiết bị này có lịch trùng trong khung giờ dự kiến!');
+    return;
+  }
+
+  emit(
+    'selectTimeAndEquipment',
+    equipmentId,
+    props.currentTimeRange.start,
+    props.currentTimeRange.end,
+    selectedDate.value,
+  );
 }
 </script>
 
 <template>
   <Modal
     :open="open"
-    width="1000px"
+    width="1050px"
     :footer="null"
     @cancel="emit('close')"
     class="facility-schedule-modal"
@@ -255,7 +449,7 @@ function handleSlotClick(eqId: string, hour: number): void {
       </div>
     </template>
 
-    <div class="space-y-4 pt-2">
+    <div class="space-y-4 pt-2 select-none">
       <!-- Toolbar: Date & Time Window Selector -->
       <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-muted/20 p-3">
         <!-- Date Selector -->
@@ -299,7 +493,8 @@ function handleSlotClick(eqId: string, hour: number): void {
             option-type="button"
             button-style="solid"
           >
-            <Radio.Button value="all">Cả ngày (07:00 - 20:00)</Radio.Button>
+            <Radio.Button value="all">Giờ hành chính (07:00 - 20:00)</Radio.Button>
+            <Radio.Button value="24h">24 Giờ (00:00 - 24:00)</Radio.Button>
             <Radio.Button value="morning">Sáng (07:00 - 13:00)</Radio.Button>
             <Radio.Button value="afternoon">Chiều (12:00 - 19:00)</Radio.Button>
           </Radio.Group>
@@ -307,7 +502,7 @@ function handleSlotClick(eqId: string, hour: number): void {
 
         <!-- Planned Slot Badge -->
         <div v-if="currentTimeRange" class="flex items-center gap-2 text-xs">
-          <span class="text-muted-foreground">Khung giờ bạn đang chọn:</span>
+          <span class="text-muted-foreground">Khung giờ dự kiến:</span>
           <Tag color="blue" class="font-bold text-xs py-0.5 px-2">
             {{ currentTimeRange.start }} - {{ currentTimeRange.end }}
           </Tag>
@@ -316,7 +511,7 @@ function handleSlotClick(eqId: string, hour: number): void {
 
       <!-- Timeline Table Container -->
       <div class="overflow-x-auto rounded-lg border border-border bg-background shadow-xs">
-        <div class="min-w-[850px]">
+        <div class="min-w-[900px]">
           <!-- Timeline Header -->
           <div class="flex border-b border-border bg-muted/50 text-[11px] font-semibold text-muted-foreground">
             <div class="w-64 shrink-0 border-r border-border p-2.5">
@@ -342,53 +537,102 @@ function handleSlotClick(eqId: string, hour: number): void {
               :class="selectedEquipmentIds.includes(eq.id) ? 'bg-primary/[0.04]' : ''"
             >
               <!-- Equipment Label -->
-              <div class="w-64 shrink-0 border-r border-border p-2.5 flex items-center justify-between gap-1.5">
-                <div class="min-w-0">
-                  <div class="text-xs font-semibold text-foreground truncate" :title="eq.name">
-                    {{ eq.name }}
+              <div class="w-64 shrink-0 border-r border-border p-2.5 flex flex-col justify-center gap-1.5">
+                <div class="flex items-center justify-between gap-1.5">
+                  <div class="min-w-0">
+                    <div class="text-xs font-semibold text-foreground truncate" :title="eq.name">
+                      {{ eq.name }}
+                    </div>
+                    <div class="text-[10px] text-muted-foreground font-mono">
+                      {{ eq.code }}
+                    </div>
                   </div>
-                  <div class="text-[10px] text-muted-foreground font-mono">
-                    {{ eq.code }}
+
+                  <!-- Status Tag if schedule has time range -->
+                  <div v-if="boundaryMinutes" class="shrink-0">
+                    <Tag v-if="hasConflict(eq.id)" color="error" class="text-[10px] m-0 font-semibold">
+                      <span class="flex items-center gap-1">
+                        <AlertTriangleIcon class="size-3" />
+                        Trùng lịch
+                      </span>
+                    </Tag>
+                    <Tag v-else color="success" class="text-[10px] m-0 font-semibold">
+                      <span class="flex items-center gap-1">
+                        <CheckCircleIcon class="size-3" />
+                        Rảnh
+                      </span>
+                    </Tag>
                   </div>
                 </div>
 
-                <div v-if="selectedEquipmentIds.includes(eq.id)" class="shrink-0">
-                  <Tag v-if="hasConflict(eq.id)" color="error" class="text-[10px] m-0 font-semibold">
-                    <span class="flex items-center gap-1">
-                      <AlertTriangleIcon class="size-3" />
-                      Trùng lịch
-                    </span>
-                  </Tag>
-                  <Tag v-else color="success" class="text-[10px] m-0 font-semibold">
-                    <span class="flex items-center gap-1">
-                      <CheckCircleIcon class="size-3" />
-                      Rảnh
-                    </span>
-                  </Tag>
-                </div>
+                <!-- Quick Select Button for entire event range -->
+                <button
+                  v-if="boundaryMinutes && !hasConflict(eq.id)"
+                  type="button"
+                  class="inline-flex items-center justify-center gap-1 rounded bg-primary/10 hover:bg-primary hover:text-primary-foreground text-primary px-2 py-0.5 text-[10px] font-semibold transition cursor-pointer w-full"
+                  :title="`Chọn trọn vẹn khung giờ ${boundaryMinutes.startText} - ${boundaryMinutes.endText}`"
+                  @click.stop="handleQuickSelectEntireRange(eq.id)"
+                >
+                  <CheckCircleIcon class="size-3" />
+                  <span>Dùng trọn vẹn ({{ boundaryMinutes.startText }} - {{ boundaryMinutes.endText }})</span>
+                </button>
               </div>
 
               <!-- Timeline Slot Area -->
               <div class="relative flex flex-1 items-center h-12">
-                <!-- Hour Column Grid Lines (clickable) -->
+                <!-- Hour Column Grid Lines (drag-to-select range) -->
                 <div
                   v-for="hour in hours"
                   :key="hour"
-                  class="h-full flex-1 border-r border-border/30 transition-colors hover:bg-primary/10 cursor-pointer"
-                  :title="`Nhấp để tạo lịch nhanh cho ${eq.name} lúc ${formatHour(hour)} - ${formatHour(hour + 1)}`"
-                  @click="handleSlotClick(eq.id, hour)"
+                  class="h-full flex-1 border-r border-border/30 transition-colors"
+                  :class="[
+                    isSlotOutsideBoundary(hour)
+                      ? 'bg-muted/40 cursor-not-allowed opacity-45'
+                      : isSlotBooked(eq.id, hour)
+                        ? 'cursor-not-allowed bg-rose-50/40 dark:bg-rose-950/20'
+                        : 'hover:bg-primary/10 cursor-crosshair',
+                  ]"
+                  :title="
+                    isSlotOutsideBoundary(hour)
+                      ? `Nằm ngoài khung giờ dự kiến (${boundaryMinutes?.startText} - ${boundaryMinutes?.endText})`
+                      : isSlotBooked(eq.id, hour)
+                        ? `Đã có lịch đặt lúc ${formatHour(hour)} - ${formatHour(hour + 1)}`
+                        : `Kéo hoặc nhấp để chọn khung giờ bắt đầu từ ${formatHour(hour)}`
+                  "
+                  @mousedown="handleMouseDown(eq.id, hour, $event)"
+                  @mouseenter="handleMouseEnter(eq.id, hour)"
                 />
 
-                <!-- Highlight Band for Currently Selected Time Range -->
+                <!-- Highlight Band for Currently Selected Time Range from Draft -->
                 <div
                   v-if="currentRangePosition && selectedDate === date"
                   class="pointer-events-none absolute top-0 bottom-0 z-10 border-x-2 shadow-xs"
-                  :class="hasConflict(eq.id) ? 'bg-red-500/20 border-red-500' : 'bg-primary/15 border-primary'"
+                  :class="hasConflict(eq.id) ? 'bg-red-500/15 border-red-500' : 'bg-primary/10 border-primary'"
                   :style="{
                     left: currentRangePosition.left,
                     width: currentRangePosition.width,
                   }"
                 />
+
+                <!-- Active Dragging Range Selection Band -->
+                <div
+                  v-if="activeDragNormalized && activeDragNormalized.equipmentId === eq.id"
+                  class="pointer-events-none absolute top-0.5 bottom-0.5 z-30 flex items-center justify-center rounded border-2 shadow-md transition-all font-mono text-xs font-bold"
+                  :class="
+                    activeDragNormalized.conflicted
+                      ? 'bg-red-500/30 border-red-500 text-red-700 dark:text-red-300'
+                      : 'bg-primary/30 border-primary text-primary-foreground drop-shadow'
+                  "
+                  :style="{
+                    left: getBookingLeft(activeDragNormalized.startMinute),
+                    width: getBookingWidth(activeDragNormalized.startMinute, activeDragNormalized.endMinute),
+                  }"
+                >
+                  <span class="rounded bg-background/95 px-1.5 py-0.5 text-[10px] shadow-sm text-foreground">
+                    {{ activeDragNormalized.startTimeText }} - {{ activeDragNormalized.endTimeText }} ({{ activeDragNormalized.durationHours }}h)
+                    <span v-if="activeDragNormalized.conflicted" class="text-red-500 ml-1 font-bold">Trùng!</span>
+                  </span>
+                </div>
 
                 <!-- Booked Multi-hour Event Blocks -->
                 <template v-for="(booking, bIdx) in (equipmentBookings.get(eq.id) ?? [])" :key="bIdx">
@@ -435,15 +679,19 @@ function handleSlotClick(eqId: string, hour: number): void {
           </div>
           <div class="flex items-center gap-1.5">
             <span class="size-3 rounded bg-primary/20 border border-primary/50" />
-            <span class="font-medium">Khung giờ bạn đang chọn</span>
+            <span class="font-medium">Khung giờ dự kiến</span>
           </div>
           <div class="flex items-center gap-1.5">
             <span class="size-3 rounded border border-border bg-background" />
             <span class="font-medium">Còn trống</span>
           </div>
+          <div class="flex items-center gap-1.5">
+            <span class="size-3 rounded bg-muted/60 border border-border" />
+            <span class="font-medium">Ngoài vùng dự kiến</span>
+          </div>
         </div>
         <div class="text-[11px] text-primary italic font-medium">
-          💡 Mẹo: Nhấp vào bất kỳ ô giờ trống nào trên timeline để chọn phòng và tạo lịch nhanh cho khung giờ đó
+          💡 Rê chuột kéo thả để chọn khoảng thời gian mượn nhiều giờ. Giới hạn tự động theo khung giờ của lịch trình.
         </div>
       </div>
     </div>
