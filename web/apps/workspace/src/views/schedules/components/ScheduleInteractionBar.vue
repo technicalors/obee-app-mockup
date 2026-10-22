@@ -66,7 +66,7 @@ function handleViewModeChange(value: unknown): void {
 <template>
   <div class="rounded border border-border bg-background p-4">
     <div class="flex flex-wrap justify-between items-center gap-4">
-      <span class="flex items-center gap-2">
+      <div class="flex items-center gap-2 shrink-0">
         <VbenButton
           :aria-label="$t('page.schedules.actions.today')"
           :aria-pressed="isCurrentMonthSelected"
@@ -144,10 +144,10 @@ function handleViewModeChange(value: unknown): void {
           <BuildingIcon class="size-3.5 text-primary shrink-0" />
           <span>{{ $t('page.schedules.actions.facilitySchedule') }}</span>
         </button>
-      </span>
+      </div>
       <div
         v-if="showCalendarUsersFilter"
-        class="flex items-center gap-2 text-sm text-muted-foreground"
+        class="flex items-center gap-2 text-sm text-muted-foreground shrink-0"
       >
         <TreeSelect
           :aria-label="$t('page.schedules.actions.selectCalendars')"
@@ -156,7 +156,7 @@ function handleViewModeChange(value: unknown): void {
           :value="selectedCalendarUserIds"
           data-testid="calendar-user-tree-select"
           @update:value="handleSelectedCalendarUsersUpdate"
-          class="w-128"
+          class="w-64 lg:w-72"
           tree-checkable
           allow-clear
           :show-checked-strategy="TreeSelect.SHOW_CHILD"
@@ -168,7 +168,7 @@ function handleViewModeChange(value: unknown): void {
           :disabled="visibilityDisabled"
           :options="visibilityOptions"
           :value="visibility"
-          class="min-w-52"
+          class="w-44 lg:w-48"
           @update:value="handleVisibilityUpdate"
         />
       </div>
