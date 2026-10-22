@@ -65,8 +65,8 @@ function handleViewModeChange(value: unknown): void {
 
 <template>
   <div class="rounded border border-border bg-background p-4">
-    <div class="flex flex-wrap justify-between items-center gap-4">
-      <div class="flex items-center gap-2 shrink-0">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
         <VbenButton
           :aria-label="$t('page.schedules.actions.today')"
           :aria-pressed="isCurrentMonthSelected"
@@ -93,11 +93,12 @@ function handleViewModeChange(value: unknown): void {
           format="MMMM, YYYY"
           value-format="YYYY-MM"
           @update:value="handleSelectedMonthUpdate"
-          class="[&_*]:capitalize font-bold min-w-40"
+          class="[&_*]:capitalize font-bold min-w-36 max-w-44"
         />
         <span
           v-else
-          class="min-w-40 text-center text-sm font-bold capitalize text-foreground"
+          class="min-w-36 max-w-56 text-center text-sm font-bold capitalize text-foreground truncate"
+          :title="navigationLabel"
           data-testid="schedule-navigation-label"
         >
           {{ navigationLabel }}
@@ -114,14 +115,14 @@ function handleViewModeChange(value: unknown): void {
         </VbenButton>
 
         <div
-          class="ml-2 flex rounded-md border border-border"
+          class="ml-1 sm:ml-2 flex rounded-md border border-border"
           data-testid="schedule-view-mode-switcher"
         >
           <button
             v-for="option in viewModeOptions"
             :key="option.value"
             type="button"
-            class="px-3 py-1.5 text-xs font-medium transition-colors first:rounded-l-md last:rounded-r-md"
+            class="px-2.5 sm:px-3 py-1.5 text-xs font-medium transition-colors first:rounded-l-md last:rounded-r-md"
             :class="
               viewMode === option.value
                 ? 'bg-primary text-primary-foreground'
@@ -137,7 +138,7 @@ function handleViewModeChange(value: unknown): void {
         <!-- Facility / Asset Schedule button -->
         <button
           type="button"
-          class="ml-2 inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent hover:text-primary hover:border-primary/50 shadow-xs cursor-pointer shrink-0"
+          class="ml-1 sm:ml-2 inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 sm:px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent hover:text-primary hover:border-primary/50 shadow-xs cursor-pointer shrink-0"
           data-testid="schedule-facility-schedule-btn"
           @click="props.onOpenFacilitySchedule?.()"
         >
@@ -156,7 +157,7 @@ function handleViewModeChange(value: unknown): void {
           :value="selectedCalendarUserIds"
           data-testid="calendar-user-tree-select"
           @update:value="handleSelectedCalendarUsersUpdate"
-          class="w-64 lg:w-72"
+          class="w-48 sm:w-56 xl:w-64"
           tree-checkable
           allow-clear
           :show-checked-strategy="TreeSelect.SHOW_CHILD"
@@ -168,7 +169,7 @@ function handleViewModeChange(value: unknown): void {
           :disabled="visibilityDisabled"
           :options="visibilityOptions"
           :value="visibility"
-          class="w-44 lg:w-48"
+          class="w-36 sm:w-40 xl:w-44"
           @update:value="handleVisibilityUpdate"
         />
       </div>

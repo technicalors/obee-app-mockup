@@ -828,9 +828,9 @@ export function formatDayLabel(
 ): string {
   const d = parseDayKey(date);
   const formatter = new Intl.DateTimeFormat(locale, {
-    weekday: 'long',
+    weekday: 'short',
     day: 'numeric',
-    month: 'long',
+    month: 'short',
     year: 'numeric',
   });
 
