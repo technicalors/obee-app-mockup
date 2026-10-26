@@ -338,16 +338,11 @@ const conflictedEquipments = computed(() => {
 
 function handleSelectFacilitySlot(
   eqId: string,
-  start: string,
-  end: string,
-  date?: string,
+  _start: string,
+  _end: string,
+  _date?: string,
 ): void {
-  props.onUpdateAuthoringTime('start_time', start);
-  props.onUpdateAuthoringTime('end_time', end);
-  if (date && props.draft && props.draft.start_date !== date) {
-    props.onUpdateAuthoringDate('start_date', date);
-    props.onUpdateAuthoringDate('end_date', date);
-  }
+  // Thời gian sử dụng thiết bị không làm ảnh hưởng tới thời gian của lịch trình
   if (props.draft && !props.draft.equipment_ids.includes(eqId)) {
     equipmentIdsValue.value = [...props.draft.equipment_ids, eqId];
   }

@@ -3,6 +3,7 @@ import type { Schedule } from '#/api/schedules';
 
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
+import { VbenButton } from '@vben/common-ui';
 import { ChevronLeft, ChevronRight, createIconifyIcon } from '@vben/icons';
 
 import { DatePicker, message, Modal, Radio, Tag, Tooltip } from 'ant-design-vue';
@@ -311,6 +312,54 @@ function formatHour(h: number): string {
   return `${String(h).padStart(2, '0')}:00`;
 }
 
+// User confirmed selection state
+export interface SelectedFacilityDraft {
+  durationHours: number;
+  end: string;
+  endMinute: number;
+  equipmentId: string;
+  equipmentName: string;
+  start: string;
+  startMinute: number;
+}
+
+const currentSelection = ref<SelectedFacilityDraft | null>(null);
+
+// Reset / Initialize selection when modal opens
+watch(
+  () => props.open,
+  (isOpen) => {
+    if (isOpen) {
+      activeDrag.value = null;
+      if (props.selectedEquipmentIds.length > 0) {
+        const firstId = props.selectedEquipmentIds[0];
+        const eq = mockEquipments.find((e) => e.id === firstId);
+        if (eq) {
+          const start = props.currentTimeRange?.start ?? '09:00';
+          const end = props.currentTimeRange?.end ?? '10:00';
+          const [sh, sm] = start.split(':').map(Number) as [number, number];
+          const [eh, em] = end.split(':').map(Number) as [number, number];
+          const startMin = sh * 60 + sm;
+          const endMin = eh * 60 + em;
+          const duration = Math.max(0.5, (endMin - startMin) / 60);
+          currentSelection.value = {
+            durationHours: Number(duration.toFixed(1)),
+            end,
+            endMinute: endMin,
+            equipmentId: eq.id,
+            equipmentName: eq.name,
+            start,
+            startMinute: startMin,
+          };
+          return;
+        }
+      }
+      currentSelection.value = null;
+    }
+  },
+  { immediate: true },
+);
+
 // Drag to select range functionality
 interface DragSelection {
   currentHour: number;
@@ -342,7 +391,7 @@ const activeDragNormalized = computed(() => {
 
   return {
     conflicted,
-    durationHours: maxH - minH,
+    durationHours: Math.max(1, maxH - minH),
     endHour: maxH,
     endMinute,
     endTimeText: `${String(maxH).padStart(2, '0')}:00`,
@@ -379,7 +428,15 @@ function handleMouseDown(eqId: string, hour: number, event: MouseEvent): void {
 
 function handleMouseEnter(eqId: string, hour: number): void {
   if (!activeDrag.value || activeDrag.value.equipmentId !== eqId) return;
-  if (isSlotOutsideBoundary(hour)) return;
+
+  // Clamp if boundary is present
+  if (boundaryMinutes.value) {
+    const boundMinH = Math.floor(boundaryMinutes.value.start / 60);
+    const boundMaxH = Math.ceil(boundaryMinutes.value.end / 60) - 1;
+    const clamped = Math.max(boundMinH, Math.min(boundMaxH, hour));
+    activeDrag.value.currentHour = clamped;
+    return;
+  }
 
   activeDrag.value.currentHour = hour;
 }
@@ -395,17 +452,24 @@ function handleGlobalMouseUp(): void {
 
   if (drag.conflicted) {
     message.error(
-      'Khung giờ bạn chọn bị trùng với lịch đặt khác, vui lòng chọn lại!',
+      'Khung giờ bạn kéo bị trùng với lịch đặt khác, vui lòng chọn lại!',
     );
     return;
   }
 
-  emit(
-    'selectTimeAndEquipment',
-    drag.equipmentId,
-    drag.startTimeText,
-    drag.endTimeText,
-    selectedDate.value,
+  const eq = mockEquipments.find((e) => e.id === drag.equipmentId);
+  currentSelection.value = {
+    durationHours: drag.durationHours,
+    end: drag.endTimeText,
+    endMinute: drag.endMinute,
+    equipmentId: drag.equipmentId,
+    equipmentName: eq?.name ?? 'Thiết bị',
+    start: drag.startTimeText,
+    startMinute: drag.startMinute,
+  };
+
+  message.success(
+    `Đã chọn ${eq?.name}: ${drag.startTimeText} - ${drag.endTimeText}`,
   );
 }
 
@@ -424,13 +488,47 @@ function handleQuickSelectEntireRange(equipmentId: string): void {
     return;
   }
 
+  const eq = mockEquipments.find((e) => e.id === equipmentId);
+  const [sh, sm] = props.currentTimeRange.start
+    .split(':')
+    .map(Number) as [number, number];
+  const [eh, em] = props.currentTimeRange.end
+    .split(':')
+    .map(Number) as [number, number];
+  const startMin = sh * 60 + sm;
+  const endMin = eh * 60 + em;
+  const duration = Math.max(0.5, (endMin - startMin) / 60);
+
+  currentSelection.value = {
+    durationHours: Number(duration.toFixed(1)),
+    end: props.currentTimeRange.end,
+    endMinute: endMin,
+    equipmentId,
+    equipmentName: eq?.name ?? 'Thiết bị',
+    start: props.currentTimeRange.start,
+    startMinute: startMin,
+  };
+
+  message.success(
+    `Đã chọn ${eq?.name}: ${props.currentTimeRange.start} - ${props.currentTimeRange.end}`,
+  );
+}
+
+function handleConfirmSelection(): void {
+  if (!currentSelection.value) return;
   emit(
     'selectTimeAndEquipment',
-    equipmentId,
-    props.currentTimeRange.start,
-    props.currentTimeRange.end,
+    currentSelection.value.equipmentId,
+    currentSelection.value.start,
+    currentSelection.value.end,
     selectedDate.value,
   );
+  emit('close');
+}
+
+function handleCancel(): void {
+  activeDrag.value = null;
+  emit('close');
 }
 </script>
 
@@ -438,8 +536,7 @@ function handleQuickSelectEntireRange(equipmentId: string): void {
   <Modal
     :open="open"
     width="1050px"
-    :footer="null"
-    @cancel="emit('close')"
+    @cancel="handleCancel"
     class="facility-schedule-modal"
   >
     <template #title>
@@ -534,7 +631,7 @@ function handleQuickSelectEntireRange(equipmentId: string): void {
               v-for="eq in sortedEquipments"
               :key="eq.id"
               class="flex items-stretch transition-colors hover:bg-muted/15"
-              :class="selectedEquipmentIds.includes(eq.id) ? 'bg-primary/[0.04]' : ''"
+              :class="currentSelection?.equipmentId === eq.id ? 'bg-primary/[0.06]' : ''"
             >
               <!-- Equipment Label -->
               <div class="w-64 shrink-0 border-r border-border p-2.5 flex flex-col justify-center gap-1.5">
@@ -606,13 +703,28 @@ function handleQuickSelectEntireRange(equipmentId: string): void {
                 <!-- Highlight Band for Currently Selected Time Range from Draft -->
                 <div
                   v-if="currentRangePosition && selectedDate === date"
-                  class="pointer-events-none absolute top-0 bottom-0 z-10 border-x-2 shadow-xs"
-                  :class="hasConflict(eq.id) ? 'bg-red-500/15 border-red-500' : 'bg-primary/10 border-primary'"
+                  class="pointer-events-none absolute top-0 bottom-0 z-10 border-x-2 shadow-xs opacity-50"
+                  :class="hasConflict(eq.id) ? 'bg-red-500/10 border-red-500' : 'bg-primary/10 border-primary'"
                   :style="{
                     left: currentRangePosition.left,
                     width: currentRangePosition.width,
                   }"
                 />
+
+                <!-- Selected Range Band (Confirmed by drag or click) -->
+                <div
+                  v-if="!activeDrag && currentSelection && currentSelection.equipmentId === eq.id"
+                  class="pointer-events-none absolute top-0.5 bottom-0.5 z-25 flex items-center justify-center rounded border-2 border-primary bg-primary/25 shadow-sm transition-all font-mono text-xs font-bold"
+                  :style="{
+                    left: getBookingLeft(currentSelection.startMinute),
+                    width: getBookingWidth(currentSelection.startMinute, currentSelection.endMinute),
+                  }"
+                >
+                  <span class="rounded bg-primary text-primary-foreground px-1.5 py-0.5 text-[10px] shadow-sm flex items-center gap-1 font-sans font-semibold">
+                    <CheckCircleIcon class="size-3 shrink-0" />
+                    <span>{{ currentSelection.start }} - {{ currentSelection.end }}</span>
+                  </span>
+                </div>
 
                 <!-- Active Dragging Range Selection Band -->
                 <div
@@ -691,9 +803,46 @@ function handleQuickSelectEntireRange(equipmentId: string): void {
           </div>
         </div>
         <div class="text-[11px] text-primary italic font-medium">
-          💡 Rê chuột kéo thả để chọn khoảng thời gian mượn nhiều giờ. Giới hạn tự động theo khung giờ của lịch trình.
+          💡 Rê chuột kéo thả để chọn khoảng thời gian. Chỉ áp dụng khi bấm &quot;Xác nhận áp dụng&quot;.
         </div>
       </div>
     </div>
+
+    <!-- Modal Footer Actions -->
+    <template #footer>
+      <div class="flex flex-wrap items-center justify-between gap-3 px-1 py-1">
+        <div class="flex items-center gap-2 text-xs min-w-0">
+          <template v-if="currentSelection">
+            <span class="text-muted-foreground font-medium shrink-0">Đã chọn:</span>
+            <span class="font-bold text-foreground truncate max-w-48">{{ currentSelection.equipmentName }}</span>
+            <Tag color="blue" class="font-mono font-semibold text-xs py-0.5 px-2 shrink-0">
+              {{ currentSelection.start }} - {{ currentSelection.end }} ({{ currentSelection.durationHours }}h)
+            </Tag>
+          </template>
+          <span v-else class="text-muted-foreground italic text-xs">
+            Chưa chọn thiết bị. Kéo trên bảng hoặc bấm &quot;Dùng trọn vẹn&quot; để chọn.
+          </span>
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0">
+          <VbenButton
+            variant="outline"
+            size="sm"
+            @click="handleCancel"
+          >
+            Hủy
+          </VbenButton>
+          <VbenButton
+            variant="default"
+            size="sm"
+            :disabled="!currentSelection"
+            @click="handleConfirmSelection"
+          >
+            <CheckCircleIcon class="size-3.5 mr-1" />
+            Xác nhận áp dụng
+          </VbenButton>
+        </div>
+      </div>
+    </template>
   </Modal>
 </template>
