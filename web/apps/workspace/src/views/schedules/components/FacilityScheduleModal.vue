@@ -10,6 +10,17 @@ import { DatePicker, message, Modal, Radio, Tag, Tooltip } from 'ant-design-vue'
 
 import { mockEquipments } from '#/mocks/data';
 
+export interface SelectedFacilityItem {
+  durationHours: number;
+  end: string;
+  endMinute: number;
+  equipmentCode: string;
+  equipmentId: string;
+  equipmentName: string;
+  start: string;
+  startMinute: number;
+}
+
 const props = defineProps<{
   currentTimeRange?: null | { end: string; start: string };
   date: string;
@@ -20,6 +31,11 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   close: [];
+  selectEquipments: [
+    equipmentIds: string[],
+    selections: SelectedFacilityItem[],
+    date?: string,
+  ];
   selectTimeAndEquipment: [
     equipmentId: string,
     start: string,
@@ -31,6 +47,7 @@ const emit = defineEmits<{
 const CalendarIcon = createIconifyIcon('lucide:calendar');
 const CheckCircleIcon = createIconifyIcon('lucide:check-circle-2');
 const AlertTriangleIcon = createIconifyIcon('lucide:alert-triangle');
+const XIcon = createIconifyIcon('lucide:x');
 
 const selectedDate = ref(props.date || new Date().toISOString().slice(0, 10));
 
@@ -86,7 +103,43 @@ const hours = computed(() =>
   Array.from({ length: totalHours.value }, (_, i) => startHour.value + i),
 );
 
-// Planned event boundaries (when opened from schedule authoring drawer)
+// 30-minute granularity slots
+interface TimelineSlot {
+  endMinute: number;
+  hour: number;
+  index: number;
+  isFirstHalf: boolean;
+  label: string;
+  startMinute: number;
+}
+
+const slots = computed<TimelineSlot[]>(() => {
+  const result: TimelineSlot[] = [];
+  let idx = 0;
+  for (let h = startHour.value; h < endHour.value; h++) {
+    // 00 - 30
+    result.push({
+      endMinute: h * 60 + 30,
+      hour: h,
+      index: idx++,
+      isFirstHalf: true,
+      label: `${String(h).padStart(2, '0')}:00 - ${String(h).padStart(2, '0')}:30`,
+      startMinute: h * 60,
+    });
+    // 30 - 60
+    result.push({
+      endMinute: (h + 1) * 60,
+      hour: h,
+      index: idx++,
+      isFirstHalf: false,
+      label: `${String(h).padStart(2, '0')}:30 - ${String(h + 1).padStart(2, '0')}:00`,
+      startMinute: h * 60 + 30,
+    });
+  }
+  return result;
+});
+
+// Planned event boundaries down to exact minutes
 const boundaryMinutes = computed(() => {
   if (!props.currentTimeRange?.start || !props.currentTimeRange?.end) {
     return null;
@@ -106,14 +159,18 @@ const boundaryMinutes = computed(() => {
   };
 });
 
-function isSlotOutsideBoundary(hour: number): boolean {
+function isSlotOutsideBoundary(slotStartMin: number, slotEndMin: number): boolean {
   if (!boundaryMinutes.value) return false;
-  const slotStart = hour * 60;
-  const slotEnd = (hour + 1) * 60;
   return (
-    slotEnd <= boundaryMinutes.value.start ||
-    slotStart >= boundaryMinutes.value.end
+    slotEndMin <= boundaryMinutes.value.start ||
+    slotStartMin >= boundaryMinutes.value.end
   );
+}
+
+function formatMinuteToTime(totalMin: number): string {
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }
 
 function shiftDate(offset: number): void {
@@ -132,11 +189,57 @@ function handleDateChange(val: unknown): void {
   }
 }
 
+// Multi-equipment selections store: equipmentId -> SelectedFacilityItem
+const selectedItems = ref<Record<string, SelectedFacilityItem>>({});
+
+// Initialize / Sync selected items when modal opens
+watch(
+  () => props.open,
+  (isOpen) => {
+    if (isOpen) {
+      activeDrag.value = null;
+      const initialMap: Record<string, SelectedFacilityItem> = {};
+      if (props.selectedEquipmentIds && props.selectedEquipmentIds.length > 0) {
+        const start = props.currentTimeRange?.start ?? '08:00';
+        const end = props.currentTimeRange?.end ?? '17:00';
+        const startMin = boundaryMinutes.value?.start ?? parseMinute(start);
+        const endMin = boundaryMinutes.value?.end ?? parseMinute(end);
+        const durationHours = Number(
+          Math.max(0.5, (endMin - startMin) / 60).toFixed(1),
+        );
+
+        for (const id of props.selectedEquipmentIds) {
+          const eq = mockEquipments.find((e) => e.id === id);
+          if (eq) {
+            initialMap[id] = {
+              durationHours,
+              end,
+              endMinute: endMin,
+              equipmentCode: eq.code,
+              equipmentId: id,
+              equipmentName: eq.name,
+              start,
+              startMinute: startMin,
+            };
+          }
+        }
+      }
+      selectedItems.value = initialMap;
+    }
+  },
+  { immediate: true },
+);
+
+function parseMinute(timeStr: string): number {
+  const [h, m] = timeStr.split(':').map(Number) as [number, number];
+  return h * 60 + m;
+}
+
 // Sort equipment: selected equipment first, then meeting rooms, then others
 const sortedEquipments = computed(() => {
   return [...mockEquipments].sort((a, b) => {
-    const aSelected = props.selectedEquipmentIds.includes(a.id);
-    const bSelected = props.selectedEquipmentIds.includes(b.id);
+    const aSelected = Boolean(selectedItems.value[a.id]);
+    const bSelected = Boolean(selectedItems.value[b.id]);
     if (aSelected && !bSelected) return -1;
     if (!aSelected && bSelected) return 1;
     const aIsRoom = a.code.startsWith('ROOM');
@@ -232,7 +335,7 @@ function getBookingWidth(startMin: number, endMin: number): string {
   if (visibleEnd <= visibleStart) return '0%';
 
   const dur = (visibleEnd - visibleStart) / windowTotalMin;
-  return `${Math.max(2, dur * 100)}%`;
+  return `${Math.max(1, dur * 100)}%`;
 }
 
 function isBookingVisibleInWindow(startMin: number, endMin: number): boolean {
@@ -241,7 +344,7 @@ function isBookingVisibleInWindow(startMin: number, endMin: number): boolean {
   return Math.max(startMin, windowStartMin) < Math.min(endMin, windowEndMin);
 }
 
-// Current selection time range positioning
+// Current selection time range positioning (Draft range)
 const currentRangePosition = computed(() => {
   if (!props.currentTimeRange?.start || !props.currentTimeRange?.end) {
     return null;
@@ -267,7 +370,7 @@ const currentRangePosition = computed(() => {
     0,
     ((startMin - windowStartMin) / windowTotalMin) * 100,
   );
-  const width = Math.max(2, ((endMin - startMin) / windowTotalMin) * 100);
+  const width = Math.max(1, ((endMin - startMin) / windowTotalMin) * 100);
 
   return {
     endMin,
@@ -299,12 +402,14 @@ function hasConflict(
   );
 }
 
-function isSlotBooked(equipmentId: string, hour: number): boolean {
-  const slotStart = hour * 60;
-  const slotEnd = (hour + 1) * 60;
+function isSlotBooked(
+  equipmentId: string,
+  startMin: number,
+  endMin: number,
+): boolean {
   const bookings = equipmentBookings.value.get(equipmentId) ?? [];
   return bookings.some(
-    (b) => Math.max(b.startMinute, slotStart) < Math.min(b.endMinute, slotEnd),
+    (b) => Math.max(b.startMinute, startMin) < Math.min(b.endMinute, endMin),
   );
 }
 
@@ -312,100 +417,61 @@ function formatHour(h: number): string {
   return `${String(h).padStart(2, '0')}:00`;
 }
 
-// User confirmed selection state
-export interface SelectedFacilityDraft {
-  durationHours: number;
-  end: string;
-  endMinute: number;
-  equipmentId: string;
-  equipmentName: string;
-  start: string;
-  startMinute: number;
-}
-
-const currentSelection = ref<SelectedFacilityDraft | null>(null);
-
-// Reset / Initialize selection when modal opens
-watch(
-  () => props.open,
-  (isOpen) => {
-    if (isOpen) {
-      activeDrag.value = null;
-      if (props.selectedEquipmentIds.length > 0) {
-        const firstId = props.selectedEquipmentIds[0];
-        const eq = mockEquipments.find((e) => e.id === firstId);
-        if (eq) {
-          const start = props.currentTimeRange?.start ?? '09:00';
-          const end = props.currentTimeRange?.end ?? '10:00';
-          const [sh, sm] = start.split(':').map(Number) as [number, number];
-          const [eh, em] = end.split(':').map(Number) as [number, number];
-          const startMin = sh * 60 + sm;
-          const endMin = eh * 60 + em;
-          const duration = Math.max(0.5, (endMin - startMin) / 60);
-          currentSelection.value = {
-            durationHours: Number(duration.toFixed(1)),
-            end,
-            endMinute: endMin,
-            equipmentId: eq.id,
-            equipmentName: eq.name,
-            start,
-            startMinute: startMin,
-          };
-          return;
-        }
-      }
-      currentSelection.value = null;
-    }
-  },
-  { immediate: true },
-);
-
-// Drag to select range functionality
+// Drag to select range functionality using 30-min slots
 interface DragSelection {
-  currentHour: number;
+  currentSlotIndex: number;
   equipmentId: string;
-  startHour: number;
+  startSlotIndex: number;
 }
 
 const activeDrag = ref<DragSelection | null>(null);
 
 const activeDragNormalized = computed(() => {
   if (!activeDrag.value) return null;
-  const { currentHour, equipmentId, startHour: sH } = activeDrag.value;
-  let minH = Math.min(sH, currentHour);
-  let maxH = Math.max(sH, currentHour) + 1;
+  const { currentSlotIndex, equipmentId, startSlotIndex } = activeDrag.value;
+  const minIdx = Math.min(startSlotIndex, currentSlotIndex);
+  const maxIdx = Math.max(startSlotIndex, currentSlotIndex);
 
+  const startSlot = slots.value[minIdx];
+  const endSlot = slots.value[maxIdx];
+  if (!startSlot || !endSlot) return null;
+
+  let rawStart = startSlot.startMinute;
+  let rawEnd = endSlot.endMinute;
+
+  // Strict boundary clamping down to the exact minute
   if (boundaryMinutes.value) {
-    const boundMinH = Math.floor(boundaryMinutes.value.start / 60);
-    const boundMaxH = Math.ceil(boundaryMinutes.value.end / 60);
-    minH = Math.max(minH, boundMinH);
-    maxH = Math.min(maxH, boundMaxH);
+    rawStart = Math.max(rawStart, boundaryMinutes.value.start);
+    rawEnd = Math.min(rawEnd, boundaryMinutes.value.end);
   }
 
-  const startMinute = minH * 60;
-  const endMinute = maxH * 60;
   const conflicted = hasConflict(equipmentId, {
-    endMin: endMinute,
-    startMin: startMinute,
+    endMin: rawEnd,
+    startMin: rawStart,
   });
+
+  const durationMin = Math.max(0, rawEnd - rawStart);
+  const durationHours = Number((durationMin / 60).toFixed(1));
 
   return {
     conflicted,
-    durationHours: Math.max(1, maxH - minH),
-    endHour: maxH,
-    endMinute,
-    endTimeText: `${String(maxH).padStart(2, '0')}:00`,
+    durationHours,
+    endMinute: rawEnd,
+    endTimeText: formatMinuteToTime(rawEnd),
     equipmentId,
-    startHour: minH,
-    startMinute,
-    startTimeText: `${String(minH).padStart(2, '0')}:00`,
+    startMinute: rawStart,
+    startTimeText: formatMinuteToTime(rawStart),
   };
 });
 
-function handleMouseDown(eqId: string, hour: number, event: MouseEvent): void {
+function handleSlotMouseDown(
+  eqId: string,
+  slot: TimelineSlot,
+  event: MouseEvent,
+): void {
   if (event.button !== 0) return;
 
-  if (isSlotOutsideBoundary(hour)) {
+  if (isSlotOutsideBoundary(slot.startMinute, slot.endMinute)) {
     if (boundaryMinutes.value) {
       message.warning(
         `Chỉ được chọn trong khung giờ dự kiến (${boundaryMinutes.value.startText} - ${boundaryMinutes.value.endText})`,
@@ -414,31 +480,43 @@ function handleMouseDown(eqId: string, hour: number, event: MouseEvent): void {
     return;
   }
 
-  if (isSlotBooked(eqId, hour)) {
+  if (isSlotBooked(eqId, slot.startMinute, slot.endMinute)) {
     message.warning('Khung giờ này đã có lịch đặt, vui lòng chọn ô khác');
     return;
   }
 
   activeDrag.value = {
-    currentHour: hour,
+    currentSlotIndex: slot.index,
     equipmentId: eqId,
-    startHour: hour,
+    startSlotIndex: slot.index,
   };
 }
 
-function handleMouseEnter(eqId: string, hour: number): void {
+function handleSlotMouseEnter(eqId: string, slot: TimelineSlot): void {
   if (!activeDrag.value || activeDrag.value.equipmentId !== eqId) return;
 
-  // Clamp if boundary is present
+  // If outside boundary, clamp to the nearest valid slot index
   if (boundaryMinutes.value) {
-    const boundMinH = Math.floor(boundaryMinutes.value.start / 60);
-    const boundMaxH = Math.ceil(boundaryMinutes.value.end / 60) - 1;
-    const clamped = Math.max(boundMinH, Math.min(boundMaxH, hour));
-    activeDrag.value.currentHour = clamped;
-    return;
+    if (slot.endMinute <= boundaryMinutes.value.start) {
+      // Find first slot inside boundary
+      const firstValid = slots.value.find(
+        (s) => s.endMinute > boundaryMinutes.value!.start,
+      );
+      if (firstValid) activeDrag.value.currentSlotIndex = firstValid.index;
+      return;
+    }
+    if (slot.startMinute >= boundaryMinutes.value.end) {
+      // Find last slot inside boundary
+      const validSlots = slots.value.filter(
+        (s) => s.startMinute < boundaryMinutes.value!.end,
+      );
+      const lastValid = validSlots[validSlots.length - 1];
+      if (lastValid) activeDrag.value.currentSlotIndex = lastValid.index;
+      return;
+    }
   }
 
-  activeDrag.value.currentHour = hour;
+  activeDrag.value.currentSlotIndex = slot.index;
 }
 
 function handleGlobalMouseUp(): void {
@@ -458,10 +536,11 @@ function handleGlobalMouseUp(): void {
   }
 
   const eq = mockEquipments.find((e) => e.id === drag.equipmentId);
-  currentSelection.value = {
+  selectedItems.value[drag.equipmentId] = {
     durationHours: drag.durationHours,
     end: drag.endTimeText,
     endMinute: drag.endMinute,
+    equipmentCode: eq?.code ?? '',
     equipmentId: drag.equipmentId,
     equipmentName: eq?.name ?? 'Thiết bị',
     start: drag.startTimeText,
@@ -482,47 +561,59 @@ onUnmounted(() => {
 });
 
 function handleQuickSelectEntireRange(equipmentId: string): void {
-  if (!props.currentTimeRange?.start || !props.currentTimeRange?.end) return;
+  if (!props.currentTimeRange?.start || !props.currentTimeRange?.end || !boundaryMinutes.value) {
+    return;
+  }
   if (hasConflict(equipmentId)) {
     message.error('Thiết bị này có lịch trùng trong khung giờ dự kiến!');
     return;
   }
 
   const eq = mockEquipments.find((e) => e.id === equipmentId);
-  const [sh, sm] = props.currentTimeRange.start
-    .split(':')
-    .map(Number) as [number, number];
-  const [eh, em] = props.currentTimeRange.end
-    .split(':')
-    .map(Number) as [number, number];
-  const startMin = sh * 60 + sm;
-  const endMin = eh * 60 + em;
-  const duration = Math.max(0.5, (endMin - startMin) / 60);
+  const startMin = boundaryMinutes.value.start;
+  const endMin = boundaryMinutes.value.end;
+  const durationHours = Number(Math.max(0.5, (endMin - startMin) / 60).toFixed(1));
 
-  currentSelection.value = {
-    durationHours: Number(duration.toFixed(1)),
-    end: props.currentTimeRange.end,
+  selectedItems.value[equipmentId] = {
+    durationHours,
+    end: boundaryMinutes.value.endText,
     endMinute: endMin,
+    equipmentCode: eq?.code ?? '',
     equipmentId,
     equipmentName: eq?.name ?? 'Thiết bị',
-    start: props.currentTimeRange.start,
+    start: boundaryMinutes.value.startText,
     startMinute: startMin,
   };
 
   message.success(
-    `Đã chọn ${eq?.name}: ${props.currentTimeRange.start} - ${props.currentTimeRange.end}`,
+    `Đã chọn ${eq?.name}: ${boundaryMinutes.value.startText} - ${boundaryMinutes.value.endText}`,
   );
 }
 
+function handleRemoveSelectedItem(equipmentId: string): void {
+  delete selectedItems.value[equipmentId];
+}
+
 function handleConfirmSelection(): void {
-  if (!currentSelection.value) return;
-  emit(
-    'selectTimeAndEquipment',
-    currentSelection.value.equipmentId,
-    currentSelection.value.start,
-    currentSelection.value.end,
-    selectedDate.value,
-  );
+  const items = Object.values(selectedItems.value);
+  if (items.length === 0) {
+    message.warning('Vui lòng chọn ít nhất một thiết bị hoặc khung giờ');
+    return;
+  }
+
+  const equipmentIds = Object.keys(selectedItems.value);
+  emit('selectEquipments', equipmentIds, items, selectedDate.value);
+
+  const first = items[0];
+  if (first) {
+    emit(
+      'selectTimeAndEquipment',
+      first.equipmentId,
+      first.start,
+      first.end,
+      selectedDate.value,
+    );
+  }
   emit('close');
 }
 
@@ -535,7 +626,7 @@ function handleCancel(): void {
 <template>
   <Modal
     :open="open"
-    width="1050px"
+    width="1080px"
     @cancel="handleCancel"
     class="facility-schedule-modal"
   >
@@ -599,8 +690,8 @@ function handleCancel(): void {
 
         <!-- Planned Slot Badge -->
         <div v-if="currentTimeRange" class="flex items-center gap-2 text-xs">
-          <span class="text-muted-foreground">Khung giờ dự kiến:</span>
-          <Tag color="blue" class="font-bold text-xs py-0.5 px-2">
+          <span class="text-muted-foreground">Khung giờ dự kiến của lịch:</span>
+          <Tag color="blue" class="font-bold font-mono text-xs py-0.5 px-2">
             {{ currentTimeRange.start }} - {{ currentTimeRange.end }}
           </Tag>
         </div>
@@ -608,7 +699,7 @@ function handleCancel(): void {
 
       <!-- Timeline Table Container -->
       <div class="overflow-x-auto rounded-lg border border-border bg-background shadow-xs">
-        <div class="min-w-[900px]">
+        <div class="min-w-[950px]">
           <!-- Timeline Header -->
           <div class="flex border-b border-border bg-muted/50 text-[11px] font-semibold text-muted-foreground">
             <div class="w-64 shrink-0 border-r border-border p-2.5">
@@ -618,7 +709,7 @@ function handleCancel(): void {
               <div
                 v-for="hour in hours"
                 :key="hour"
-                class="flex-1 border-r border-border/50 py-2.5 text-center font-mono text-[11px]"
+                class="flex-1 border-r border-border/50 py-2 text-center font-mono text-[11px]"
               >
                 {{ formatHour(hour) }}
               </div>
@@ -631,7 +722,7 @@ function handleCancel(): void {
               v-for="eq in sortedEquipments"
               :key="eq.id"
               class="flex items-stretch transition-colors hover:bg-muted/15"
-              :class="currentSelection?.equipmentId === eq.id ? 'bg-primary/[0.06]' : ''"
+              :class="selectedItems[eq.id] ? 'bg-primary/[0.06]' : ''"
             >
               <!-- Equipment Label -->
               <div class="w-64 shrink-0 border-r border-border p-2.5 flex flex-col justify-center gap-1.5">
@@ -645,15 +736,18 @@ function handleCancel(): void {
                     </div>
                   </div>
 
-                  <!-- Status Tag if schedule has time range -->
-                  <div v-if="boundaryMinutes" class="shrink-0">
-                    <Tag v-if="hasConflict(eq.id)" color="error" class="text-[10px] m-0 font-semibold">
+                  <!-- Status / Selection Tag -->
+                  <div class="shrink-0 flex items-center gap-1">
+                    <Tag v-if="selectedItems[eq.id]" color="blue" class="text-[10px] m-0 font-semibold font-mono">
+                      {{ selectedItems[eq.id]?.start }} - {{ selectedItems[eq.id]?.end }}
+                    </Tag>
+                    <Tag v-else-if="boundaryMinutes && hasConflict(eq.id)" color="error" class="text-[10px] m-0 font-semibold">
                       <span class="flex items-center gap-1">
                         <AlertTriangleIcon class="size-3" />
-                        Trùng lịch
+                        Trùng
                       </span>
                     </Tag>
-                    <Tag v-else color="success" class="text-[10px] m-0 font-semibold">
+                    <Tag v-else-if="boundaryMinutes" color="success" class="text-[10px] m-0 font-semibold">
                       <span class="flex items-center gap-1">
                         <CheckCircleIcon class="size-3" />
                         Rảnh
@@ -662,48 +756,60 @@ function handleCancel(): void {
                   </div>
                 </div>
 
-                <!-- Quick Select Button for entire event range -->
-                <button
-                  v-if="boundaryMinutes && !hasConflict(eq.id)"
-                  type="button"
-                  class="inline-flex items-center justify-center gap-1 rounded bg-primary/10 hover:bg-primary hover:text-primary-foreground text-primary px-2 py-0.5 text-[10px] font-semibold transition cursor-pointer w-full"
-                  :title="`Chọn trọn vẹn khung giờ ${boundaryMinutes.startText} - ${boundaryMinutes.endText}`"
-                  @click.stop="handleQuickSelectEntireRange(eq.id)"
-                >
-                  <CheckCircleIcon class="size-3" />
-                  <span>Dùng trọn vẹn ({{ boundaryMinutes.startText }} - {{ boundaryMinutes.endText }})</span>
-                </button>
+                <!-- Action Button -->
+                <div class="flex items-center gap-1 w-full">
+                  <button
+                    v-if="selectedItems[eq.id]"
+                    type="button"
+                    class="inline-flex items-center justify-center gap-1 rounded border border-rose-300 bg-rose-50 hover:bg-rose-100 text-rose-700 dark:bg-rose-950/40 dark:border-rose-800 dark:text-rose-300 px-2 py-0.5 text-[10px] font-semibold transition cursor-pointer w-full"
+                    @click.stop="handleRemoveSelectedItem(eq.id)"
+                  >
+                    <XIcon class="size-3" />
+                    <span>Bỏ chọn</span>
+                  </button>
+                  <button
+                    v-else-if="boundaryMinutes && !hasConflict(eq.id)"
+                    type="button"
+                    class="inline-flex items-center justify-center gap-1 rounded bg-primary/10 hover:bg-primary hover:text-primary-foreground text-primary px-2 py-0.5 text-[10px] font-semibold transition cursor-pointer w-full"
+                    :title="`Chọn trọn vẹn khung giờ ${boundaryMinutes.startText} - ${boundaryMinutes.endText}`"
+                    @click.stop="handleQuickSelectEntireRange(eq.id)"
+                  >
+                    <CheckCircleIcon class="size-3" />
+                    <span>Dùng trọn vẹn ({{ boundaryMinutes.startText }} - {{ boundaryMinutes.endText }})</span>
+                  </button>
+                </div>
               </div>
 
-              <!-- Timeline Slot Area -->
+              <!-- Timeline Slot Area (30-min precision) -->
               <div class="relative flex flex-1 items-center h-12">
-                <!-- Hour Column Grid Lines (drag-to-select range) -->
+                <!-- 30-min Sub-slots -->
                 <div
-                  v-for="hour in hours"
-                  :key="hour"
-                  class="h-full flex-1 border-r border-border/30 transition-colors"
+                  v-for="slot in slots"
+                  :key="slot.index"
+                  class="h-full flex-1 transition-colors relative"
                   :class="[
-                    isSlotOutsideBoundary(hour)
+                    slot.isFirstHalf ? 'border-r border-border/20 border-dashed' : 'border-r border-border/50',
+                    isSlotOutsideBoundary(slot.startMinute, slot.endMinute)
                       ? 'bg-muted/40 cursor-not-allowed opacity-45'
-                      : isSlotBooked(eq.id, hour)
+                      : isSlotBooked(eq.id, slot.startMinute, slot.endMinute)
                         ? 'cursor-not-allowed bg-rose-50/40 dark:bg-rose-950/20'
                         : 'hover:bg-primary/10 cursor-crosshair',
                   ]"
                   :title="
-                    isSlotOutsideBoundary(hour)
+                    isSlotOutsideBoundary(slot.startMinute, slot.endMinute)
                       ? `Nằm ngoài khung giờ dự kiến (${boundaryMinutes?.startText} - ${boundaryMinutes?.endText})`
-                      : isSlotBooked(eq.id, hour)
-                        ? `Đã có lịch đặt lúc ${formatHour(hour)} - ${formatHour(hour + 1)}`
-                        : `Kéo hoặc nhấp để chọn khung giờ bắt đầu từ ${formatHour(hour)}`
+                      : isSlotBooked(eq.id, slot.startMinute, slot.endMinute)
+                        ? `Đã có lịch đặt: ${slot.label}`
+                        : `Kéo hoặc nhấp để chọn: ${slot.label}`
                   "
-                  @mousedown="handleMouseDown(eq.id, hour, $event)"
-                  @mouseenter="handleMouseEnter(eq.id, hour)"
+                  @mousedown="handleSlotMouseDown(eq.id, slot, $event)"
+                  @mouseenter="handleSlotMouseEnter(eq.id, slot)"
                 />
 
                 <!-- Highlight Band for Currently Selected Time Range from Draft -->
                 <div
                   v-if="currentRangePosition && selectedDate === date"
-                  class="pointer-events-none absolute top-0 bottom-0 z-10 border-x-2 shadow-xs opacity-50"
+                  class="pointer-events-none absolute top-0 bottom-0 z-10 border-x-2 shadow-xs opacity-40"
                   :class="hasConflict(eq.id) ? 'bg-red-500/10 border-red-500' : 'bg-primary/10 border-primary'"
                   :style="{
                     left: currentRangePosition.left,
@@ -711,19 +817,30 @@ function handleCancel(): void {
                   }"
                 />
 
-                <!-- Selected Range Band (Confirmed by drag or click) -->
+                <!-- Selected Range Band for this Equipment -->
                 <div
-                  v-if="!activeDrag && currentSelection && currentSelection.equipmentId === eq.id"
-                  class="pointer-events-none absolute top-0.5 bottom-0.5 z-25 flex items-center justify-center rounded border-2 border-primary bg-primary/25 shadow-sm transition-all font-mono text-xs font-bold"
+                  v-if="selectedItems[eq.id] && (!activeDrag || activeDrag.equipmentId !== eq.id)"
+                  class="absolute top-1 bottom-1 z-25 flex items-center justify-between rounded border-2 border-primary bg-primary/25 px-2 shadow-xs transition-all font-mono text-xs font-bold"
                   :style="{
-                    left: getBookingLeft(currentSelection.startMinute),
-                    width: getBookingWidth(currentSelection.startMinute, currentSelection.endMinute),
+                    left: getBookingLeft(selectedItems[eq.id]?.startMinute ?? 0),
+                    width: getBookingWidth(
+                      selectedItems[eq.id]?.startMinute ?? 0,
+                      selectedItems[eq.id]?.endMinute ?? 0,
+                    ),
                   }"
                 >
-                  <span class="rounded bg-primary text-primary-foreground px-1.5 py-0.5 text-[10px] shadow-sm flex items-center gap-1 font-sans font-semibold">
-                    <CheckCircleIcon class="size-3 shrink-0" />
-                    <span>{{ currentSelection.start }} - {{ currentSelection.end }}</span>
+                  <span class="truncate text-[10px] text-foreground font-sans font-semibold flex items-center gap-1">
+                    <CheckCircleIcon class="size-3 text-primary shrink-0" />
+                    <span>{{ selectedItems[eq.id]?.start }} - {{ selectedItems[eq.id]?.end }}</span>
                   </span>
+                  <button
+                    type="button"
+                    class="ml-1 flex size-4 items-center justify-center rounded-full hover:bg-black/10 dark:hover:bg-white/20 text-muted-foreground hover:text-foreground cursor-pointer shrink-0"
+                    title="Bỏ chọn thiết bị này"
+                    @click.stop="handleRemoveSelectedItem(eq.id)"
+                  >
+                    <XIcon class="size-3" />
+                  </button>
                 </div>
 
                 <!-- Active Dragging Range Selection Band -->
@@ -803,24 +920,35 @@ function handleCancel(): void {
           </div>
         </div>
         <div class="text-[11px] text-primary italic font-medium">
-          💡 Rê chuột kéo thả để chọn khoảng thời gian. Chỉ áp dụng khi bấm &quot;Xác nhận áp dụng&quot;.
+          💡 Rê chuột kéo thả để chọn nhiều tài sản. Giới hạn tự động bám sát từng phút của lịch trình.
         </div>
       </div>
     </div>
 
-    <!-- Modal Footer Actions -->
+    <!-- Modal Footer Actions: Multi-equipment Summary & Confirm -->
     <template #footer>
       <div class="flex flex-wrap items-center justify-between gap-3 px-1 py-1">
-        <div class="flex items-center gap-2 text-xs min-w-0">
-          <template v-if="currentSelection">
-            <span class="text-muted-foreground font-medium shrink-0">Đã chọn:</span>
-            <span class="font-bold text-foreground truncate max-w-48">{{ currentSelection.equipmentName }}</span>
-            <Tag color="blue" class="font-mono font-semibold text-xs py-0.5 px-2 shrink-0">
-              {{ currentSelection.start }} - {{ currentSelection.end }} ({{ currentSelection.durationHours }}h)
-            </Tag>
+        <div class="flex flex-1 items-center gap-2 text-xs min-w-0">
+          <template v-if="Object.keys(selectedItems).length > 0">
+            <span class="text-muted-foreground font-medium shrink-0">
+              Đã chọn ({{ Object.keys(selectedItems).length }}):
+            </span>
+            <div class="flex flex-wrap items-center gap-1.5 max-h-16 overflow-y-auto min-w-0">
+              <Tag
+                v-for="item in Object.values(selectedItems)"
+                :key="item.equipmentId"
+                closable
+                color="blue"
+                class="flex items-center gap-1 font-semibold text-xs py-0.5 px-2 m-0 shrink-0"
+                @close="handleRemoveSelectedItem(item.equipmentId)"
+              >
+                <span class="font-bold">{{ item.equipmentName }}:</span>
+                <span class="font-mono">{{ item.start }} - {{ item.end }}</span>
+              </Tag>
+            </div>
           </template>
           <span v-else class="text-muted-foreground italic text-xs">
-            Chưa chọn thiết bị. Kéo trên bảng hoặc bấm &quot;Dùng trọn vẹn&quot; để chọn.
+            Chưa chọn tài sản nào. Kéo thả trên bảng hoặc bấm &quot;Dùng trọn vẹn&quot; để chọn nhiều tài sản.
           </span>
         </div>
 
@@ -835,11 +963,14 @@ function handleCancel(): void {
           <VbenButton
             variant="default"
             size="sm"
-            :disabled="!currentSelection"
+            :disabled="Object.keys(selectedItems).length === 0"
             @click="handleConfirmSelection"
           >
             <CheckCircleIcon class="size-3.5 mr-1" />
             Xác nhận áp dụng
+            <span v-if="Object.keys(selectedItems).length > 0" class="ml-1">
+              ({{ Object.keys(selectedItems).length }})
+            </span>
           </VbenButton>
         </div>
       </div>

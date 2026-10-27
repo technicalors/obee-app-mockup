@@ -132,6 +132,29 @@ function handleStandaloneFacilitySlotSelect(
   );
 }
 
+function handleStandaloneMultipleFacilities(
+  equipmentIds: string[],
+  selections: Array<{ equipmentId: string; start: string; end: string }>,
+  date?: string,
+): void {
+  const targetDate = date || standaloneFacilityDate.value;
+  standaloneFacilityModalOpen.value = false;
+  const first = selections[0];
+  const start = first?.start ?? '09:00';
+  const end = first?.end ?? '10:00';
+  authoringDraft.value = createScheduleDraftForDate(
+    targetDate,
+    currentUserId.value,
+    {
+      end_date: targetDate,
+      end_time: end,
+      equipment_ids: equipmentIds,
+      start_date: targetDate,
+      start_time: start,
+    },
+  );
+}
+
 const weekDates = computed(() => getWeekDates(weekAnchorDate.value));
 const dayDates = computed(() => [dayAnchorDate.value]);
 
@@ -1464,6 +1487,7 @@ function isScheduleObserver(schedule: Schedule): boolean {
       :schedules="schedules"
       :selected-equipment-ids="[]"
       @close="standaloneFacilityModalOpen = false"
+      @select-equipments="handleStandaloneMultipleFacilities"
       @select-time-and-equipment="handleStandaloneFacilitySlotSelect"
     />
   </Page>

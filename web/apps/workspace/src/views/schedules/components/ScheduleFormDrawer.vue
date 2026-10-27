@@ -349,6 +349,21 @@ function handleSelectFacilitySlot(
   facilityModalOpen.value = false;
 }
 
+function handleSelectMultipleFacilities(
+  equipmentIds: string[],
+  _selections: unknown,
+  _date?: string,
+): void {
+  // Cập nhật tất cả các thiết bị được chọn trên modal vào lịch trình
+  // Thời gian sử dụng thiết bị không làm ảnh hưởng tới thời gian của lịch trình
+  if (props.draft) {
+    equipmentIdsValue.value = Array.from(
+      new Set([...props.draft.equipment_ids, ...equipmentIds]),
+    );
+  }
+  facilityModalOpen.value = false;
+}
+
 function setQuickMeetingUrl(type: 'google' | 'teams' | 'zoom'): void {
   const code = Math.random().toString(36).slice(2, 6);
   let url = '';
@@ -1092,6 +1107,7 @@ const isCreateBlocked = computed(
     :selected-equipment-ids="draft?.equipment_ids ?? []"
     :current-time-range="currentTimeRange"
     @close="facilityModalOpen = false"
+    @select-equipments="handleSelectMultipleFacilities"
     @select-time-and-equipment="handleSelectFacilitySlot"
   />
 </template>
