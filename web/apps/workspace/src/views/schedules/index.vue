@@ -926,17 +926,33 @@ async function submitAuthoringDraft(): Promise<void> {
   authoringSaving.value = true;
 
   try {
-    await (authoringDraft.value.mode === 'edit'
+    const targetDate = authoringDraft.value.start_date;
+    const isEditing = authoringDraft.value.mode === 'edit';
+
+    await (isEditing
       ? updateScheduleEvent(
           authoringDraft.value.source_event_id,
           authoringPayload.value,
         )
       : createScheduleEvent(authoringPayload.value));
 
+    // Nếu tạo/sửa lịch ở mốc thời gian khác, đồng bộ view để hiển thị ngay lập tức
+    if (targetDate) {
+      const targetMonth = targetDate.slice(0, 7);
+      if (selectedMonthValue.value !== targetMonth) {
+        selectedMonthValue.value = targetMonth;
+      }
+      if (viewMode.value === 'day') {
+        dayAnchorDate.value = targetDate.slice(0, 10);
+      } else if (viewMode.value === 'week') {
+        weekAnchorDate.value = targetDate.slice(0, 10);
+      }
+    }
+
     await loadSchedules(false);
     notification.success({
       message: $t(
-        `page.schedules.messages.${authoringDraft.value.mode === 'edit' ? 'updateSuccess' : 'createSuccess'}`,
+        `page.schedules.messages.${isEditing ? 'updateSuccess' : 'createSuccess'}`,
       ),
     });
     authoringSaving.value = false;

@@ -228,8 +228,44 @@ function resolveMockResponse(
       const found = facilityResourcesStore.find((f) => f.id === id);
       return found ? { code: found.code, id: found.id, name: found.name } : null;
     }).filter((x: any) => x !== null);
+
+    const rawStartDate = String(payload.start_date || '');
+    const rawEndDate = String(payload.end_date || '');
+    const startDateOnly = rawStartDate.includes('T') ? rawStartDate.split('T')[0] : rawStartDate;
+    const endDateOnly = rawEndDate.includes('T') ? rawEndDate.split('T')[0] : rawEndDate;
+
+    const startTimeOnly = payload.start_time 
+      || (rawStartDate.includes('T') ? rawStartDate.split('T')[1]?.slice(0, 5) : '09:00');
+    const endTimeOnly = payload.end_time 
+      || (rawEndDate.includes('T') ? rawEndDate.split('T')[1]?.slice(0, 5) : '17:00');
+
+    const validStartIso = `${startDateOnly}T${startTimeOnly}:00+07:00`;
+    const validEndIso = `${endDateOnly}T${endTimeOnly}:00+07:00`;
+
+    const participantIds = Array.isArray(payload.participants) ? payload.participants : [];
+    const participantUsers = participantIds.map((pId: string) => {
+      const found = mockUsers.find((u) => u.id === pId);
+      return found ? { avatar: found.avatar, email: found.email, id: found.id, name: found.name } : null;
+    }).filter((u: any) => u !== null);
+
+    // Luôn đảm bảo mockAuthUser (người tạo) có trong participants để lịch không bị lọc mất
+    if (!participantUsers.some((u: any) => u.id === mockAuthUser.id)) {
+      participantUsers.unshift({
+        avatar: mockAuthUser.avatar,
+        email: mockAuthUser.email,
+        id: mockAuthUser.id,
+        name: mockAuthUser.name,
+      });
+    }
+
+    const observerIds = Array.isArray(payload.observers) ? payload.observers : [];
+    const observerUsers = observerIds.map((oId: string) => {
+      const found = mockUsers.find((u) => u.id === oId);
+      return found ? { avatar: found.avatar, email: found.email, id: found.id, name: found.name } : null;
+    }).filter((u: any) => u !== null);
+
     const newSchedule = {
-      end: `${payload.end_date}T${payload.end_time || '17:00:00'}+07:00`,
+      end: validEndIso,
       event: {
         can_edit: true,
         company_name: null,
@@ -238,32 +274,32 @@ function resolveMockResponse(
         created_by: mockAuthUser.id,
         creator: { id: mockAuthUser.id, name: mockAuthUser.name },
         department_company_id: mockOrganizations[0]!.id,
-        end_date: payload.end_date,
-        end_time: payload.end_time,
+        end_date: validEndIso,
+        end_time: endTimeOnly,
         equipment_ids: payload.equipment_ids || [],
         equipments: eqItems,
         has_reminder: payload.has_reminder ?? true,
         id: eventId,
         is_general: payload.is_general ?? true,
         is_joined: true,
-        location: payload.location ?? 'Phòng họp Lotus',
+        location: payload.location ?? (payload.physical_address || 'Phòng họp Lotus'),
         location_type: payload.location_type ?? 'physical',
         meeting_url: payload.meeting_url ?? null,
         note: payload.note ?? null,
-        observers: [],
+        observers: observerUsers,
         one_day: payload.schedule_type === 'ordinary',
-        participants: [mockAuthUser].map((u) => ({ avatar: u.avatar, email: u.email, id: u.id, name: u.name })),
-        physical_address: null,
+        participants: participantUsers,
+        physical_address: payload.physical_address ?? null,
         privacy: payload.privacy ?? 'public',
         remind_range: payload.remind_range ?? 'minute',
         remind_value: payload.remind_value ?? 15,
-        repeat_end_time: null,
-        repeat_pattern: null,
-        repeat_start_time: null,
-        repeat_type: null,
+        repeat_end_time: payload.repeat_end_time ?? null,
+        repeat_pattern: payload.repeat_pattern ?? null,
+        repeat_start_time: payload.repeat_start_time ?? null,
+        repeat_type: payload.repeat_type ?? null,
         schedule_type: payload.schedule_type ?? 'ordinary',
-        start_date: payload.start_date,
-        start_time: payload.start_time,
+        start_date: validStartIso,
+        start_time: startTimeOnly,
         title: payload.title,
         type: payload.type ?? 'meeting',
         updated_at: new Date().toISOString(),
@@ -273,8 +309,8 @@ function resolveMockResponse(
       id: scheduleId,
       one_day: payload.schedule_type === 'ordinary',
       remind_at: null,
-      repeat: false,
-      start: `${payload.start_date}T${payload.start_time || '09:00:00'}+07:00`,
+      repeat: payload.schedule_type === 'repeat',
+      start: validStartIso,
       user_id: mockAuthUser.id,
     };
     schedulesStore.push(newSchedule);
@@ -285,8 +321,32 @@ function resolveMockResponse(
     schedulesStore = schedulesStore.filter((s) => s.event_id !== eventId && s.id !== eventId);
     return success(config, { message: 'Đã xóa lịch demo.' });
   }
-  if (path.startsWith('/schedule-events/') && method === 'PUT')
-    return success(config, {});
+  if (path.startsWith('/schedule-events/') && method === 'PUT') {
+    const eventId = resourceId(path);
+    const payload = typeof config.data === 'string' ? JSON.parse(config.data) : config.data;
+    const existing = schedulesStore.find((s) => s.event_id === eventId || s.id === eventId);
+    if (existing) {
+      const rawStartDate = String(payload.start_date || '');
+      const rawEndDate = String(payload.end_date || '');
+      const startDateOnly = rawStartDate.includes('T') ? rawStartDate.split('T')[0] : rawStartDate;
+      const endDateOnly = rawEndDate.includes('T') ? rawEndDate.split('T')[0] : rawEndDate;
+      const startTimeOnly = payload.start_time 
+        || (rawStartDate.includes('T') ? rawStartDate.split('T')[1]?.slice(0, 5) : '09:00');
+      const endTimeOnly = payload.end_time 
+        || (rawEndDate.includes('T') ? rawEndDate.split('T')[1]?.slice(0, 5) : '17:00');
+
+      existing.start = `${startDateOnly}T${startTimeOnly}:00+07:00`;
+      existing.end = `${endDateOnly}T${endTimeOnly}:00+07:00`;
+      existing.event.title = payload.title ?? existing.event.title;
+      existing.event.start_date = existing.start;
+      existing.event.end_date = existing.end;
+      existing.event.start_time = startTimeOnly;
+      existing.event.end_time = endTimeOnly;
+      existing.event.equipment_ids = payload.equipment_ids ?? existing.event.equipment_ids;
+      existing.event.note = payload.note ?? existing.event.note;
+    }
+    return success(config, { message: 'Đã cập nhật lịch.' });
+  }
   if (path.endsWith('/join'))
     return success(config, { message: 'Đã tham gia lịch.' });
   if (path.endsWith('/leave'))
