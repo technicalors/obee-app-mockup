@@ -756,7 +756,7 @@ const isCreateBlocked = computed(
                       <div class="flex items-center justify-between gap-2 border-b border-border/60 pb-1.5 pt-0.5">
                         <span class="flex items-center gap-1.5 text-xs font-bold text-foreground">
                           <UsersIcon class="size-3.5 text-primary" />
-                          <span>Người theo dõi ẩn ({{ omittedValues.length }})</span>
+                          <span>Người được chia sẻ ẩn ({{ omittedValues.length }})</span>
                         </span>
                         <button
                           type="button"
