@@ -1,0 +1,9 @@
+{
+  "routeTitle": "Purchasing",
+  "menu": {
+    "requests": "Purchase requests",
+    "approvals": "Approvals",
+    "orders": "Purchase orders",
+    "reports": "Purchasing progress"
+  }
+}

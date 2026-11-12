@@ -2,5 +2,8 @@
   "cashFund": {
     "routeTitle": "现金基金"
   },
+  "purchasing": {
+    "routeTitle": "采购目录"
+  },
   "routeTitle": "主数据"
 }

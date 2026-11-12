@@ -121,6 +121,15 @@ const routes: RouteRecordRaw[] = [
         name: 'MasterDataCashFund',
         path: 'cash-fund',
       },
+      {
+        component: () => import('#/views/purchasing/master-data/index.vue'),
+        meta: {
+          icon: 'lucide:shopping-cart',
+          title: $t('masterData.purchasing.routeTitle'),
+        },
+        name: 'MasterDataPurchasing',
+        path: 'purchasing',
+      },
     ],
   },
 ];

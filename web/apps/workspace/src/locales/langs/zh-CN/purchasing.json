@@ -1,0 +1,9 @@
+{
+  "routeTitle": "采购",
+  "menu": {
+    "requests": "采购申请",
+    "approvals": "审批",
+    "orders": "采购订单",
+    "reports": "采购进度"
+  }
+}

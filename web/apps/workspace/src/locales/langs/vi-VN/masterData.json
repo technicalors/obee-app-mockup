@@ -2,5 +2,8 @@
   "cashFund": {
     "routeTitle": "Quỹ tiền mặt"
   },
+  "purchasing": {
+    "routeTitle": "Danh mục mua hàng"
+  },
   "routeTitle": "Masterdata"
 }

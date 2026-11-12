@@ -2,5 +2,8 @@
   "cashFund": {
     "routeTitle": "Cash Fund"
   },
+  "purchasing": {
+    "routeTitle": "Purchasing catalog"
+  },
   "routeTitle": "Masterdata"
 }

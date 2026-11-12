@@ -1,0 +1,9 @@
+{
+  "routeTitle": "Mua hàng",
+  "menu": {
+    "requests": "Đề nghị mua hàng",
+    "approvals": "Phê duyệt",
+    "orders": "Đơn hàng (PO)",
+    "reports": "Tiến độ mua hàng"
+  }
+}
